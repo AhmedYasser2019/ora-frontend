@@ -155,5 +155,26 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
   }
 }
+
+@utility text-gradient-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-gradient-green {
+  background: var(--gradient-green);
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
