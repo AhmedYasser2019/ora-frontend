@@ -250,7 +250,7 @@ function Home() {
                 <p className="mt-1 text-xs text-muted-foreground">{p.s}</p>
                 <div className="mt-3 flex items-center justify-between">
                   <span className="font-display text-lg text-gold-deep">
-                    {data?.items[p.key] ? `${egp(data.items[p.key])} ج.م` : "جاري التحديث…"}
+                    {data ? `${egp(data.items[p.key] ?? 0)} ج.م` : "جاري التحديث…"}
                   </span>
 
                   <button className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
