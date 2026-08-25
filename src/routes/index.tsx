@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+
 import {
   Menu,
   ShoppingBag,
@@ -20,6 +22,8 @@ import barImg from "@/assets/bar.jpg";
 import coinsImg from "@/assets/coins.jpg";
 import silverImg from "@/assets/silver.jpg";
 import jewelryImg from "@/assets/jewelry.jpg";
+import { livePricesQuery, egp } from "@/lib/prices.queries";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,7 +41,9 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
   component: Home,
+
 });
 
 const nav = [
@@ -50,19 +56,13 @@ const nav = [
   "من نحن",
 ];
 
-const prices = [
-  { k: "عيار 24", v: "5,420", d: "+1.2%" },
-  { k: "عيار 21", v: "4,742", d: "+1.0%" },
-  { k: "عيار 18", v: "4,065", d: "+0.8%" },
-  { k: "الفضة", v: "62", d: "-0.3%" },
-];
-
 const products = [
-  { img: barImg, t: "سبيكة ذهب 10 جرام", s: "عيار 24 – 999.9", p: "54,200 ج.م" },
-  { img: coinsImg, t: "جنيه ذهب إنجليزي", s: "عيار 22 – 8 جرام", p: "42,900 ج.م" },
-  { img: jewelryImg, t: "طقم ذهب كلاسيك", s: "عيار 21 – 12 جرام", p: "58,700 ج.م" },
-  { img: silverImg, t: "سبيكة فضة 100 جرام", s: "فضة 999", p: "6,300 ج.م" },
-];
+  { key: "bar-10g", img: barImg, t: "سبيكة ذهب 10 جرام", s: "عيار 24 – 999.9" },
+  { key: "coin-8g", img: coinsImg, t: "جنيه ذهب إنجليزي", s: "عيار 22 – 8 جرام" },
+  { key: "set-12g", img: jewelryImg, t: "طقم ذهب كلاسيك", s: "عيار 21 – 12 جرام" },
+  { key: "silver-100g", img: silverImg, t: "سبيكة فضة 100 جرام", s: "فضة 999" },
+] as const;
+
 
 const services = [
   { icon: TrendingUp, t: "سعر الذهب اللحظي", d: "تابع تحديث الأسعار لحظة بلحظة." },
@@ -72,6 +72,24 @@ const services = [
 ];
 
 function Home() {
+  const { data, isFetching, dataUpdatedAt } = useQuery(livePricesQuery);
+
+  const gramRows = [
+    { k: "عيار 24", v: data?.gram.k24, u: "جنيه / جرام" },
+    { k: "عيار 21", v: data?.gram.k21, u: "جنيه / جرام" },
+    { k: "عيار 18", v: data?.gram.k18, u: "جنيه / جرام" },
+    { k: "الفضة", v: data?.gram.silver, u: "جنيه / جرام" },
+  ];
+
+  const updatedLabel = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString("ar-EG", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "—";
+
+
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
@@ -161,16 +179,28 @@ function Home() {
 
       {/* Prices */}
       <section id="prices" className="mx-auto max-w-6xl px-4 py-10">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-2 text-primary">
+            <span
+              className={`h-2 w-2 rounded-full bg-gold-deep ${isFetching ? "animate-pulse" : ""}`}
+            />
+            أسعار لحظية · آخر تحديث {updatedLabel}
+          </span>
+          <span>يتم التحديث تلقائيًا كل دقيقة</span>
+        </div>
         <div className="grid grid-cols-2 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-4">
-          {prices.map((p) => (
+          {gramRows.map((p) => (
             <div key={p.k} className="rounded-xl bg-card px-4 py-4 text-center">
               <p className="text-xs text-muted-foreground">{p.k}</p>
-              <p className="mt-1 font-display text-2xl text-primary">{p.v}</p>
-              <p className="text-[11px] text-gold-deep">جنيه / جرام · {p.d}</p>
+              <p className="mt-1 font-display text-2xl text-primary">
+                {p.v ? egp(p.v) : "—"}
+              </p>
+              <p className="text-[11px] text-gold-deep">{p.u}</p>
             </div>
           ))}
         </div>
       </section>
+
 
       {/* Categories */}
       <section className="mx-auto max-w-6xl px-4">
@@ -221,7 +251,10 @@ function Home() {
                 <h3 className="text-base text-primary">{p.t}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">{p.s}</p>
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="font-display text-lg text-gold-deep">{p.p}</span>
+                  <span className="font-display text-lg text-gold-deep">
+                    {data ? `${egp(data.items[p.key] ?? 0)} ج.م` : "جاري التحديث…"}
+                  </span>
+
                   <button className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
                     أضف للسلة
                   </button>
