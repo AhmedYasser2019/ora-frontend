@@ -66,6 +66,24 @@ const services = [
 ];
 
 function Home() {
+  const { data, isFetching, dataUpdatedAt } = useQuery(livePricesQuery);
+
+  const gramRows = [
+    { k: "عيار 24", v: data?.gram.k24, u: "جنيه / جرام" },
+    { k: "عيار 21", v: data?.gram.k21, u: "جنيه / جرام" },
+    { k: "عيار 18", v: data?.gram.k18, u: "جنيه / جرام" },
+    { k: "الفضة", v: data?.gram.silver, u: "جنيه / جرام" },
+  ];
+
+  const updatedLabel = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString("ar-EG", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "—";
+
+
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
@@ -155,16 +173,28 @@ function Home() {
 
       {/* Prices */}
       <section id="prices" className="mx-auto max-w-6xl px-4 py-10">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-2 text-primary">
+            <span
+              className={`h-2 w-2 rounded-full bg-gold-deep ${isFetching ? "animate-pulse" : ""}`}
+            />
+            أسعار لحظية · آخر تحديث {updatedLabel}
+          </span>
+          <span>يتم التحديث تلقائيًا كل دقيقة</span>
+        </div>
         <div className="grid grid-cols-2 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-4">
-          {prices.map((p) => (
+          {gramRows.map((p) => (
             <div key={p.k} className="rounded-xl bg-card px-4 py-4 text-center">
               <p className="text-xs text-muted-foreground">{p.k}</p>
-              <p className="mt-1 font-display text-2xl text-primary">{p.v}</p>
-              <p className="text-[11px] text-gold-deep">جنيه / جرام · {p.d}</p>
+              <p className="mt-1 font-display text-2xl text-primary">
+                {p.v ? egp(p.v) : "—"}
+              </p>
+              <p className="text-[11px] text-gold-deep">{p.u}</p>
             </div>
           ))}
         </div>
       </section>
+
 
       {/* Categories */}
       <section className="mx-auto max-w-6xl px-4">
