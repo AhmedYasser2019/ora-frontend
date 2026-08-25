@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+
 import {
   Menu,
   ShoppingBag,
@@ -20,6 +22,8 @@ import barImg from "@/assets/bar.jpg";
 import coinsImg from "@/assets/coins.jpg";
 import silverImg from "@/assets/silver.jpg";
 import jewelryImg from "@/assets/jewelry.jpg";
+import { livePricesQuery, egp } from "@/lib/prices.queries";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -245,7 +249,10 @@ function Home() {
                 <h3 className="text-base text-primary">{p.t}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">{p.s}</p>
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="font-display text-lg text-gold-deep">{p.p}</span>
+                  <span className="font-display text-lg text-gold-deep">
+                    {data?.items[p.key] ? `${egp(data.items[p.key])} ج.م` : "جاري التحديث…"}
+                  </span>
+
                   <button className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
                     أضف للسلة
                   </button>
