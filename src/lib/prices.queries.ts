@@ -5,7 +5,7 @@ import { getLivePrices } from "./prices.functions";
 export const livePricesQuery = queryOptions({
   queryKey: ["live-prices"],
   queryFn: () => getLivePrices(),
-  refetchInterval: 60_000,
+  refetchInterval: 120_000,
   refetchOnWindowFocus: true,
   staleTime: 30_000,
 });

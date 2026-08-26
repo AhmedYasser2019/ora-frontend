@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 
 import {
   Menu,
@@ -23,6 +22,7 @@ import coinsImg from "@/assets/coins.jpg";
 import silverImg from "@/assets/silver.jpg";
 import jewelryImg from "@/assets/jewelry.jpg";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
+import { useLivePrices } from "@/lib/use-live-prices";
 
 
 export const Route = createFileRoute("/")({
@@ -72,7 +72,7 @@ const services = [
 ];
 
 function Home() {
-  const { data, isFetching, dataUpdatedAt } = useQuery(livePricesQuery);
+  const { data, isFetching, dataUpdatedAt, live, pushedAt } = useLivePrices();
 
   const gramRows = [
     { k: "عيار 24", v: data?.gram.k24, u: "جنيه / جرام" },
@@ -182,11 +182,12 @@ function Home() {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-2 text-primary">
             <span
-              className={`h-2 w-2 rounded-full bg-gold-deep ${isFetching ? "animate-pulse" : ""}`}
+              className={`h-2 w-2 rounded-full bg-gold-deep ${live || isFetching ? "animate-pulse" : ""}`}
+              key={pushedAt}
             />
             أسعار لحظية · آخر تحديث {updatedLabel}
           </span>
-          <span>يتم التحديث تلقائيًا كل دقيقة</span>
+          <span>{live ? "بث مباشر متصل · تحديث فوري" : "جاري الاتصال بالبث المباشر…"}</span>
         </div>
         <div className="grid grid-cols-2 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-4">
           {gramRows.map((p) => (
