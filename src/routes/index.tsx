@@ -23,6 +23,7 @@ import silverImg from "@/assets/silver.jpg";
 import jewelryImg from "@/assets/jewelry.jpg";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
+import { LiveTicker } from "@/components/LiveTicker";
 
 
 export const Route = createFileRoute("/")({
@@ -72,7 +73,7 @@ const services = [
 ];
 
 function Home() {
-  const { data, isFetching, dataUpdatedAt, live, pushedAt } = useLivePrices();
+  const { data, isFetching, dataUpdatedAt, live, pushedAt, history } = useLivePrices();
 
   const gramRows = [
     { k: "عيار 24", v: data?.gram.k24, u: "جنيه / جرام" },
@@ -189,16 +190,19 @@ function Home() {
           </span>
           <span>{live ? "بث مباشر متصل · تحديث فوري" : "جاري الاتصال بالبث المباشر…"}</span>
         </div>
-        <div className="grid grid-cols-2 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-4">
-          {gramRows.map((p) => (
-            <div key={p.k} className="rounded-xl bg-card px-4 py-4 text-center">
-              <p className="text-xs text-muted-foreground">{p.k}</p>
-              <p className="mt-1 font-display text-2xl text-primary">
-                {p.v ? egp(p.v) : "—"}
-              </p>
-              <p className="text-[11px] text-gold-deep">{p.u}</p>
-            </div>
-          ))}
+        <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <div className="grid grid-cols-2 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-4">
+            {gramRows.map((p) => (
+              <div key={p.k} className="rounded-xl bg-card px-4 py-4 text-center">
+                <p className="text-xs text-muted-foreground">{p.k}</p>
+                <p className="mt-1 font-display text-2xl text-primary">
+                  {p.v ? egp(p.v) : "—"}
+                </p>
+                <p className="text-[11px] text-gold-deep">{p.u}</p>
+              </div>
+            ))}
+          </div>
+          <LiveTicker history={history} />
         </div>
       </section>
 
