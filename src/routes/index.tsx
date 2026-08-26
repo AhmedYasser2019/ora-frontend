@@ -24,6 +24,7 @@ import jewelryImg from "@/assets/jewelry.jpg";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
+import { FinancialNews } from "@/components/FinancialNews";
 
 
 export const Route = createFileRoute("/")({
