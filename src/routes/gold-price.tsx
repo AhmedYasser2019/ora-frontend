@@ -1,0 +1,109 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+import { PageShell } from "@/components/PageShell";
+import { LiveTicker } from "@/components/LiveTicker";
+import { egp, livePricesQuery } from "@/lib/prices.queries";
+import { useLivePrices } from "@/lib/use-live-prices";
+
+export const Route = createFileRoute("/gold-price")({
+  head: () => ({
+    meta: [
+      { title: "سعر الذهب اليوم لحظة بلحظة في مصر | أورا" },
+      {
+        name: "description",
+        content:
+          "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و22 و21 و18 وسعر الفضة والأوقية والدولار، بتحديث مباشر كل ثوانٍ.",
+      },
+      { property: "og:title", content: "سعر الذهب اليوم لحظة بلحظة | أورا" },
+      {
+        property: "og:description",
+        content: "أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.",
+      },
+    ],
+  }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  component: GoldPricePage,
+});
+
+function GoldPricePage() {
+  const { data, isFetching, dataUpdatedAt, live, pushedAt, history } = useLivePrices();
+
+  const updated = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString("ar-EG", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "—";
+
+  const rows = [
+    { k: "عيار 24", v: data?.gram.k24 },
+    { k: "عيار 22", v: data?.gram.k22 },
+    { k: "عيار 21", v: data?.gram.k21 },
+    { k: "عيار 18", v: data?.gram.k18 },
+    { k: "الفضة 999", v: data?.gram.silver },
+  ];
+
+  return (
+    <PageShell
+      title="سعر الذهب اليوم"
+      subtitle="أسعار مباشرة مرتبطة بسعر الأوقية العالمي وسعر الدولار مقابل الجنيه، محدثة تلقائيًا كل ثوانٍ."
+    >
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span className="flex items-center gap-2 text-primary">
+          <span
+            key={pushedAt}
+            className={`h-2 w-2 rounded-full bg-gold-deep ${live || isFetching ? "animate-pulse" : ""}`}
+          />
+          آخر تحديث {updated}
+        </span>
+        <span>{live ? "بث مباشر متصل · تحديث فوري" : "جاري الاتصال بالبث المباشر…"}</span>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <table className="w-full text-sm">
+            <thead className="bg-cream text-primary">
+              <tr>
+                <th className="px-4 py-3 text-right font-semibold">العيار</th>
+                <th className="px-4 py-3 text-right font-semibold">سعر الجرام (ج.م)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.k} className="border-t border-border">
+                  <td className="px-4 py-3 text-primary">{r.k}</td>
+                  <td className="px-4 py-3 font-display text-lg text-gold-deep">
+                    {r.v ? egp(r.v) : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <LiveTicker history={history} />
+      </div>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="rounded-2xl bg-cream p-5 text-center">
+          <p className="text-xs text-muted-foreground">أوقية الذهب (دولار)</p>
+          <p className="mt-1 font-display text-2xl text-primary">
+            {data ? egp(data.spot.goldUsdOz) : "—"}
+          </p>
+        </div>
+        <div className="rounded-2xl bg-cream p-5 text-center">
+          <p className="text-xs text-muted-foreground">أوقية الفضة (دولار)</p>
+          <p className="mt-1 font-display text-2xl text-primary">
+            {data ? data.spot.silverUsdOz.toFixed(2) : "—"}
+          </p>
+        </div>
+        <div className="rounded-2xl bg-cream p-5 text-center">
+          <p className="text-xs text-muted-foreground">الدولار / الجنيه</p>
+          <p className="mt-1 font-display text-2xl text-primary">
+            {data ? data.spot.usdEgp.toFixed(2) : "—"}
+          </p>
+        </div>
+      </div>
+    </PageShell>
+  );
+}
