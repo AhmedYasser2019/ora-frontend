@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as ApiPublicPricesStreamRouteImport } from './routes/api/public/prices-stream'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionRoute = CollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicPricesStreamRoute = ApiPublicPricesStreamRouteImport.update({
@@ -25,27 +31,31 @@ const ApiPublicPricesStreamRoute = ApiPublicPricesStreamRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/collection': typeof CollectionRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/collection': typeof CollectionRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/collection': typeof CollectionRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/prices-stream'
+  fullPaths: '/' | '/collection' | '/api/public/prices-stream'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/prices-stream'
-  id: '__root__' | '/' | '/api/public/prices-stream'
+  to: '/' | '/collection' | '/api/public/prices-stream'
+  id: '__root__' | '/' | '/collection' | '/api/public/prices-stream'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CollectionRoute: typeof CollectionRoute
   ApiPublicPricesStreamRoute: typeof ApiPublicPricesStreamRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collection': {
+      id: '/collection'
+      path: '/collection'
+      fullPath: '/collection'
+      preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/prices-stream': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CollectionRoute: CollectionRoute,
   ApiPublicPricesStreamRoute: ApiPublicPricesStreamRoute,
 }
 export const routeTree = rootRouteImport
