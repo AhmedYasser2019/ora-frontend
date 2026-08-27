@@ -289,6 +289,10 @@ function Home() {
         </div>
       </section>
 
+      {/* Financial news */}
+      <FinancialNews />
+
+
       {/* Trust */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid gap-6 rounded-2xl bg-secondary p-6 sm:grid-cols-3">
