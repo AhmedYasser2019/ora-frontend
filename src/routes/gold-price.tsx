@@ -86,21 +86,21 @@ function GoldPricePage() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">أوقية الذهب (دولار)</p>
-          <p className="mt-1 font-display text-2xl text-primary">
-            {data ? egp(data.spot.goldUsdOz) : "—"}
-          </p>
-        </div>
-        <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">أوقية الفضة (دولار)</p>
-          <p className="mt-1 font-display text-2xl text-primary">
-            {data ? data.spot.silverUsdOz.toFixed(2) : "—"}
-          </p>
-        </div>
-        <div className="rounded-2xl bg-cream p-5 text-center">
           <p className="text-xs text-muted-foreground">الدولار / الجنيه</p>
           <p className="mt-1 font-display text-2xl text-primary">
-            {data ? data.spot.usdEgp.toFixed(2) : "—"}
+            {data ? data.usdEgp.toFixed(2) : "—"}
+          </p>
+        </div>
+        <div className="rounded-2xl bg-cream p-5 text-center">
+          <p className="text-xs text-muted-foreground">أوقية الذهب (عيار 24)</p>
+          <p className="mt-1 font-display text-2xl text-primary">
+            {data ? egp(data.gram.k24 * 31.1035) : "—"}
+          </p>
+        </div>
+        <div className="rounded-2xl bg-cream p-5 text-center">
+          <p className="text-xs text-muted-foreground">أوقية الفضة</p>
+          <p className="mt-1 font-display text-2xl text-primary">
+            {data ? egp(data.gram.silver * 31.1035) : "—"}
           </p>
         </div>
       </div>
