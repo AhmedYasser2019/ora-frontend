@@ -45,15 +45,6 @@ export const Route = createFileRoute("/")({
 
 });
 
-const nav = [
-  "الرئيسية",
-  "مجموعتنا",
-  "الفضة",
-  "سعر الذهب",
-  "حساب الزكاة",
-  "فروعنا",
-  "من نحن",
-];
 
 const products = [
   { key: "bar-10g", img: barImg, t: "سبيكة ذهب 10 جرام", s: "عيار 24 – 999.9" },
