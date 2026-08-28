@@ -164,21 +164,21 @@ function Home() {
       <section className="mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            { icon: Coins, t: "سبائك ذهب" },
-            { icon: BadgeCheck, t: "عملات ذهبية" },
-            { icon: Gem, t: "مشغولات" },
-            { icon: ShieldCheck, t: "سبائك فضة" },
-          ].map(({ icon: Icon, t }) => (
-            <a
+            { icon: Coins, t: "سبائك ذهب", to: "/collection" as const },
+            { icon: BadgeCheck, t: "عملات ذهبية", to: "/collection" as const },
+            { icon: Gem, t: "مشغولات", to: "/collection" as const },
+            { icon: ShieldCheck, t: "سبائك فضة", to: "/silver" as const },
+          ].map(({ icon: Icon, t, to }) => (
+            <Link
               key={t}
-              href="#products"
+              to={to}
               className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card py-6 transition-colors hover:border-gold"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/60 text-primary">
                 <Icon className="h-6 w-6" />
               </span>
               <span className="text-xs font-semibold tracking-wide text-primary">{t}</span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
