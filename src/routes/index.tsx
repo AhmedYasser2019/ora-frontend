@@ -219,14 +219,18 @@ function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-8 text-center text-2xl text-primary">خدماتنا</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map(({ icon: Icon, t, d }) => (
-              <div key={t} className="rounded-2xl bg-card p-6 text-center">
+            {services.map(({ icon: Icon, t, d, to }) => (
+              <Link
+                key={t}
+                to={to}
+                className="rounded-2xl bg-card p-6 text-center transition-shadow hover:shadow-soft"
+              >
                 <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-gold">
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-4 text-base text-primary">{t}</h3>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{d}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
