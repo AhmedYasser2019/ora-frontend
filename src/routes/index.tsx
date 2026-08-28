@@ -187,9 +187,9 @@ function Home() {
       <section id="products" className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="text-2xl text-primary">مجموعتنا</h2>
-          <a href="#" className="flex items-center gap-1 text-sm text-gold-deep">
+          <Link to="/collection" className="flex items-center gap-1 text-sm text-gold-deep">
             عرض الكل <ArrowLeft className="h-4 w-4" />
-          </a>
+          </Link>
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {products.map((p) => (
