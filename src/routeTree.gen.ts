@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as GoldPriceRouteImport } from './routes/gold-price'
 import { Route as SilverRouteImport } from './routes/silver'
+import { Route as ZakatRouteImport } from './routes/zakat'
 import { Route as ApiPublicPricesStreamRouteImport } from './routes/api/public/prices-stream'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const SilverRoute = SilverRouteImport.update({
   path: '/silver',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ZakatRoute = ZakatRouteImport.update({
+  id: '/zakat',
+  path: '/zakat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPricesStreamRoute = ApiPublicPricesStreamRouteImport.update({
   id: '/api/public/prices-stream',
   path: '/api/public/prices-stream',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/collection': typeof CollectionRoute
   '/gold-price': typeof GoldPriceRoute
   '/silver': typeof SilverRoute
+  '/zakat': typeof ZakatRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/collection': typeof CollectionRoute
   '/gold-price': typeof GoldPriceRoute
   '/silver': typeof SilverRoute
+  '/zakat': typeof ZakatRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesById {
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/collection': typeof CollectionRoute
   '/gold-price': typeof GoldPriceRoute
   '/silver': typeof SilverRoute
+  '/zakat': typeof ZakatRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRouteTypes {
@@ -70,6 +79,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/gold-price'
     | '/silver'
+    | '/zakat'
     | '/api/public/prices-stream'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/gold-price'
     | '/silver'
+    | '/zakat'
     | '/api/public/prices-stream'
   id:
     | '__root__'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/gold-price'
     | '/silver'
+    | '/zakat'
     | '/api/public/prices-stream'
   fileRoutesById: FileRoutesById
 }
@@ -92,6 +104,7 @@ export interface RootRouteChildren {
   CollectionRoute: typeof CollectionRoute
   GoldPriceRoute: typeof GoldPriceRoute
   SilverRoute: typeof SilverRoute
+  ZakatRoute: typeof ZakatRoute
   ApiPublicPricesStreamRoute: typeof ApiPublicPricesStreamRoute
 }
 
@@ -125,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SilverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/zakat': {
+      id: '/zakat'
+      path: '/zakat'
+      fullPath: '/zakat'
+      preLoaderRoute: typeof ZakatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/prices-stream': {
       id: '/api/public/prices-stream'
       path: '/api/public/prices-stream'
@@ -140,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionRoute: CollectionRoute,
   GoldPriceRoute: GoldPriceRoute,
   SilverRoute: SilverRoute,
+  ZakatRoute: ZakatRoute,
   ApiPublicPricesStreamRoute: ApiPublicPricesStreamRoute,
 }
 export const routeTree = rootRouteImport
