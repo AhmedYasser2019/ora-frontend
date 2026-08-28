@@ -1,8 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import {
-  Menu,
-  ShoppingBag,
   Coins,
   Gem,
   Calculator,
@@ -11,9 +9,6 @@ import {
   BadgeCheck,
   TrendingUp,
   ArrowLeft,
-  Phone,
-  Mail,
-  MapPin,
 } from "lucide-react";
 
 import heroGold from "@/assets/hero-gold.jpg";
@@ -25,6 +20,8 @@ import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
 import { FinancialNews } from "@/components/FinancialNews";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 
 export const Route = createFileRoute("/")({
