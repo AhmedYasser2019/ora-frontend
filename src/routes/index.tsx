@@ -55,10 +55,10 @@ const products = [
 
 
 const services = [
-  { icon: TrendingUp, t: "سعر الذهب اللحظي", d: "تابع تحديث الأسعار لحظة بلحظة." },
-  { icon: Calculator, t: "حساب الزكاة", d: "احسب زكاة ذهبك بدقة في ثوانٍ." },
-  { icon: Coins, t: "إعادة البيع", d: "نشتري منك ذهبك بأفضل سعر في السوق." },
-  { icon: Gem, t: "شهادة أصل", d: "كل سبيكة معتمدة بشهادة ضمان." },
+  { icon: TrendingUp, t: "سعر الذهب اللحظي", d: "تابع تحديث الأسعار لحظة بلحظة.", to: "/gold-price" as const },
+  { icon: Calculator, t: "حساب الزكاة", d: "احسب زكاة ذهبك بدقة في ثوانٍ.", to: "/zakat" as const },
+  { icon: Coins, t: "إعادة البيع", d: "نشتري منك ذهبك بأفضل سعر في السوق.", to: "/branches" as const },
+  { icon: Gem, t: "شهادة أصل", d: "كل سبيكة معتمدة بشهادة ضمان.", to: "/about" as const },
 ];
 
 function Home() {
