@@ -1,8 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import {
-  Menu,
-  ShoppingBag,
   Coins,
   Gem,
   Calculator,
@@ -11,9 +9,6 @@ import {
   BadgeCheck,
   TrendingUp,
   ArrowLeft,
-  Phone,
-  Mail,
-  MapPin,
 } from "lucide-react";
 
 import heroGold from "@/assets/hero-gold.jpg";
@@ -25,6 +20,8 @@ import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
 import { FinancialNews } from "@/components/FinancialNews";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 
 export const Route = createFileRoute("/")({
@@ -48,15 +45,6 @@ export const Route = createFileRoute("/")({
 
 });
 
-const nav = [
-  "الرئيسية",
-  "مجموعتنا",
-  "الفضة",
-  "سعر الذهب",
-  "حساب الزكاة",
-  "فروعنا",
-  "من نحن",
-];
 
 const products = [
   { key: "bar-10g", img: barImg, t: "سبيكة ذهب 10 جرام", s: "عيار 24 – 999.9" },
@@ -67,10 +55,10 @@ const products = [
 
 
 const services = [
-  { icon: TrendingUp, t: "سعر الذهب اللحظي", d: "تابع تحديث الأسعار لحظة بلحظة." },
-  { icon: Calculator, t: "حساب الزكاة", d: "احسب زكاة ذهبك بدقة في ثوانٍ." },
-  { icon: Coins, t: "إعادة البيع", d: "نشتري منك ذهبك بأفضل سعر في السوق." },
-  { icon: Gem, t: "شهادة أصل", d: "كل سبيكة معتمدة بشهادة ضمان." },
+  { icon: TrendingUp, t: "سعر الذهب اللحظي", d: "تابع تحديث الأسعار لحظة بلحظة.", to: "/gold-price" as const },
+  { icon: Calculator, t: "حساب الزكاة", d: "احسب زكاة ذهبك بدقة في ثوانٍ.", to: "/zakat" as const },
+  { icon: Coins, t: "إعادة البيع", d: "نشتري منك ذهبك بأفضل سعر في السوق.", to: "/branches" as const },
+  { icon: Gem, t: "شهادة أصل", d: "كل سبيكة معتمدة بشهادة ضمان.", to: "/about" as const },
 ];
 
 function Home() {
@@ -94,52 +82,7 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
-      <div className="bg-gradient-green text-primary-foreground">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-xs">
-          <span className="flex items-center gap-2">
-            <Phone className="h-3.5 w-3.5 text-gold" /> 17608
-          </span>
-          <span className="hidden sm:inline text-gold">توصيل آمن ومؤمّن لكل محافظات مصر</span>
-          <span>AR | EN</span>
-        </div>
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <button
-            aria-label="القائمة"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary md:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <div className="text-center">
-            <p className="font-display text-3xl leading-none tracking-[0.25em] text-primary">ORA</p>
-            <p className="mt-1 text-[10px] tracking-[0.35em] text-gold-deep">GOLD JEWELRY</p>
-          </div>
-          <button
-            aria-label="حقيبة الشراء"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
-          >
-            <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[11px] font-semibold text-accent-foreground">
-              2
-            </span>
-          </button>
-        </div>
-        <nav className="hidden border-t border-border/60 md:block">
-          <ul className="mx-auto flex max-w-6xl items-center justify-center gap-8 px-4 py-3 text-sm text-primary">
-            {nav.map((n) => (
-              <li key={n}>
-                <a href="#" className="transition-colors hover:text-gold-deep">
-                  {n}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
+      <SiteHeader />
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-4 pt-6">
@@ -161,19 +104,19 @@ function Home() {
               سبائك وعملات ذهبية معتمدة بشهادات أصل، وأسعار لحظية شفافة، وتسليم آمن في أي وقت.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a
-                href="#products"
+              <Link
+                to="/collection"
                 className="rounded-full px-7 py-3 text-sm font-semibold text-accent-foreground shadow-soft"
                 style={{ background: "var(--gradient-gold)" }}
               >
                 ابدأ الاستثمار
-              </a>
-              <a
-                href="#prices"
+              </Link>
+              <Link
+                to="/gold-price"
                 className="rounded-full border border-gold/60 px-7 py-3 text-sm font-semibold text-gold"
               >
                 سعر الذهب اليوم
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -212,21 +155,21 @@ function Home() {
       <section className="mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            { icon: Coins, t: "سبائك ذهب" },
-            { icon: BadgeCheck, t: "عملات ذهبية" },
-            { icon: Gem, t: "مشغولات" },
-            { icon: ShieldCheck, t: "سبائك فضة" },
-          ].map(({ icon: Icon, t }) => (
-            <a
+            { icon: Coins, t: "سبائك ذهب", to: "/collection" as const },
+            { icon: BadgeCheck, t: "عملات ذهبية", to: "/collection" as const },
+            { icon: Gem, t: "مشغولات", to: "/collection" as const },
+            { icon: ShieldCheck, t: "سبائك فضة", to: "/silver" as const },
+          ].map(({ icon: Icon, t, to }) => (
+            <Link
               key={t}
-              href="#products"
+              to={to}
               className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card py-6 transition-colors hover:border-gold"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/60 text-primary">
                 <Icon className="h-6 w-6" />
               </span>
               <span className="text-xs font-semibold tracking-wide text-primary">{t}</span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
@@ -235,9 +178,9 @@ function Home() {
       <section id="products" className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="text-2xl text-primary">مجموعتنا</h2>
-          <a href="#" className="flex items-center gap-1 text-sm text-gold-deep">
+          <Link to="/collection" className="flex items-center gap-1 text-sm text-gold-deep">
             عرض الكل <ArrowLeft className="h-4 w-4" />
-          </a>
+          </Link>
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {products.map((p) => (
@@ -276,14 +219,18 @@ function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-8 text-center text-2xl text-primary">خدماتنا</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map(({ icon: Icon, t, d }) => (
-              <div key={t} className="rounded-2xl bg-card p-6 text-center">
+            {services.map(({ icon: Icon, t, d, to }) => (
+              <Link
+                key={t}
+                to={to}
+                className="rounded-2xl bg-card p-6 text-center transition-shadow hover:shadow-soft"
+              >
                 <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-gold">
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-4 text-base text-primary">{t}</h3>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{d}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -310,46 +257,7 @@ function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-green text-primary-foreground">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-3">
-          <div>
-            <p className="font-display text-3xl tracking-[0.25em] text-gold">ORA</p>
-            <p className="mt-1 text-[10px] tracking-[0.35em] text-gold/70">GOLD JEWELRY</p>
-            <p className="mt-4 text-sm text-primary-foreground/75">
-              أورا للذهب والسبائك — استثمار واضح وآمن في المعادن النفيسة.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-base text-gold">روابط سريعة</h3>
-            <ul className="mt-3 space-y-2 text-sm text-primary-foreground/75">
-              {nav.slice(1).map((n) => (
-                <li key={n}>
-                  <a href="#" className="hover:text-gold">
-                    {n}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-base text-gold">تواصل معنا</h3>
-            <ul className="mt-3 space-y-3 text-sm text-primary-foreground/75">
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gold" /> 17608
-              </li>
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gold" /> support@ora-gold.com
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 text-gold" /> سموحة، الإسكندرية، مصر
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="border-t border-primary-foreground/10 py-4 text-center text-xs text-primary-foreground/60">
-          جميع الحقوق محفوظة © أورا للذهب 2026
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
