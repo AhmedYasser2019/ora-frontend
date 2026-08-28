@@ -113,19 +113,19 @@ function Home() {
               سبائك وعملات ذهبية معتمدة بشهادات أصل، وأسعار لحظية شفافة، وتسليم آمن في أي وقت.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a
-                href="#products"
+              <Link
+                to="/collection"
                 className="rounded-full px-7 py-3 text-sm font-semibold text-accent-foreground shadow-soft"
                 style={{ background: "var(--gradient-gold)" }}
               >
                 ابدأ الاستثمار
-              </a>
-              <a
-                href="#prices"
+              </Link>
+              <Link
+                to="/gold-price"
                 className="rounded-full border border-gold/60 px-7 py-3 text-sm font-semibold text-gold"
               >
                 سعر الذهب اليوم
-              </a>
+              </Link>
             </div>
           </div>
         </div>
