@@ -107,12 +107,12 @@ export function FinancialNews() {
           ))}
         </div>
 
-        <a
-          href="#news"
+        <Link
+          to="/news"
           className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-gold-deep"
         >
           مشاهدة الكل <ArrowLeft className="h-4 w-4" />
-        </a>
+        </Link>
       </div>
     </section>
   );
