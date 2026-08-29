@@ -4,13 +4,17 @@ import { useState } from "react";
 
 import { navLinks } from "@/lib/site";
 
+import { PriceMarquee } from "./PriceMarquee";
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
     <>
+      <PriceMarquee />
       {/* Top bar */}
       <div className="bg-gradient-green text-primary-foreground">
+
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-xs">
           <span className="flex items-center gap-2">
             <Phone className="h-3.5 w-3.5 text-gold" /> 17608
