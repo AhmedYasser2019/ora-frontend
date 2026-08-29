@@ -1,4 +1,4 @@
-import { WifiOff } from "lucide-react";
+import { WifiOff, Radio } from "lucide-react";
 
 import { egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
@@ -9,7 +9,7 @@ const time = (ts: number) =>
 export function PriceMarquee() {
   const { data, live, dataUpdatedAt } = useLivePrices();
 
-  const items = data
+  const priceItems = data
     ? [
         { label: "ذهب عيار 24", value: `${egp(data.gram.k24)} ج.م / جرام` },
         { label: "ذهب عيار 22", value: `${egp(data.gram.k22)} ج.م / جرام` },
@@ -22,6 +22,13 @@ export function PriceMarquee() {
       ]
     : [{ label: "جارٍ تحميل الأسعار", value: "..." }];
 
+  const statusItem = {
+    label: live ? "بث مباشر" : "الاتصال متعذر",
+    value: live ? "متصل" : "غير متصل",
+    status: live ? ("live" as const) : ("offline" as const),
+  };
+
+  const items = [statusItem, ...priceItems];
   const track = [...items, ...items];
 
   return (
@@ -39,15 +46,41 @@ export function PriceMarquee() {
       )}
       <div className="overflow-hidden py-2">
         <div className="flex w-max animate-[marquee_38s_linear_infinite] gap-8 whitespace-nowrap hover:[animation-play-state:paused]">
-          {track.map((it, i) => (
-            <span key={`${it.label}-${i}`} className="flex items-center gap-2 text-xs">
-              <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-gold" : "bg-muted-foreground"}`} />
-              <span className="text-primary-foreground/70">{it.label}</span>
-              <span className={`font-semibold ${live ? "text-gold" : "text-gold/60"}`}>
-                {it.value}
+          {track.map((it, i) =>
+            "status" in it ? (
+              <span
+                key={`status-${i}`}
+                className={`flex items-center gap-2 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  it.status === "live"
+                    ? "bg-gold/15 text-gold"
+                    : "bg-destructive/20 text-destructive"
+                }`}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${
+                      it.status === "live" ? "bg-gold" : "bg-destructive"
+                    }`}
+                  />
+                  <span
+                    className={`relative inline-flex h-2 w-2 rounded-full ${
+                      it.status === "live" ? "bg-gold" : "bg-destructive"
+                    }`}
+                  />
+                </span>
+                <Radio className="h-3 w-3" />
+                {it.label}
               </span>
-            </span>
-          ))}
+            ) : (
+              <span key={`${it.label}-${i}`} className="flex items-center gap-2 text-xs">
+                <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-gold" : "bg-muted-foreground"}`} />
+                <span className="text-primary-foreground/70">{it.label}</span>
+                <span className={`font-semibold ${live ? "text-gold" : "text-gold/60"}`}>
+                  {it.value}
+                </span>
+              </span>
+            ),
+          )}
         </div>
       </div>
     </div>
