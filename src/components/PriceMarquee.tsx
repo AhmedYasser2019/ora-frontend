@@ -1,4 +1,4 @@
-import { WifiOff } from "lucide-react";
+import { WifiOff, Radio } from "lucide-react";
 
 import { egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
