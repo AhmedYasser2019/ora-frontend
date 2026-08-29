@@ -9,7 +9,7 @@ const time = (ts: number) =>
 export function PriceMarquee() {
   const { data, live, dataUpdatedAt } = useLivePrices();
 
-  const items = data
+  const priceItems = data
     ? [
         { label: "ذهب عيار 24", value: `${egp(data.gram.k24)} ج.م / جرام` },
         { label: "ذهب عيار 22", value: `${egp(data.gram.k22)} ج.م / جرام` },
@@ -22,6 +22,13 @@ export function PriceMarquee() {
       ]
     : [{ label: "جارٍ تحميل الأسعار", value: "..." }];
 
+  const statusItem = {
+    label: live ? "بث مباشر" : "الاتصال متعذر",
+    value: live ? "متصل" : "غير متصل",
+    status: live ? ("live" as const) : ("offline" as const),
+  };
+
+  const items = [statusItem, ...priceItems];
   const track = [...items, ...items];
 
   return (
