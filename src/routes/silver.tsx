@@ -53,26 +53,7 @@ function SilverPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {items.map((p, i) => (
-          <article
-            key={`${p.t}-${i}`}
-            className="overflow-hidden rounded-2xl border border-border bg-card"
-          >
-            <img
-              src={p.img}
-              alt={p.t}
-              loading="lazy"
-              width={800}
-              height={800}
-              className="aspect-square w-full bg-cream object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-base text-primary">{p.t}</h2>
-              <p className="mt-1 text-xs text-muted-foreground">{p.s}</p>
-              <p className="mt-3 font-display text-lg text-gold-deep">
-                {data ? `${egp(data.items[p.key] ?? 0)} ج.م` : "جاري التحديث…"}
-              </p>
-            </div>
-          </article>
+          <ProductCard key={`${p.t}-${i}`} p={p} price={data?.items[p.key]} />
         ))}
       </div>
     </PageShell>
