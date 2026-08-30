@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as GoldPriceRouteImport } from './routes/gold-price'
 import { Route as NewsRouteImport } from './routes/news'
@@ -38,6 +39,11 @@ const BranchesRoute = BranchesRouteImport.update({
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/branches': typeof BranchesRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/branches': typeof BranchesRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/branches': typeof BranchesRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/branches'
     | '/cart'
+    | '/checkout'
     | '/collection'
     | '/gold-price'
     | '/news'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/branches'
     | '/cart'
+    | '/checkout'
     | '/collection'
     | '/gold-price'
     | '/news'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/branches'
     | '/cart'
+    | '/checkout'
     | '/collection'
     | '/gold-price'
     | '/news'
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BranchesRoute: typeof BranchesRoute
   CartRoute: typeof CartRoute
+  CheckoutRoute: typeof CheckoutRoute
   CollectionRoute: typeof CollectionRoute
   GoldPriceRoute: typeof GoldPriceRoute
   NewsRoute: typeof NewsRoute
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -240,6 +260,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   BranchesRoute: BranchesRoute,
   CartRoute: CartRoute,
+  CheckoutRoute: CheckoutRoute,
   CollectionRoute: CollectionRoute,
   GoldPriceRoute: GoldPriceRoute,
   NewsRoute: NewsRoute,
