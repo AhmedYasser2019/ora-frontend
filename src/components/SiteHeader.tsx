@@ -2,12 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Phone, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
 
+import { useCart } from "@/lib/cart";
 import { navLinks } from "@/lib/site";
 
 import { PriceMarquee } from "./PriceMarquee";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { count, ready } = useCart();
 
   return (
     <>
@@ -38,11 +40,16 @@ export function SiteHeader() {
             <p className="mt-1 text-[10px] tracking-[0.35em] text-gold-deep">GOLD JEWELRY</p>
           </Link>
           <Link
-            to="/collection"
-            aria-label="حقيبة الشراء"
+            to="/cart"
+            aria-label="سلة الشراء"
             className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
           >
             <ShoppingBag className="h-5 w-5" />
+            {ready && count > 0 && (
+              <span className="absolute -left-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-primary">
+                {count}
+              </span>
+            )}
           </Link>
         </div>
 
