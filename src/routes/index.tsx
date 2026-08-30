@@ -20,6 +20,7 @@ import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
 import { FinancialNews } from "@/components/FinancialNews";
+import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -184,32 +185,7 @@ function Home() {
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {products.map((p) => (
-            <article
-              key={p.t}
-              className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
-            >
-              <img
-                src={p.img}
-                alt={p.t}
-                loading="lazy"
-                width={800}
-                height={800}
-                className="aspect-square w-full bg-cream object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-base text-primary">{p.t}</h3>
-                <p className="mt-1 text-xs text-muted-foreground">{p.s}</p>
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="font-display text-lg text-gold-deep">
-                    {data ? `${egp(data.items[p.key] ?? 0)} ج.م` : "جاري التحديث…"}
-                  </span>
-
-                  <button className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
-                    أضف للسلة
-                  </button>
-                </div>
-              </div>
-            </article>
+            <ProductCard key={p.t} p={p} price={data?.items[p.key]} />
           ))}
         </div>
       </section>
