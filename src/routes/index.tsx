@@ -20,6 +20,7 @@ import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
 import { FinancialNews } from "@/components/FinancialNews";
+import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 

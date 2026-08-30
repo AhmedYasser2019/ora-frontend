@@ -13,7 +13,7 @@ export type CardProduct = {
   s: string;
 };
 
-export function ProductCard({ p, price }: { p: CardProduct; price?: number }) {
+export function ProductCard({ p, price }: { p: CardProduct; price?: number | undefined }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
 
