@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import { PageShell } from "@/components/PageShell";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { safeNext, useAuth } from "@/lib/use-auth";
 
 const searchSchema = z.object({
@@ -112,14 +111,15 @@ function AuthPage() {
   const google = async () => {
     setBusy(true);
     sessionStorage.setItem("ora.auth.next", target);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + target },
     });
-    if (result.error) {
+    if (error) {
       setBusy(false);
-      toast.error("تعذر تسجيل الدخول بحساب Google", { description: result.error.message });
+      toast.error("تعذر تسجيل الدخول بحساب Google", { description: error.message });
     }
-    // redirected أو تم تعيين الجلسة — سيتولى useEffect التوجيه
+    // المستخدم بيتحول لصفحة جوجل، وuseEffect هيتولى التوجيه بعد الرجوع
   };
 
   return (
