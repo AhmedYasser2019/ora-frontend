@@ -16,6 +16,7 @@ import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { productBySlug } from "@/lib/site";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
+import { MarketCountdown } from "@/components/MarketCountdown";
 import { FinancialNews } from "@/components/FinancialNews";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -144,6 +145,8 @@ function Home() {
         </div>
       </section>
 
+
+      <MarketCountdown />
 
       {/* Categories */}
       <section className="mx-auto max-w-6xl px-4">
