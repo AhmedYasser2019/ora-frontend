@@ -12,11 +12,8 @@ import {
 } from "lucide-react";
 
 import heroGold from "@/assets/hero-gold.jpg";
-import barImg from "@/assets/bar.jpg";
-import coinsImg from "@/assets/coins.jpg";
-import silverImg from "@/assets/silver.jpg";
-import jewelryImg from "@/assets/jewelry.jpg";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
+import { productBySlug } from "@/lib/site";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
 import { FinancialNews } from "@/components/FinancialNews";
@@ -47,12 +44,8 @@ export const Route = createFileRoute("/")({
 });
 
 
-const products = [
-  { key: "bar-10g", img: barImg, t: "سبيكة ذهب 10 جرام", s: "عيار 24 – 999.9" },
-  { key: "coin-8g", img: coinsImg, t: "جنيه ذهب إنجليزي", s: "عيار 22 – 8 جرام" },
-  { key: "set-12g", img: jewelryImg, t: "طقم ذهب كلاسيك", s: "عيار 21 – 12 جرام" },
-  { key: "silver-100g", img: silverImg, t: "سبيكة فضة 100 جرام", s: "فضة 999" },
-] as const;
+const featured = ["gold-bar-10g", "gold-sovereign-coin", "classic-gold-set", "silver-bar-100g"];
+const products = featured.flatMap((slug) => productBySlug(slug) ?? []);
 
 
 const services = [

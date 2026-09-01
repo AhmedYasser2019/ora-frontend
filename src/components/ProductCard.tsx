@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Check, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import type { PriceKey } from "@/lib/site";
 
 export type CardProduct = {
   key: PriceKey;
+  slug: string;
   img: string;
   t: string;
   s: string;
@@ -34,16 +36,22 @@ export function ProductCard({ p, price }: { p: CardProduct; price?: number | und
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft">
-      <img
-        src={p.img}
-        alt={p.t}
-        loading="lazy"
-        width={800}
-        height={800}
-        className="aspect-square w-full bg-cream object-cover"
-      />
+      <Link to="/products/$slug" params={{ slug: p.slug }} aria-label={p.t}>
+        <img
+          src={p.img}
+          alt={p.t}
+          loading="lazy"
+          width={800}
+          height={800}
+          className="aspect-square w-full bg-cream object-cover"
+        />
+      </Link>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-base text-primary">{p.t}</h3>
+        <h3 className="text-base text-primary">
+          <Link to="/products/$slug" params={{ slug: p.slug }} className="hover:text-gold-deep">
+            {p.t}
+          </Link>
+        </h3>
         <p className="mt-1 text-xs text-muted-foreground">{p.s}</p>
         <div className="mt-3 flex flex-1 items-end justify-between gap-2">
           <span className="font-display text-lg text-gold-deep">

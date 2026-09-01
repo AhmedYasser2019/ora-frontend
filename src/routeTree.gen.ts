@@ -21,6 +21,7 @@ import { Route as GoldPriceRouteImport } from './routes/gold-price'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SilverRouteImport } from './routes/silver'
 import { Route as ZakatRouteImport } from './routes/zakat'
+import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as ApiPublicPricesStreamRouteImport } from './routes/api/public/prices-stream'
 
 const IndexRoute = IndexRouteImport.update({
@@ -83,6 +84,11 @@ const ZakatRoute = ZakatRouteImport.update({
   path: '/zakat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsSlugRoute = ProductsSlugRouteImport.update({
+  id: '/products/$slug',
+  path: '/products/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPricesStreamRoute = ApiPublicPricesStreamRouteImport.update({
   id: '/api/public/prices-stream',
   path: '/api/public/prices-stream',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/silver': typeof SilverRoute
   '/zakat': typeof ZakatRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/silver': typeof SilverRoute
   '/zakat': typeof ZakatRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesById {
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/silver': typeof SilverRoute
   '/zakat': typeof ZakatRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/silver'
     | '/zakat'
+    | '/products/$slug'
     | '/api/public/prices-stream'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/silver'
     | '/zakat'
+    | '/products/$slug'
     | '/api/public/prices-stream'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/silver'
     | '/zakat'
+    | '/products/$slug'
     | '/api/public/prices-stream'
   fileRoutesById: FileRoutesById
 }
@@ -196,6 +208,7 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRoute
   SilverRoute: typeof SilverRoute
   ZakatRoute: typeof ZakatRoute
+  ProductsSlugRoute: typeof ProductsSlugRoute
   ApiPublicPricesStreamRoute: typeof ApiPublicPricesStreamRoute
 }
 
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZakatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products/$slug': {
+      id: '/products/$slug'
+      path: '/products/$slug'
+      fullPath: '/products/$slug'
+      preLoaderRoute: typeof ProductsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/prices-stream': {
       id: '/api/public/prices-stream'
       path: '/api/public/prices-stream'
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRoute,
   SilverRoute: SilverRoute,
   ZakatRoute: ZakatRoute,
+  ProductsSlugRoute: ProductsSlugRoute,
   ApiPublicPricesStreamRoute: ApiPublicPricesStreamRoute,
 }
 export const routeTree = rootRouteImport

@@ -30,7 +30,10 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "تسجيل الدخول | أورا للذهب" },
-      { name: "description", content: "سجّل الدخول أو أنشئ حسابك في أورا للذهب لمتابعة طلباتك وحفظ بياناتك." },
+      {
+        name: "description",
+        content: "سجّل الدخول أو أنشئ حسابك في أورا للذهب لمتابعة طلباتك وحفظ بياناتك.",
+      },
       { property: "og:title", content: "تسجيل الدخول | أورا للذهب" },
       { property: "og:description", content: "حسابك في أورا للذهب والسبائك." },
       { property: "og:type", content: "website" },
@@ -188,11 +191,6 @@ function AuthPage() {
     if (!loading && user && !wizard) navigate({ to: target });
   }, [loading, user, wizard, navigate, target]);
 
-  // لو أكد بريده من الرابط بدل الكود، ننقله تلقائيًا للخطوة الأخيرة
-  useEffect(() => {
-    if (user && mode === "signup" && step === 3) setStep(4);
-  }, [user, mode, step]);
-
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -219,11 +217,21 @@ function AuthPage() {
       toast.error("كلمة المرور يجب ألا تقل عن 6 أحرف");
       return;
     }
+    if (!/^01[0-9]{9}$/.test(form.phone.trim())) {
+      toast.error("رقم موبايل غير صحيح", { description: "مثال: 01012345678" });
+      return;
+    }
     setStep(2);
   };
 
+  // ponytail: التوثيق و OTP بيانات محلية فقط لحد ما نربط الباك إند — التحقق كله في الواجهة
   const submitKyc = (e: React.FormEvent) => {
     e.preventDefault();
+    const num = kyc.docNumber.trim();
+    if (kyc.docType === "id" ? !/^[0-9]{14}$/.test(num) : num.length < 6) {
+      toast.error(kyc.docType === "id" ? "الرقم القومي 14 رقمًا" : "رقم جواز غير صحيح");
+      return;
+    }
     if (!docFront) {
       toast.error("ارفع صورة الوجه الأمامي للهوية");
       return;
@@ -232,15 +240,26 @@ function AuthPage() {
       toast.error("ارفع صورة الوجه الخلفي للهوية");
       return;
     }
-    void createAccount();
+    setStep(3);
   };
 
-  /** إنشاء الحساب فعليًا وإرسال كود التأكيد */
-  const createAccount = async () => {
+  const submitOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!/^[0-9]{6}$/.test(otp.trim())) {
+      toast.error("الكود 6 أرقام");
+      return;
+    }
+    setStep(4);
+  };
+
+  /** آخر خطوة: ننشئ الحساب فعليًا بالبريد وكلمة المرور، وباقي البيانات تتخزن كـ metadata */
+  const finish = async (e: React.FormEvent) => {
+    e.preventDefault();
     setBusy(true);
     try {
+      const email = form.email.trim();
       const { error } = await supabase.auth.signUp({
-        email: form.email.trim(),
+        email,
         password: form.password,
         options: {
           data: {
@@ -248,72 +267,27 @@ function AuthPage() {
             phone: form.phone.trim(),
             doc_type: kyc.docType,
             doc_number: kyc.docNumber.trim(),
+            experience,
           },
-          emailRedirectTo: window.location.origin + "/auth",
+          emailRedirectTo: window.location.origin + target,
         },
       });
       if (error) throw error;
-      toast.success("أرسلنا كود التأكيد إلى بريدك");
-      setStep(3);
-    } catch (err) {
-      toast.error("تعذر إنشاء الحساب", {
-        description: err instanceof Error ? err.message : "حاول مرة أخرى",
+      // لو تأكيد البريد مقفول في Supabase هيدخل على طول، غير كده نطلب منه التأكيد
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email,
+        password: form.password,
       });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const submitOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: form.email.trim(),
-        token: otp.trim(),
-        type: "signup",
-      });
-      if (error) throw error;
-      setStep(4);
-    } catch (err) {
-      toast.error("كود غير صحيح", {
-        description: err instanceof Error ? err.message : "تأكد من الكود أو اطلب إرساله مرة أخرى",
-      });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const resendOtp = async () => {
-    const { error } = await supabase.auth.resend({ type: "signup", email: form.email.trim() });
-    if (error) toast.error("تعذر إعادة الإرسال", { description: error.message });
-    else toast.success("أرسلنا الكود مرة أخرى");
-  };
-
-  /** حفظ خبرة الاستثمار + رفع صور الهوية (رفع الصور best-effort) */
-  const finish = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const { data, error } = await supabase.auth.updateUser({ data: { experience } });
-      if (error) throw error;
-      const uid = data.user?.id;
-      for (const [name, file] of [
-        ["front", docFront],
-        ["back", docBack],
-      ] as const) {
-        if (!file || !uid) continue;
-        const ext = file.name.split(".").pop() || "jpg";
-        const { error: upErr } = await supabase.storage
-          .from("kyc")
-          .upload(`${uid}/${name}.${ext}`, file, { upsert: true });
-        // ponytail: رفع الصور اختياري — لو bucket "kyc" غير موجود نكمّل التسجيل وننبّه فقط
-        if (upErr) toast.warning("تم إنشاء الحساب، لكن رفع صور الهوية فشل", { description: upErr.message });
+      if (signInErr) {
+        toast.success("تم إنشاء حسابك", { description: "أكد بريدك الإلكتروني ثم سجّل الدخول." });
+        setMode("login");
+        setStep(1);
+        return;
       }
-      toast.success("تم توثيق حسابك");
+      toast.success("تم إنشاء حسابك");
       navigate({ to: target });
     } catch (err) {
-      toast.error("تعذر إكمال التسجيل", {
+      toast.error("تعذر إنشاء الحساب", {
         description: err instanceof Error ? err.message : "حاول مرة أخرى",
       });
     } finally {
@@ -330,6 +304,31 @@ function AuthPage() {
       {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
       {label}
     </button>
+  );
+
+  /** رجوع + التالي (+ تخطي مؤقت لحد ما نربط الباك إند) */
+  const stepNav = (back: number, label: string, skipTo?: number) => (
+    <>
+      <div className="mt-1 flex gap-3">
+        <button
+          type="button"
+          onClick={() => setStep(back)}
+          className="rounded-full border border-border px-5 py-3 text-sm font-semibold text-primary"
+        >
+          رجوع
+        </button>
+        <div className="grid flex-1">{submitBtn(label)}</div>
+      </div>
+      {skipTo !== undefined && (
+        <button
+          type="button"
+          onClick={() => setStep(skipTo)}
+          className="text-xs font-semibold text-muted-foreground underline"
+        >
+          تخطي هذه الخطوة (وضع التجربة)
+        </button>
+      )}
+    </>
   );
 
   return (
@@ -501,23 +500,15 @@ function AuthPage() {
                       <ImageDrop label="الوجه الخلفي للبطاقة" file={docBack} onPick={setDocBack} />
                     )}
                   </div>
-                  <div className="mt-1 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      className="rounded-full border border-border px-5 py-3 text-sm font-semibold text-primary"
-                    >
-                      رجوع
-                    </button>
-                    <div className="grid flex-1">{submitBtn("التالي")}</div>
-                  </div>
+                  {stepNav(1, "التالي", 3)}
                 </form>
               )}
 
               {step === 3 && (
                 <form onSubmit={submitOtp} className="grid gap-4">
                   <p className="text-xs text-muted-foreground">
-                    أرسلنا كود تأكيد إلى <span dir="ltr">{form.email}</span>. اكتبه هنا لتفعيل حسابك.
+                    اكتب كود التأكيد المرسل إلى <span dir="ltr">{form.email}</span> (أي 6 أرقام
+                    أثناء التجربة).
                   </p>
                   <Field
                     id="otp"
@@ -530,14 +521,7 @@ function AuthPage() {
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="123456"
                   />
-                  {submitBtn("تأكيد")}
-                  <button
-                    type="button"
-                    onClick={resendOtp}
-                    className="text-xs font-semibold text-gold-deep underline"
-                  >
-                    إعادة إرسال الكود
-                  </button>
+                  {stepNav(2, "تأكيد", 4)}
                 </form>
               )}
 
@@ -563,7 +547,7 @@ function AuthPage() {
                       {x}
                     </label>
                   ))}
-                  {submitBtn("إنهاء التسجيل")}
+                  {stepNav(3, "إنهاء التسجيل")}
                 </form>
               )}
             </div>
