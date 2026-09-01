@@ -18,7 +18,7 @@ export function ProductCard({ p, price }: { p: CardProduct; price?: number | und
   const [added, setAdded] = useState(false);
 
   const onAdd = () => {
-    add({
+    const ok = add({
       id: p.t,
       key: p.key,
       title: p.t,
@@ -26,6 +26,7 @@ export function ProductCard({ p, price }: { p: CardProduct; price?: number | und
       img: p.img,
       lastPrice: price ?? 0,
     });
+    if (!ok) return;
     setAdded(true);
     toast.success("تمت الإضافة للسلة", { description: p.t });
     setTimeout(() => setAdded(false), 1400);

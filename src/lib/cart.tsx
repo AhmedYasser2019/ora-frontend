@@ -7,7 +7,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 
+import { useAuth } from "./use-auth";
 import type { PriceKey } from "./site";
 
 export type CartItem = {
@@ -25,7 +28,8 @@ type CartContextValue = {
   items: CartItem[];
   count: number;
   ready: boolean;
-  add: (item: Omit<CartItem, "qty">, qty?: number) => void;
+  /** ترجع false لو المستخدم غير مسجّل الدخول (ويتم تحويله لصفحة الدخول) */
+  add: (item: Omit<CartItem, "qty">, qty?: number) => boolean;
   setQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
   clear: () => void;
@@ -38,6 +42,8 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [ready, setReady] = useState(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -58,17 +64,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, ready]);
 
-  const add = useCallback((item: Omit<CartItem, "qty">, qty = 1) => {
-    setItems((prev) => {
-      const found = prev.find((p) => p.id === item.id);
-      if (found) {
-        return prev.map((p) =>
-          p.id === item.id ? { ...p, qty: p.qty + qty, lastPrice: item.lastPrice || p.lastPrice } : p,
-        );
+  const add = useCallback(
+    (item: Omit<CartItem, "qty">, qty = 1) => {
+      if (loading) return false;
+      if (!user) {
+        toast.error("سجّل الدخول أولاً", { description: "لازم تسجّل الدخول قبل الإضافة للسلة" });
+        navigate({ to: "/auth", search: { next: window.location.pathname } });
+        return false;
       }
-      return [...prev, { ...item, qty }];
-    });
-  }, []);
+      setItems((prev) => {
+        const found = prev.find((p) => p.id === item.id);
+        if (found) {
+          return prev.map((p) =>
+            p.id === item.id ? { ...p, qty: p.qty + qty, lastPrice: item.lastPrice || p.lastPrice } : p,
+          );
+        }
+        return [...prev, { ...item, qty }];
+      });
+      return true;
+    },
+    [loading, user, navigate],
+  );
 
   const setQty = useCallback((id: string, qty: number) => {
     setItems((prev) =>
