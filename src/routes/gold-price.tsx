@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { PageShell } from "@/components/PageShell";
 import { LiveTicker } from "@/components/LiveTicker";
+import { PriceBoard } from "@/components/PriceBoard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 
@@ -36,14 +37,6 @@ function GoldPricePage() {
       })
     : "—";
 
-  const rows = [
-    { k: "عيار 24", v: data?.gram.k24 },
-    { k: "عيار 22", v: data?.gram.k22 },
-    { k: "عيار 21", v: data?.gram.k21 },
-    { k: "عيار 18", v: data?.gram.k18 },
-    { k: "الفضة 999", v: data?.gram.silver },
-  ];
-
   return (
     <PageShell
       title="سعر الذهب اليوم"
@@ -61,26 +54,7 @@ function GoldPricePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-          <table className="w-full text-sm">
-            <thead className="bg-cream text-primary">
-              <tr>
-                <th className="px-4 py-3 text-right font-semibold">العيار</th>
-                <th className="px-4 py-3 text-right font-semibold">سعر الجرام (ج.م)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.k} className="border-t border-border">
-                  <td className="px-4 py-3 text-primary">{r.k}</td>
-                  <td className="px-4 py-3 font-display text-lg text-gold-deep">
-                    {r.v ? egp(r.v) : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <PriceBoard metal="gold" gram={data?.gram} sell={data?.sell} spreadPct={data?.spreadPct} />
         <LiveTicker history={history} />
       </div>
 

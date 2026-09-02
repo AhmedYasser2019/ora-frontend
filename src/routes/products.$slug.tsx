@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, ChevronLeft, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
+import { BadgeCheck, ChevronLeft, Minus, Plus, Recycle, ShieldCheck, Truck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -7,7 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
-import { allProducts, productBySlug } from "@/lib/site";
+import { allProducts, buyPrice, productBySlug, sellPrice, weightLabel } from "@/lib/site";
 import { useLivePrices } from "@/lib/use-live-prices";
 
 export const Route = createFileRoute("/products/$slug")({
@@ -57,12 +57,13 @@ function ProductPage() {
   const navigate = useNavigate();
   const [qty, setQty] = useState(1);
 
-  const price = data?.items[p.key];
+  const price = buyPrice(p, data?.gram);
+  const resale = sellPrice(p, data?.sell);
   const related = allProducts.filter((x) => x.cat === p.cat && x.slug !== p.slug).slice(0, 4);
 
   const addToCart = () => {
     const ok = add(
-      { id: p.t, key: p.key, title: p.t, sub: p.s, img: p.img, lastPrice: price ?? 0 },
+      { id: p.t, slug: p.slug, title: p.t, sub: p.s, img: p.img, lastPrice: price ?? 0 },
       qty,
     );
     if (ok) toast.success("تمت الإضافة للسلة", { description: `${p.t} × ${qty}` });
@@ -70,18 +71,23 @@ function ProductPage() {
   };
 
   const specs = [
-    ["العلامة التجارية", p.brand],
+    ["العلامة التجارية", p.provider],
     ["الفئة", p.cat],
     ["المعدن", p.cat === "سبائك فضة" ? "فضة" : "ذهب"],
-    ["العيار", p.karat],
+    ["العيار", p.karat ? String(p.karat) : "—"],
     ["النقاء", p.purity],
-    ["الوزن", p.weight],
+    ["الوزن", weightLabel(p.weightG)],
+    ["المصنعية", `${(p.fabrication * 100).toFixed(1)}%`],
+    ["التوفر", p.available ? "متوفر" : "غير متوفر"],
     ["كود المنتج", `ORA-${p.slug.toUpperCase()}`],
   ];
 
   return (
     <PageShell title={p.t} subtitle={p.s}>
-      <nav aria-label="مسار التنقل" className="mb-8 flex items-center gap-1 text-xs text-muted-foreground">
+      <nav
+        aria-label="مسار التنقل"
+        className="mb-8 flex items-center gap-1 text-xs text-muted-foreground"
+      >
         <Link to="/" className="hover:text-gold-deep">
           الرئيسية
         </Link>
@@ -113,7 +119,7 @@ function ProductPage() {
               النقاء: {p.purity}
             </span>
             <span className="rounded-full border border-border px-3 py-1 text-[11px] font-semibold text-primary">
-              {p.weight}
+              {weightLabel(p.weightG)}
             </span>
           </div>
 
@@ -165,6 +171,36 @@ function ProductPage() {
             </div>
           </div>
 
+          {p.cashbackPct > 0 && (
+            <div className="mt-4 rounded-2xl border border-gold/40 bg-secondary/40 p-5">
+              <div className="flex items-center gap-2">
+                <Recycle className="h-4 w-4 text-gold-deep" />
+                <h2 className="text-sm font-semibold text-primary">إعادة البيع والكاش باك</h2>
+              </div>
+              <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs text-muted-foreground">سعر إعادة البيع الآن</dt>
+                  <dd className="mt-1 font-display text-xl text-primary">
+                    {resale ? `${egp(resale)} ج.م` : "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">المصنعية المستردّة</dt>
+                  <dd className="mt-1 font-display text-xl text-gold-deep">
+                    حتى {Math.round(p.cashbackPct * 100)}%
+                  </dd>
+                </div>
+              </dl>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                نشتري منك هذا المنتج في أي وقت بسعر البيع اللحظي، ونرد لك جزءًا من المصنعية بشرط
+                بقاء العبوة الأصلية سليمة وغير مفتوحة.{" "}
+                <Link to="/refund-policy" className="font-semibold text-gold-deep hover:underline">
+                  اقرأ الشروط
+                </Link>
+              </p>
+            </div>
+          )}
+
           <dl className="mt-6 overflow-hidden rounded-2xl border border-border">
             {specs.map(([k, v], i) => (
               <div
@@ -194,7 +230,7 @@ function ProductPage() {
           <h2 className="font-display text-2xl text-primary">منتجات ذات صلة</h2>
           <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {related.map((r) => (
-              <ProductCard key={r.slug} p={r} price={data?.items[r.key]} />
+              <ProductCard key={r.slug} p={r} price={buyPrice(r, data?.gram)} />
             ))}
           </div>
         </section>

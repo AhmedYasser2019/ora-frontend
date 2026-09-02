@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { PageShell } from "@/components/PageShell";
+import { buyPrice, productBySlug } from "@/lib/site";
 import { DELIVERY_FEE, FREE_DELIVERY_OVER, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
@@ -26,8 +27,11 @@ function CartPage() {
   const { data } = useLivePrices();
   const { items, setQty, remove, clear, ready } = useCart();
 
-  const priceOf = (key: string, fallback: number) => data?.items[key] ?? fallback;
-  const subtotal = items.reduce((s, i) => s + priceOf(i.key, i.lastPrice) * i.qty, 0);
+  const priceOf = (slug: string, fallback: number) => {
+    const p = productBySlug(slug);
+    return (p && buyPrice(p, data?.gram)) ?? fallback;
+  };
+  const subtotal = items.reduce((s, i) => s + priceOf(i.slug, i.lastPrice) * i.qty, 0);
   const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_OVER ? 0 : DELIVERY_FEE;
 
   return (
@@ -55,12 +59,9 @@ function CartPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-4">
             {items.map((i) => {
-              const unit = priceOf(i.key, i.lastPrice);
+              const unit = priceOf(i.slug, i.lastPrice);
               return (
-                <div
-                  key={i.id}
-                  className="flex gap-4 rounded-2xl border border-border bg-card p-4"
-                >
+                <div key={i.id} className="flex gap-4 rounded-2xl border border-border bg-card p-4">
                   <img
                     src={i.img}
                     alt={i.title}
@@ -128,7 +129,9 @@ function CartPage() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">الشحن المؤمّن</dt>
-                <dd className="text-primary">{delivery === 0 ? "مجاني" : `${egp(delivery)} ج.م`}</dd>
+                <dd className="text-primary">
+                  {delivery === 0 ? "مجاني" : `${egp(delivery)} ج.م`}
+                </dd>
               </div>
               <div className="flex justify-between border-t border-border pt-3">
                 <dt className="font-semibold text-primary">الإجمالي</dt>
@@ -143,10 +146,7 @@ function CartPage() {
             >
               إتمام الطلب
             </Link>
-            <Link
-              to="/collection"
-              className="mt-3 block text-center text-xs text-gold-deep"
-            >
+            <Link to="/collection" className="mt-3 block text-center text-xs text-gold-deep">
               متابعة التسوق
             </Link>
           </aside>

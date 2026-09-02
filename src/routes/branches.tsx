@@ -14,7 +14,10 @@ export const Route = createFileRoute("/branches")({
           "عناوين فروع أورا للذهب في الإسكندرية والقاهرة والجيزة والمنصورة، مع أرقام التواصل ومواعيد العمل.",
       },
       { property: "og:title", content: "فروعنا | أورا للذهب" },
-      { property: "og:description", content: "فروع أورا في مصر: العناوين والمواعيد وأرقام التواصل." },
+      {
+        property: "og:description",
+        content: "فروع أورا في مصر: العناوين والمواعيد وأرقام التواصل.",
+      },
     ],
   }),
   component: BranchesPage,

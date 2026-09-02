@@ -38,15 +38,130 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          address: string | null
+          branch: string | null
+          created_at: string
+          delivery_fee: number
+          full_name: string
+          fulfilment: string
+          governorate: string | null
+          id: string
+          payment_method: string
+          phone: string
+          ref: string
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          qty: number
+          slug: string
+          title: string
+          unit_price: number
+          weight_g: number
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      wallet_transactions: {
+        Row: {
+          cash_delta: number
+          created_at: string
+          grams_delta: number
+          gram_price: number | null
+          id: string
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          cash_delta?: number
+          created_at?: string
+          grams_delta?: number
+          gram_price?: number | null
+          id?: string
+          kind: string
+          user_id: string
+        }
+        Update: {
+          cash_delta?: number
+          created_at?: string
+          grams_delta?: number
+          gram_price?: number | null
+          id?: string
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          cash_balance: number
+          created_at: string
+          gold_grams: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cash_balance?: number
+          created_at?: string
+          gold_grams?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cash_balance?: number
+          created_at?: string
+          gold_grams?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      place_order: {
+        Args: {
+          p_full_name: string
+          p_phone: string
+          p_fulfilment: string
+          p_payment_method: string
+          p_items: Json
+          p_governorate?: string | null
+          p_address?: string | null
+          p_branch?: string | null
+        }
+        Returns: Database["public"]["Tables"]["orders"]["Row"]
+      }
+      cancel_order: {
+        Args: { p_order_id: string }
+        Returns: Database["public"]["Tables"]["orders"]["Row"]
+      }
+      wallet_transact: {
+        Args: {
+          p_kind: string
+          p_amount: number
+          p_gram_price?: number | null
+        }
+        Returns: Database["public"]["Tables"]["wallets"]["Row"]
+      }
     }
     Enums: {
-      [_ in never]: never
+      order_status: "pending" | "confirmed" | "shipped" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -173,6 +288,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      order_status: ["pending", "confirmed", "shipped", "completed", "cancelled"],
+    },
   },
 } as const

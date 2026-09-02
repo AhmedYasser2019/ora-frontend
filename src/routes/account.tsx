@@ -43,7 +43,7 @@ function AccountPage() {
       .maybeSingle()
       .then(({ data }) => {
         setProfile({
-          full_name: data?.full_name ?? (user.user_metadata?.full_name as string) ?? "",
+          full_name: data?.full_name ?? (user.user_metadata["full_name"] as string) ?? "",
           phone: data?.phone ?? "",
         });
         setFetching(false);
@@ -56,7 +56,11 @@ function AccountPage() {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: profile.full_name.trim(), phone: profile.phone.trim(), updated_at: new Date().toISOString() })
+      .update({
+        full_name: profile.full_name.trim(),
+        phone: profile.phone.trim(),
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", user.id);
     setSaving(false);
     if (error) toast.error("تعذر حفظ البيانات");
@@ -80,7 +84,7 @@ function AccountPage() {
   }
 
   return (
-    <PageShell title="حسابي" description="بياناتك محفوظة بأمان وتُستخدم لتسريع إتمام طلباتك.">
+    <PageShell title="حسابي" subtitle="بياناتك محفوظة بأمان وتُستخدم لتسريع إتمام طلباتك.">
       <div className="mx-auto max-w-md">
         <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8">
           <div className="mb-6 flex items-center gap-4">
@@ -88,8 +92,12 @@ function AccountPage() {
               <User className="h-7 w-7" />
             </span>
             <div>
-              <p className="font-display text-lg text-primary">{profile.full_name || "عميل أورا"}</p>
-              <p dir="ltr" className="text-xs text-muted-foreground">{user.email}</p>
+              <p className="font-display text-lg text-primary">
+                {profile.full_name || "عميل أورا"}
+              </p>
+              <p dir="ltr" className="text-xs text-muted-foreground">
+                {user.email}
+              </p>
             </div>
           </div>
 
@@ -100,7 +108,12 @@ function AccountPage() {
           ) : (
             <form onSubmit={save} className="grid gap-4">
               <div>
-                <label htmlFor="full_name" className="mb-1.5 block text-xs font-semibold text-primary">الاسم الكامل</label>
+                <label
+                  htmlFor="full_name"
+                  className="mb-1.5 block text-xs font-semibold text-primary"
+                >
+                  الاسم الكامل
+                </label>
                 <input
                   id="full_name"
                   value={profile.full_name}
@@ -109,7 +122,9 @@ function AccountPage() {
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold text-primary">رقم الموبايل</label>
+                <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold text-primary">
+                  رقم الموبايل
+                </label>
                 <input
                   id="phone"
                   dir="ltr"
@@ -125,7 +140,11 @@ function AccountPage() {
                 disabled={saving}
                 className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
-                {saving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {saving ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 حفظ البيانات
               </button>
             </form>
@@ -135,14 +154,23 @@ function AccountPage() {
             <span className="flex items-center gap-2 text-xs text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-gold-deep" /> حساب موثّق بالبريد الإلكتروني
             </span>
-            <button onClick={logout} className="flex items-center gap-1.5 text-xs font-semibold text-destructive hover:underline">
+            <button
+              onClick={logout}
+              className="flex items-center gap-1.5 text-xs font-semibold text-destructive hover:underline"
+            >
               <LogOut className="h-3.5 w-3.5" /> تسجيل الخروج
             </button>
           </div>
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          لديك طلبات؟ <Link to="/cart" className="font-semibold text-gold-deep hover:underline">تابع سلتك من هنا</Link>
+          <Link to="/wallet" className="font-semibold text-gold-deep hover:underline">
+            افتح محفظتك
+          </Link>
+          {" · "}
+          <Link to="/cart" className="font-semibold text-gold-deep hover:underline">
+            تابع سلتك من هنا
+          </Link>
         </p>
       </div>
     </PageShell>
