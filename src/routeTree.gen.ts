@@ -14,12 +14,23 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BranchesRouteImport } from './routes/branches'
+import { Route as BudgetCalculatorRouteImport } from './routes/budget-calculator'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CollectionRouteImport } from './routes/collection'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GoldPriceRouteImport } from './routes/gold-price'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
+import { Route as ShippingPolicyRouteImport } from './routes/shipping-policy'
 import { Route as SilverRouteImport } from './routes/silver'
+import { Route as SilverPriceRouteImport } from './routes/silver-price'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ZakatRouteImport } from './routes/zakat'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as ApiPublicPricesStreamRouteImport } from './routes/api/public/prices-stream'
@@ -49,6 +60,11 @@ const BranchesRoute = BranchesRouteImport.update({
   path: '/branches',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetCalculatorRoute = BudgetCalculatorRouteImport.update({
+  id: '/budget-calculator',
+  path: '/budget-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -64,6 +80,16 @@ const CollectionRoute = CollectionRouteImport.update({
   path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GoldPriceRoute = GoldPriceRouteImport.update({
   id: '/gold-price',
   path: '/gold-price',
@@ -74,9 +100,49 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentMethodsRoute = PaymentMethodsRouteImport.update({
+  id: '/payment-methods',
+  path: '/payment-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingPolicyRoute = ShippingPolicyRouteImport.update({
+  id: '/shipping-policy',
+  path: '/shipping-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SilverRoute = SilverRouteImport.update({
   id: '/silver',
   path: '/silver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SilverPriceRoute = SilverPriceRouteImport.update({
+  id: '/silver-price',
+  path: '/silver-price',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ZakatRoute = ZakatRouteImport.update({
@@ -101,12 +167,23 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
+  '/budget-calculator': typeof BudgetCalculatorRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
+  '/orders': typeof OrdersRoute
+  '/payment-methods': typeof PaymentMethodsRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund-policy': typeof RefundPolicyRoute
+  '/shipping-policy': typeof ShippingPolicyRoute
   '/silver': typeof SilverRoute
+  '/silver-price': typeof SilverPriceRoute
+  '/terms': typeof TermsRoute
+  '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
@@ -117,12 +194,23 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
+  '/budget-calculator': typeof BudgetCalculatorRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
+  '/orders': typeof OrdersRoute
+  '/payment-methods': typeof PaymentMethodsRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund-policy': typeof RefundPolicyRoute
+  '/shipping-policy': typeof ShippingPolicyRoute
   '/silver': typeof SilverRoute
+  '/silver-price': typeof SilverPriceRoute
+  '/terms': typeof TermsRoute
+  '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
@@ -134,12 +222,23 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
+  '/budget-calculator': typeof BudgetCalculatorRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
+  '/orders': typeof OrdersRoute
+  '/payment-methods': typeof PaymentMethodsRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund-policy': typeof RefundPolicyRoute
+  '/shipping-policy': typeof ShippingPolicyRoute
   '/silver': typeof SilverRoute
+  '/silver-price': typeof SilverPriceRoute
+  '/terms': typeof TermsRoute
+  '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
@@ -152,12 +251,23 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/branches'
+    | '/budget-calculator'
     | '/cart'
     | '/checkout'
     | '/collection'
+    | '/contact'
+    | '/faq'
     | '/gold-price'
     | '/news'
+    | '/orders'
+    | '/payment-methods'
+    | '/privacy'
+    | '/refund-policy'
+    | '/shipping-policy'
     | '/silver'
+    | '/silver-price'
+    | '/terms'
+    | '/wallet'
     | '/zakat'
     | '/products/$slug'
     | '/api/public/prices-stream'
@@ -168,12 +278,23 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/branches'
+    | '/budget-calculator'
     | '/cart'
     | '/checkout'
     | '/collection'
+    | '/contact'
+    | '/faq'
     | '/gold-price'
     | '/news'
+    | '/orders'
+    | '/payment-methods'
+    | '/privacy'
+    | '/refund-policy'
+    | '/shipping-policy'
     | '/silver'
+    | '/silver-price'
+    | '/terms'
+    | '/wallet'
     | '/zakat'
     | '/products/$slug'
     | '/api/public/prices-stream'
@@ -184,12 +305,23 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/branches'
+    | '/budget-calculator'
     | '/cart'
     | '/checkout'
     | '/collection'
+    | '/contact'
+    | '/faq'
     | '/gold-price'
     | '/news'
+    | '/orders'
+    | '/payment-methods'
+    | '/privacy'
+    | '/refund-policy'
+    | '/shipping-policy'
     | '/silver'
+    | '/silver-price'
+    | '/terms'
+    | '/wallet'
     | '/zakat'
     | '/products/$slug'
     | '/api/public/prices-stream'
@@ -201,12 +333,23 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
   BranchesRoute: typeof BranchesRoute
+  BudgetCalculatorRoute: typeof BudgetCalculatorRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CollectionRoute: typeof CollectionRoute
+  ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
   GoldPriceRoute: typeof GoldPriceRoute
   NewsRoute: typeof NewsRoute
+  OrdersRoute: typeof OrdersRoute
+  PaymentMethodsRoute: typeof PaymentMethodsRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RefundPolicyRoute: typeof RefundPolicyRoute
+  ShippingPolicyRoute: typeof ShippingPolicyRoute
   SilverRoute: typeof SilverRoute
+  SilverPriceRoute: typeof SilverPriceRoute
+  TermsRoute: typeof TermsRoute
+  WalletRoute: typeof WalletRoute
   ZakatRoute: typeof ZakatRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   ApiPublicPricesStreamRoute: typeof ApiPublicPricesStreamRoute
@@ -249,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BranchesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/budget-calculator': {
+      id: '/budget-calculator'
+      path: '/budget-calculator'
+      fullPath: '/budget-calculator'
+      preLoaderRoute: typeof BudgetCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cart': {
       id: '/cart'
       path: '/cart'
@@ -270,6 +420,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gold-price': {
       id: '/gold-price'
       path: '/gold-price'
@@ -284,11 +448,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-methods': {
+      id: '/payment-methods'
+      path: '/payment-methods'
+      fullPath: '/payment-methods'
+      preLoaderRoute: typeof PaymentMethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping-policy': {
+      id: '/shipping-policy'
+      path: '/shipping-policy'
+      fullPath: '/shipping-policy'
+      preLoaderRoute: typeof ShippingPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/silver': {
       id: '/silver'
       path: '/silver'
       fullPath: '/silver'
       preLoaderRoute: typeof SilverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/silver-price': {
+      id: '/silver-price'
+      path: '/silver-price'
+      fullPath: '/silver-price'
+      preLoaderRoute: typeof SilverPriceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/zakat': {
@@ -321,12 +541,23 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
   BranchesRoute: BranchesRoute,
+  BudgetCalculatorRoute: BudgetCalculatorRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CollectionRoute: CollectionRoute,
+  ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
   GoldPriceRoute: GoldPriceRoute,
   NewsRoute: NewsRoute,
+  OrdersRoute: OrdersRoute,
+  PaymentMethodsRoute: PaymentMethodsRoute,
+  PrivacyRoute: PrivacyRoute,
+  RefundPolicyRoute: RefundPolicyRoute,
+  ShippingPolicyRoute: ShippingPolicyRoute,
   SilverRoute: SilverRoute,
+  SilverPriceRoute: SilverPriceRoute,
+  TermsRoute: TermsRoute,
+  WalletRoute: WalletRoute,
   ZakatRoute: ZakatRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   ApiPublicPricesStreamRoute: ApiPublicPricesStreamRoute,

@@ -11,11 +11,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { useAuth } from "./use-auth";
-import type { PriceKey } from "./site";
 
 export type CartItem = {
   id: string;
-  key: PriceKey;
+  slug: string;
   title: string;
   sub: string;
   img: string;
@@ -76,7 +75,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const found = prev.find((p) => p.id === item.id);
         if (found) {
           return prev.map((p) =>
-            p.id === item.id ? { ...p, qty: p.qty + qty, lastPrice: item.lastPrice || p.lastPrice } : p,
+            p.id === item.id
+              ? { ...p, qty: p.qty + qty, lastPrice: item.lastPrice || p.lastPrice }
+              : p,
           );
         }
         return [...prev, { ...item, qty }];

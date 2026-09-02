@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Phone, ShoppingBag, X } from "lucide-react";
+import { Menu, Package, Phone, ShoppingBag, User, Wallet, X } from "lucide-react";
 import { useState } from "react";
 
 import { useCart } from "@/lib/cart";
@@ -16,7 +16,6 @@ export function SiteHeader() {
       <PriceMarquee />
       {/* Top bar */}
       <div className="bg-gradient-green text-primary-foreground">
-
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-xs">
           <span className="flex items-center gap-2">
             <Phone className="h-3.5 w-3.5 text-gold" /> 17608
@@ -39,18 +38,41 @@ export function SiteHeader() {
             <p className="font-display text-3xl leading-none tracking-[0.25em] text-primary">ORA</p>
             <p className="mt-1 text-[10px] tracking-[0.35em] text-gold-deep">GOLD JEWELRY</p>
           </Link>
-          <Link
-            to="/cart"
-            aria-label="سلة الشراء"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
-          >
-            <ShoppingBag className="h-5 w-5" />
-            {ready && count > 0 && (
-              <span className="absolute -left-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-primary">
-                {count}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/orders"
+              aria-label="طلباتي"
+              className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
+            >
+              <Package className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/account"
+              aria-label="حسابي"
+              className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
+            >
+              <User className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/wallet"
+              aria-label="محفظتي"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary"
+            >
+              <Wallet className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/cart"
+              aria-label="سلة الشراء"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {ready && count > 0 && (
+                <span className="absolute -left-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-primary">
+                  {count}
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
 
         <nav className="hidden border-t border-border/60 md:block">

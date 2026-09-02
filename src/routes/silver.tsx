@@ -4,7 +4,7 @@ import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
-import { allProducts } from "@/lib/site";
+import { allProducts, buyPrice } from "@/lib/site";
 
 export const Route = createFileRoute("/silver")({
   head: () => ({
@@ -54,7 +54,7 @@ function SilverPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {items.map((p, i) => (
-          <ProductCard key={`${p.t}-${i}`} p={p} price={data?.items[p.key]} />
+          <ProductCard key={`${p.t}-${i}`} p={p} price={buyPrice(p, data?.gram)} />
         ))}
       </div>
     </PageShell>

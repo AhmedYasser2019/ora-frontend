@@ -76,9 +76,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ORA | أورا للذهب والسبائك" },
-      { name: "description", content: "استثمر في الذهب والفضة بثقة مع أورا: سبائك وعملات ذهبية وأسعار لحظية." },
+      {
+        name: "description",
+        content: "استثمر في الذهب والفضة بثقة مع أورا: سبائك وعملات ذهبية وأسعار لحظية.",
+      },
       { property: "og:title", content: "ORA | أورا للذهب والسبائك" },
-      { property: "og:description", content: "سبائك وعملات ذهبية معتمدة وأسعار لحظية للذهب في مصر." },
+      {
+        property: "og:description",
+        content: "سبائك وعملات ذهبية معتمدة وأسعار لحظية للذهب في مصر.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

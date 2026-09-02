@@ -9,11 +9,12 @@ import {
   BadgeCheck,
   TrendingUp,
   ArrowLeft,
+  Smartphone,
 } from "lucide-react";
 
 import heroGold from "@/assets/hero-gold.jpg";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
-import { productBySlug } from "@/lib/site";
+import { buyPrice, productBySlug } from "@/lib/site";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { LiveTicker } from "@/components/LiveTicker";
 import { MarketCountdown } from "@/components/MarketCountdown";
@@ -21,7 +22,6 @@ import { FinancialNews } from "@/components/FinancialNews";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,18 +41,25 @@ export const Route = createFileRoute("/")({
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
   component: Home,
-
 });
-
 
 const featured = ["gold-bar-10g", "gold-sovereign-coin", "classic-gold-set", "silver-bar-100g"];
 const products = featured.flatMap((slug) => productBySlug(slug) ?? []);
 
-
 const services = [
-  { icon: TrendingUp, t: "سعر الذهب اللحظي", d: "تابع تحديث الأسعار لحظة بلحظة.", to: "/gold-price" as const },
+  {
+    icon: TrendingUp,
+    t: "سعر الذهب اللحظي",
+    d: "تابع تحديث الأسعار لحظة بلحظة.",
+    to: "/gold-price" as const,
+  },
   { icon: Calculator, t: "حساب الزكاة", d: "احسب زكاة ذهبك بدقة في ثوانٍ.", to: "/zakat" as const },
-  { icon: Coins, t: "إعادة البيع", d: "نشتري منك ذهبك بأفضل سعر في السوق.", to: "/branches" as const },
+  {
+    icon: Coins,
+    t: "إعادة البيع",
+    d: "نشتري منك ذهبك بأفضل سعر في السوق.",
+    to: "/branches" as const,
+  },
   { icon: Gem, t: "شهادة أصل", d: "كل سبيكة معتمدة بشهادة ضمان.", to: "/about" as const },
 ];
 
@@ -73,7 +80,6 @@ function Home() {
         second: "2-digit",
       })
     : "—";
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,9 +140,7 @@ function Home() {
             {gramRows.map((p) => (
               <div key={p.k} className="rounded-xl bg-card px-4 py-4 text-center">
                 <p className="text-xs text-muted-foreground">{p.k}</p>
-                <p className="mt-1 font-display text-2xl text-primary">
-                  {p.v ? egp(p.v) : "—"}
-                </p>
+                <p className="mt-1 font-display text-2xl text-primary">{p.v ? egp(p.v) : "—"}</p>
                 <p className="text-[11px] text-gold-deep">{p.u}</p>
               </div>
             ))}
@@ -144,7 +148,6 @@ function Home() {
           <LiveTicker history={history} />
         </div>
       </section>
-
 
       <MarketCountdown />
 
@@ -181,7 +184,7 @@ function Home() {
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {products.map((p) => (
-            <ProductCard key={p.t} p={p} price={data?.items[p.key]} />
+            <ProductCard key={p.slug} p={p} price={buyPrice(p, data?.gram)} />
           ))}
         </div>
       </section>
@@ -211,6 +214,42 @@ function Home() {
       {/* Financial news */}
       <FinancialNews />
 
+      {/* App */}
+      <section className="bg-gradient-green py-14 text-primary-foreground">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div>
+            <p className="text-sm text-gold">حمّل تطبيق أورا</p>
+            <h2 className="mt-2 font-display text-3xl text-gold">استثمارك في الذهب من جيبك</h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-primary-foreground/75">
+              اشترِ الذهب وبِعه وتابع أسعاره لحظة بلحظة، واستعرض المنتجات وأدر محفظتك من أي مكان —
+              بنفس الأسعار والحسابات الموجودة على الموقع.
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-foreground/75">
+              {["تنبيهات تغير السعر", "محفظة وادخار بالجرام", "تتبع الطلبات"].map((f) => (
+                <li key={f} className="flex items-center gap-1.5">
+                  <Smartphone className="h-3.5 w-3.5 text-gold" /> {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex flex-col gap-3">
+            <span className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-gold/40 bg-primary-foreground/5 px-6 py-3">
+              <Smartphone className="h-6 w-6 text-gold" />
+              <span>
+                <span className="block text-[10px] text-primary-foreground/60">قريبًا على</span>
+                <span className="block text-sm font-semibold text-gold">Google Play</span>
+              </span>
+            </span>
+            <span className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-gold/40 bg-primary-foreground/5 px-6 py-3">
+              <Smartphone className="h-6 w-6 text-gold" />
+              <span>
+                <span className="block text-[10px] text-primary-foreground/60">قريبًا على</span>
+                <span className="block text-sm font-semibold text-gold">App Store</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </section>
 
       {/* Trust */}
       <section className="mx-auto max-w-6xl px-4 py-12">

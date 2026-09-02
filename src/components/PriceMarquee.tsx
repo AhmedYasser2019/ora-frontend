@@ -2,6 +2,12 @@ import { WifiOff, Radio } from "lucide-react";
 
 import { egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
+import { buyPrice, productBySlug } from "@/lib/site";
+
+const itemPrice = (slug: string, gram: Parameters<typeof buyPrice>[1]) => {
+  const p = productBySlug(slug);
+  return (p && buyPrice(p, gram)) ?? 0;
+};
 
 const time = (ts: number) =>
   ts ? new Intl.DateTimeFormat("ar-EG", { timeStyle: "medium" }).format(new Date(ts)) : "—";
@@ -17,8 +23,11 @@ export function PriceMarquee() {
         { label: "ذهب عيار 18", value: `${egp(data.gram.k18)} ج.م / جرام` },
         { label: "الفضة", value: `${egp(data.gram.silver)} ج.م / جرام` },
         { label: "الدولار", value: `${data.usdEgp.toFixed(2)} ج.م` },
-        { label: "سبيكة 10 جرام", value: `${egp(data.items["bar-10g"] ?? 0)} ج.م` },
-        { label: "جنيه ذهب 8 جرام", value: `${egp(data.items["coin-8g"] ?? 0)} ج.م` },
+        { label: "سبيكة 10 جرام", value: `${egp(itemPrice("gold-bar-10g", data.gram))} ج.م` },
+        {
+          label: "جنيه ذهب 8 جرام",
+          value: `${egp(itemPrice("gold-sovereign-coin", data.gram))} ج.م`,
+        },
       ]
     : [{ label: "جارٍ تحميل الأسعار", value: "..." }];
 
@@ -73,7 +82,9 @@ export function PriceMarquee() {
               </span>
             ) : (
               <span key={`${it.label}-${i}`} className="flex items-center gap-2 text-xs">
-                <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-gold" : "bg-muted-foreground"}`} />
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${live ? "bg-gold" : "bg-muted-foreground"}`}
+                />
                 <span className="text-primary-foreground/70">{it.label}</span>
                 <span className={`font-semibold ${live ? "text-gold" : "text-gold/60"}`}>
                   {it.value}

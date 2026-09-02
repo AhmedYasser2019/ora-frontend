@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 
-import { navLinks } from "@/lib/site";
+import { helpLinks, navLinks } from "@/lib/site";
 
 export function SiteFooter() {
   return (
     <footer className="bg-gradient-green text-primary-foreground">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="font-display text-3xl tracking-[0.25em] text-gold">ORA</p>
           <p className="mt-1 text-[10px] tracking-[0.35em] text-gold/70">GOLD JEWELRY</p>
@@ -18,6 +18,18 @@ export function SiteFooter() {
           <h3 className="text-base text-gold">روابط سريعة</h3>
           <ul className="mt-3 space-y-2 text-sm text-primary-foreground/75">
             {navLinks.slice(1).map((n) => (
+              <li key={n.to}>
+                <Link to={n.to} className="hover:text-gold">
+                  {n.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-base text-gold">مركز المساعدة</h3>
+          <ul className="mt-3 space-y-2 text-sm text-primary-foreground/75">
+            {helpLinks.map((n) => (
               <li key={n.to}>
                 <Link to={n.to} className="hover:text-gold">
                   {n.label}
