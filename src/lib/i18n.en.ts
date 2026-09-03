@@ -831,20 +831,23 @@ export const en: Record<string, string> = {
     "Calculate zakat on gold and silver accurately from live market prices in Egypt, with the nisab threshold and the 2.5% rate.",
   "حساب زكاة الذهب | أورا": "Gold zakat calculator | ORA",
   "حاسبة زكاة الذهب والفضة بأسعار لحظية.": "A gold and silver zakat calculator at live prices.",
-  "نصاب زكاة الذهب 85 جرامًا من عيار 24، ونسبة الزكاة 2.5% من قيمة ما تملكه بعد مرور عام هجري.":
-    "The nisab for gold zakat is 85 grams of 24K, and the rate is 2.5% of what you hold after a full lunar year.",
+  "نصاب الزكاة 85 جرامًا من الذهب عيار 21، أو 595 جرامًا من الفضة لمن يملك فضة وحدها، ونسبتها 2.5% بعد مرور حَوْل هجري كامل — وفق ما تعتمده دار الإفتاء المصرية.":
+    "The nisab is 85 grams of 21K gold, or 595 grams of silver for anyone holding silver alone, and the rate is 2.5% after a full lunar year \u2014 as adopted by Egypt's Dar al-Ifta.",
   "وزن الذهب (جرام)": "Gold weight (grams)",
   "وزن الفضة (جرام)": "Silver weight (grams)",
   النتيجة: "Result",
   "قيمة الذهب": "Gold value",
   "قيمة الفضة": "Silver value",
   "إجمالي القيمة": "Total value",
-  "النصاب (85 جرام ذهب)": "Nisab (85g of gold)",
+  "النصاب (85 جرام ذهب عيار 21)": "Nisab (85g of 21K gold)",
+  "النصاب (595 جرام فضة)": "Nisab (595g of silver)",
   "الزكاة المستحقة (2.5%)": "Zakat due (2.5%)",
   "بلغت ممتلكاتك النصاب، والزكاة واجبة بعد حَوْل كامل.":
     "Your holdings have reached the nisab; zakat is due after a full lunar year.",
   "لم تبلغ ممتلكاتك النصاب، فلا زكاة واجبة عليها حاليًا.":
     "Your holdings are below the nisab, so no zakat is due at the moment.",
+  "ذهب الزينة المستعمل بالقدر المعتاد دون إسراف لا زكاة فيه، وإنما تجب في المدَّخر والمُقتنى. النتيجة استرشادية وفق فتاوى دار الإفتاء المصرية.":
+    "Jewellery worn in customary amounts, without extravagance, carries no zakat; zakat is due on what is saved or hoarded. This result is indicative and follows the fatwas of Egypt's Dar al-Ifta.",
 
   // صفحة الأخبار
   "الأخبار المالية وتحليلات سوق الذهب | أورا": "Financial news and gold market analysis | ORA",
