@@ -2,19 +2,23 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronDown, LifeBuoy, Search } from "lucide-react";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+
+import { tr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "الأسئلة الشائعة | مركز المساعدة — أورا للذهب" },
+      { title: tr("الأسئلة الشائعة | مركز المساعدة — أورا للذهب") },
       {
         name: "description",
-        content:
-          "إجابات على أكثر الأسئلة شيوعًا عن شراء وبيع الذهب، الأسعار، المحفظة، الإيداع والسحب، الطلبات وأمان الحساب.",
+        content: tr(
+          "إجابات على أكثر الأسئلة شيوعًا عن شراء الذهب، الأسعار، المحفظة، الإيداع، الطلبات وأمان الحساب.",
+        ),
       },
-      { property: "og:title", content: "الأسئلة الشائعة | أورا للذهب" },
-      { property: "og:description", content: "مركز المساعدة وإجابات أسئلتك." },
+      { property: "og:title", content: tr("الأسئلة الشائعة | أورا للذهب") },
+      { property: "og:description", content: tr("مركز المساعدة وإجابات أسئلتك.") },
     ],
   }),
   component: FaqPage,
@@ -28,7 +32,7 @@ const GROUPS: Group[] = [
     qa: [
       [
         "ما هو أورا للذهب؟",
-        "منصة مصرية لشراء وبيع سبائك وعملات الذهب والفضة المعتمدة، بأسعار مرتبطة بالسوق لحظة بلحظة، مع محفظة رقمية تتيح لك الادخار بالجرام وإعادة البيع في أي وقت.",
+        "منصة مصرية لشراء سبائك وعملات الذهب والفضة المعتمدة، بأسعار مرتبطة بالسوق لحظة بلحظة، مع محفظة رقمية تتيح لك الادخار بالجرام.",
       ],
       [
         "كيف أنشئ حساب؟",
@@ -36,7 +40,7 @@ const GROUPS: Group[] = [
       ],
       [
         "هل يجب التحقق من هويتي؟",
-        "التصفح والشراء بالقيم الصغيرة لا يحتاج تحققًا. عند تجاوز حدود معينة أو عند طلب سحب رصيد، نطلب صورة بطاقة الرقم القومي التزامًا بقواعد (اعرف عميلك).",
+        "التصفح والشراء بالقيم الصغيرة لا يحتاج تحققًا. عند تجاوز حدود معينة نطلب صورة بطاقة الرقم القومي التزامًا بقواعد (اعرف عميلك).",
       ],
       [
         "نسيت كلمة المرور، ماذا أفعل؟",
@@ -98,7 +102,7 @@ const GROUPS: Group[] = [
       ],
       [
         "هل يمكنني إلغاء عملية شراء؟",
-        "يمكنك إلغاء الطلب ما دام في حالة (قيد التنفيذ). بعد التنفيذ يتحول الأمر إلى إعادة بيع بسعر البيع اللحظي.",
+        "يمكنك إلغاء الطلب ما دام في حالة (قيد التنفيذ). بعد التنفيذ يتم التعامل معه كإرجاع من الفرع بسعر البيع اللحظي.",
       ],
     ],
   },
@@ -107,15 +111,11 @@ const GROUPS: Group[] = [
     qa: [
       [
         "هل يمكنني بيع الذهب لأورا؟",
-        "نعم، نشتري منك في أي وقت خلال ساعات العمل، سواء رصيد المحفظة أو المنتجات المادية في أي فرع.",
+        "نعم، نشتري منك المنتجات المادية في أي فرع خلال ساعات العمل. البيع من داخل المحفظة متوقف حاليًا.",
       ],
       [
         "على أي سعر يتم البيع؟",
         "على سعر البيع المعروض لحظة تنفيذ العملية، وهو أقل من سعر الشراء بمقدار هامش التاجر المعلن.",
-      ],
-      [
-        "هل يمكنني بيع جزء فقط من رصيدي؟",
-        "نعم. من المحفظة يمكنك بيع أي كمية بالجرام، حتى لو كانت أقل من جرام واحد.",
       ],
       [
         "ما هو برنامج الكاش باك؟",
@@ -124,21 +124,12 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    g: "المحفظة والإيداع والسحب",
+    g: "المحفظة والإيداع",
     qa: [
       [
         "كيف أضيف أموالًا لحسابي؟",
         "من صفحة المحفظة اختر (شحن رصيد) وأدخل المبلغ، ثم حوّل عبر InstaPay أو تحويل بنكي إلى الحساب الموضح في صفحة طرق الدفع.",
       ],
-      [
-        "كيف أسحب أموالي؟",
-        "من المحفظة اختر (سحب رصيد). يُحوَّل المبلغ إلى حساب بنكي مسجّل باسمك خلال يوم عمل واحد.",
-      ],
-      [
-        "هل يوجد حد أدنى أو أقصى للسحب؟",
-        "الحد الأدنى 500 جنيه، والحد الأقصى 200,000 جنيه في اليوم الواحد.",
-      ],
-      ["هل توجد رسوم على السحب؟", "لا. السحب مجاني، وتتحمل أورا رسوم التحويل البنكي."],
       [
         "أين أرى رصيدي وكمية الذهب التي أملكها؟",
         "في صفحة المحفظة: بطاقة للرصيد النقدي، وبطاقة لرصيد الذهب بالجرام وقيمته الحالية بسعر البيع، وبطاقة لإجمالي المحفظة.",
@@ -221,13 +212,14 @@ const GROUPS: Group[] = [
 ];
 
 function FaqPage() {
+  const t = useT();
   const [q, setQ] = useState("");
   const needle = q.trim();
 
   const groups = needle
     ? GROUPS.map((g) => ({
         ...g,
-        qa: g.qa.filter(([a, b]) => a.includes(needle) || b.includes(needle)),
+        qa: g.qa.filter(([a, b]) => t(a).includes(needle) || t(b).includes(needle)),
       })).filter((g) => g.qa.length > 0)
     : GROUPS;
 
@@ -240,34 +232,34 @@ function FaqPage() {
     >
       <div className="mx-auto max-w-3xl">
         <div className="relative mb-8">
-          <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="ابحث في الأسئلة…"
-            aria-label="ابحث في الأسئلة الشائعة"
-            className="w-full rounded-full border border-border bg-card py-3 pr-11 pl-4 text-sm text-primary outline-none focus:border-gold"
+            placeholder={t("ابحث في الأسئلة…")}
+            aria-label={t("ابحث في الأسئلة الشائعة")}
+            className="w-full rounded-full border border-border bg-card py-3 pe-4 ps-11 text-sm text-primary outline-none focus:border-gold"
           />
         </div>
 
         {total === 0 ? (
           <p className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
-            لا توجد نتائج لبحثك. جرّب كلمة أخرى أو تواصل معنا مباشرة.
+            {t("لا توجد نتائج لبحثك. جرّب كلمة أخرى أو تواصل معنا مباشرة.")}
           </p>
         ) : (
           <div className="space-y-10">
             {groups.map((g) => (
               <section key={g.g}>
-                <h2 className="mb-3 font-display text-xl text-primary">{g.g}</h2>
+                <h2 className="mb-3 font-display text-xl text-primary">{t(g.g)}</h2>
                 <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
                   {g.qa.map(([question, answer]) => (
                     <details key={question} className="group">
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-semibold text-primary hover:bg-secondary/40">
-                        {question}
+                        {t(question)}
                         <ChevronDown className="h-4 w-4 shrink-0 text-gold-deep transition-transform group-open:rotate-180" />
                       </summary>
                       <p className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">
-                        {answer}
+                        {t(answer)}
                       </p>
                     </details>
                   ))}
@@ -279,15 +271,15 @@ function FaqPage() {
 
         <div className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-gold/40 bg-gradient-green p-8 text-center text-primary-foreground">
           <LifeBuoy className="h-8 w-8 text-gold" />
-          <p className="font-display text-lg text-gold">لم تجد إجابة سؤالك؟</p>
+          <p className="font-display text-lg text-gold">{t("لم تجد إجابة سؤالك؟")}</p>
           <p className="text-sm text-primary-foreground/75">
-            فريق خدمة العملاء متاح يوميًا خلال ساعات العمل على الرقم الموحد 17608.
+            {t("فريق خدمة العملاء متاح يوميًا خلال ساعات العمل على الرقم الموحد 17608.")}
           </p>
           <Link
             to="/contact"
             className="mt-2 rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-primary"
           >
-            تواصل معنا
+            {t("تواصل معنا")}
           </Link>
         </div>
       </div>

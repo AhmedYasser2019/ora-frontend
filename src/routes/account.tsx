@@ -3,17 +3,20 @@ import { useEffect, useState } from "react";
 import { LoaderCircle, LogOut, Save, ShieldCheck, User } from "lucide-react";
 import { toast } from "sonner";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "حسابي | أورا للذهب" },
-      { name: "description", content: "إدارة بيانات حسابك في أورا للذهب." },
-      { property: "og:title", content: "حسابي | أورا للذهب" },
-      { property: "og:description", content: "إدارة بيانات حسابك." },
+      { title: tr("حسابي | أورا للذهب") },
+      { name: "description", content: tr("إدارة بيانات حسابك في أورا للذهب.") },
+      { property: "og:title", content: tr("حسابي | أورا للذهب") },
+      { property: "og:description", content: tr("إدارة بيانات حسابك.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -24,6 +27,7 @@ export const Route = createFileRoute("/account")({
 function AccountPage() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const t = useT();
   const [profile, setProfile] = useState({ full_name: "", phone: "" });
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -63,13 +67,13 @@ function AccountPage() {
       })
       .eq("id", user.id);
     setSaving(false);
-    if (error) toast.error("تعذر حفظ البيانات");
-    else toast.success("تم حفظ بياناتك");
+    if (error) toast.error(t("تعذر حفظ البيانات"));
+    else toast.success(t("تم حفظ بياناتك"));
   };
 
   const logout = async () => {
     await signOut();
-    toast.success("تم تسجيل الخروج");
+    toast.success(t("تم تسجيل الخروج"));
     navigate({ to: "/" });
   };
 
@@ -93,7 +97,7 @@ function AccountPage() {
             </span>
             <div>
               <p className="font-display text-lg text-primary">
-                {profile.full_name || "عميل أورا"}
+                {profile.full_name || t("عميل أورا")}
               </p>
               <p dir="ltr" className="text-xs text-muted-foreground">
                 {user.email}
@@ -112,7 +116,7 @@ function AccountPage() {
                   htmlFor="full_name"
                   className="mb-1.5 block text-xs font-semibold text-primary"
                 >
-                  الاسم الكامل
+                  {t("الاسم الكامل")}
                 </label>
                 <input
                   id="full_name"
@@ -123,7 +127,7 @@ function AccountPage() {
               </div>
               <div>
                 <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold text-primary">
-                  رقم الموبايل
+                  {t("رقم الموبايل")}
                 </label>
                 <input
                   id="phone"
@@ -145,31 +149,32 @@ function AccountPage() {
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                حفظ البيانات
+                {t("حفظ البيانات")}
               </button>
             </form>
           )}
 
           <div className="mt-6 flex items-center justify-between border-t border-border pt-5">
             <span className="flex items-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-gold-deep" /> حساب موثّق بالبريد الإلكتروني
+              <ShieldCheck className="h-4 w-4 text-gold-deep" />{" "}
+              {t("حساب موثّق بالبريد الإلكتروني")}
             </span>
             <button
               onClick={logout}
               className="flex items-center gap-1.5 text-xs font-semibold text-destructive hover:underline"
             >
-              <LogOut className="h-3.5 w-3.5" /> تسجيل الخروج
+              <LogOut className="h-3.5 w-3.5" /> {t("تسجيل الخروج")}
             </button>
           </div>
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
           <Link to="/wallet" className="font-semibold text-gold-deep hover:underline">
-            افتح محفظتك
+            {t("افتح محفظتك")}
           </Link>
           {" · "}
           <Link to="/cart" className="font-semibold text-gold-deep hover:underline">
-            تابع سلتك من هنا
+            {t("تابع سلتك من هنا")}
           </Link>
         </p>
       </div>

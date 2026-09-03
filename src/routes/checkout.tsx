@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
@@ -19,13 +20,15 @@ import { useAuth } from "@/lib/use-auth";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { GOVERNORATES, branches, buyPrice, productBySlug } from "@/lib/site";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "إتمام الطلب | أورا للذهب" },
-      { name: "description", content: "أكد طلبك لشراء الذهب بسعر لحظي مثبت مع أورا." },
-      { property: "og:title", content: "إتمام الطلب | أورا للذهب" },
-      { property: "og:description", content: "تأكيد طلب شراء الذهب بأسعار لحظية." },
+      { title: tr("إتمام الطلب | أورا للذهب") },
+      { name: "description", content: tr("أكد طلبك لشراء الذهب بسعر لحظي مثبت مع أورا.") },
+      { property: "og:title", content: tr("إتمام الطلب | أورا للذهب") },
+      { property: "og:description", content: tr("تأكيد طلب شراء الذهب بأسعار لحظية.") },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
@@ -52,6 +55,7 @@ function CheckoutPage() {
   const { items, clear } = useCart();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const t = useT();
 
   const [form, setForm] = useState({
     name: "",
@@ -82,13 +86,13 @@ function CheckoutPage() {
     e.preventDefault();
     if (!user) return;
     if (!form.name.trim() || !/^01\d{9}$/.test(form.phone.trim())) {
-      toast.error("راجع البيانات", {
-        description: "أدخل الاسم ورقم موبايل مصري صحيح (01xxxxxxxxx).",
+      toast.error(t("راجع البيانات"), {
+        description: t("أدخل الاسم ورقم موبايل مصري صحيح (01xxxxxxxxx)."),
       });
       return;
     }
     if (form.fulfilment === "delivery" && form.address.trim().length < 10) {
-      toast.error("أدخل عنوان التوصيل بالتفصيل");
+      toast.error(t("أدخل عنوان التوصيل بالتفصيل"));
       return;
     }
     if (items.length === 0) return;
@@ -116,7 +120,7 @@ function CheckoutPage() {
     setSubmitting(false);
 
     if (error || !order) {
-      toast.error(RPC_ERRORS[error?.code ?? ""] ?? "تعذر إتمام الطلب");
+      toast.error(t(RPC_ERRORS[error?.code ?? ""] ?? "تعذر إتمام الطلب"));
       return;
     }
     setPlaced({ ref: order.ref, total: Number(order.total) });
@@ -138,25 +142,31 @@ function CheckoutPage() {
       <PageShell title="تم استلام طلبك" subtitle="شكرًا لثقتك في أورا.">
         <div className="mx-auto max-w-lg rounded-2xl border border-border bg-card p-10 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-gold-deep" />
-          <p className="mt-4 text-xl text-primary">طلبك رقم {placed.ref}</p>
-          <p className="mt-1 font-display text-2xl text-gold-deep">{egp(placed.total)} ج.م</p>
+          <p className="mt-4 text-xl text-primary">
+            {t("طلبك رقم")} {placed.ref}
+          </p>
+          <p className="mt-1 font-display text-2xl text-gold-deep">
+            {egp(placed.total)} {t("ج.م")}
+          </p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             {form.payment === "wallet"
-              ? "تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم."
-              : "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل."}
+              ? t("تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم.")
+              : t(
+                  "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.",
+                )}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               to="/orders"
               className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
             >
-              تابع طلباتك
+              {t("تابع طلباتك")}
             </Link>
             <Link
               to="/payment-methods"
               className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-primary"
             >
-              بيانات الدفع
+              {t("بيانات الدفع")}
             </Link>
           </div>
         </div>
@@ -168,12 +178,12 @@ function CheckoutPage() {
     return (
       <PageShell title="إتمام الطلب">
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
-          <p className="text-lg text-primary">سلتك فاضية</p>
+          <p className="text-lg text-primary">{t("سلتك فاضية")}</p>
           <button
             onClick={() => navigate({ to: "/collection" })}
             className="mt-6 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
           >
-            تصفح المجموعة
+            {t("تصفح المجموعة")}
           </button>
         </div>
       </PageShell>
@@ -191,24 +201,24 @@ function CheckoutPage() {
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <form onSubmit={submit} className="space-y-6">
           <fieldset className="space-y-4 rounded-2xl border border-border bg-card p-6">
-            <legend className="px-2 font-display text-base text-primary">بياناتك</legend>
+            <legend className="px-2 font-display text-base text-primary">{t("بياناتك")}</legend>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="name" className="mb-1 block text-xs font-semibold text-primary">
-                  الاسم بالكامل
+                  {t("الاسم بالكامل")}
                 </label>
                 <input
                   id="name"
                   className={input}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="مثال: أحمد محمد"
+                  placeholder={t("مثال: أحمد محمد")}
                   required
                 />
               </div>
               <div>
                 <label htmlFor="phone" className="mb-1 block text-xs font-semibold text-primary">
-                  رقم الموبايل
+                  {t("رقم الموبايل")}
                 </label>
                 <input
                   id="phone"
@@ -225,7 +235,9 @@ function CheckoutPage() {
           </fieldset>
 
           <fieldset className="space-y-4 rounded-2xl border border-border bg-card p-6">
-            <legend className="px-2 font-display text-base text-primary">طريقة الاستلام</legend>
+            <legend className="px-2 font-display text-base text-primary">
+              {t("طريقة الاستلام")}
+            </legend>
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
@@ -243,7 +255,7 @@ function CheckoutPage() {
                       : "bg-secondary text-primary hover:bg-secondary/70"
                   }`}
                 >
-                  {label}
+                  {t(label)}
                 </button>
               ))}
             </div>
@@ -252,7 +264,7 @@ function CheckoutPage() {
               <div className="grid gap-4 sm:grid-cols-[200px_1fr]">
                 <div>
                   <label htmlFor="gov" className="mb-1 block text-xs font-semibold text-primary">
-                    المحافظة
+                    {t("المحافظة")}
                   </label>
                   <select
                     id="gov"
@@ -261,20 +273,22 @@ function CheckoutPage() {
                     onChange={(e) => setForm({ ...form, governorate: e.target.value })}
                   >
                     {GOVERNORATES.map((g) => (
-                      <option key={g}>{g}</option>
+                      <option key={g} value={g}>
+                        {t(g)}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label htmlFor="addr" className="mb-1 block text-xs font-semibold text-primary">
-                    العنوان بالتفصيل
+                    {t("العنوان بالتفصيل")}
                   </label>
                   <input
                     id="addr"
                     className={input}
                     value={form.address}
                     onChange={(e) => setForm({ ...form, address: e.target.value })}
-                    placeholder="الشارع، رقم العقار، الدور، الشقة، علامة مميزة"
+                    placeholder={t("الشارع، رقم العقار، الدور، الشقة، علامة مميزة")}
                     required
                   />
                 </div>
@@ -282,7 +296,7 @@ function CheckoutPage() {
             ) : (
               <div>
                 <label htmlFor="branch" className="mb-1 block text-xs font-semibold text-primary">
-                  الفرع
+                  {t("الفرع")}
                 </label>
                 <select
                   id="branch"
@@ -291,7 +305,9 @@ function CheckoutPage() {
                   onChange={(e) => setForm({ ...form, branch: e.target.value })}
                 >
                   {branches.map((b) => (
-                    <option key={b.name}>{b.name}</option>
+                    <option key={b.name} value={b.name}>
+                      {t(b.name)}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -299,7 +315,7 @@ function CheckoutPage() {
           </fieldset>
 
           <fieldset className="space-y-4 rounded-2xl border border-border bg-card p-6">
-            <legend className="px-2 font-display text-base text-primary">طريقة الدفع</legend>
+            <legend className="px-2 font-display text-base text-primary">{t("طريقة الدفع")}</legend>
             <div className="grid gap-2 sm:grid-cols-2">
               {PAYMENTS.map((p) => (
                 <button
@@ -313,14 +329,14 @@ function CheckoutPage() {
                   }`}
                 >
                   <p.icon className="h-4 w-4" />
-                  {p.label}
+                  {t(p.label)}
                 </button>
               ))}
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               {form.payment === "wallet"
-                ? "سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة."
-                : "ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب."}
+                ? t("سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة.")
+                : t("ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.")}
             </p>
           </fieldset>
 
@@ -334,17 +350,17 @@ function CheckoutPage() {
             ) : (
               <Truck className="h-4 w-4" />
             )}
-            تأكيد الطلب · {egp(total)} ج.م
+            {t("تأكيد الطلب")} · {egp(total)} {t("ج.م")}
           </button>
         </form>
 
         <aside className="h-fit rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-display text-lg text-primary">ملخص الطلب</h2>
+          <h2 className="font-display text-lg text-primary">{t("ملخص الطلب")}</h2>
           <ul className="mt-4 space-y-3 border-b border-border pb-4">
             {items.map((i) => (
               <li key={i.id} className="flex justify-between gap-3 text-xs">
                 <span className="text-primary">
-                  {i.title} <span className="text-muted-foreground">× {i.qty}</span>
+                  {t(i.title)} <span className="text-muted-foreground">× {i.qty}</span>
                 </span>
                 <span className="shrink-0 text-muted-foreground">
                   {egp(priceOf(i.slug, i.lastPrice) * i.qty)}
@@ -354,16 +370,22 @@ function CheckoutPage() {
           </ul>
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">الإجمالي الفرعي</dt>
-              <dd className="text-primary">{egp(subtotal)} ج.م</dd>
+              <dt className="text-muted-foreground">{t("الإجمالي الفرعي")}</dt>
+              <dd className="text-primary">
+                {egp(subtotal)} {t("ج.م")}
+              </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">التوصيل</dt>
-              <dd className="text-primary">{delivery === 0 ? "مجاني" : `${egp(delivery)} ج.م`}</dd>
+              <dt className="text-muted-foreground">{t("التوصيل")}</dt>
+              <dd className="text-primary">
+                {delivery === 0 ? t("مجاني") : `${egp(delivery)} ${t("ج.م")}`}
+              </dd>
             </div>
             <div className="flex justify-between border-t border-border pt-2 font-display text-lg">
-              <dt className="text-primary">الإجمالي</dt>
-              <dd className="text-gold-deep">{egp(total)} ج.م</dd>
+              <dt className="text-primary">{t("الإجمالي")}</dt>
+              <dd className="text-gold-deep">
+                {egp(total)} {t("ج.م")}
+              </dd>
             </div>
           </dl>
         </aside>

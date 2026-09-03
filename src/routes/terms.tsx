@@ -3,18 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
 import { Policy } from "@/components/Policy";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "الشروط والأحكام | أورا للذهب" },
+      { title: tr("الشروط والأحكام | أورا للذهب") },
       {
         name: "description",
-        content: "الشروط والأحكام الخاصة باستخدام موقع أورا للذهب وشراء وبيع السبائك والعملات.",
+        content: tr("الشروط والأحكام الخاصة باستخدام موقع أورا للذهب وشراء وبيع السبائك والعملات."),
       },
-      { property: "og:title", content: "الشروط والأحكام | أورا للذهب" },
+      { property: "og:title", content: tr("الشروط والأحكام | أورا للذهب") },
       {
         property: "og:description",
-        content: "الشروط والأحكام الخاصة باستخدام موقع أورا للذهب وشراء وبيع السبائك والعملات.",
+        content: tr("الشروط والأحكام الخاصة باستخدام موقع أورا للذهب وشراء وبيع السبائك والعملات."),
       },
     ],
   }),

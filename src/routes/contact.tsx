@@ -3,20 +3,24 @@ import { useState } from "react";
 import { CheckCircle2, Clock, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { branches } from "@/lib/site";
+
+import { tr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "إتصل بنا | أورا للذهب" },
+      { title: tr("إتصل بنا | أورا للذهب") },
       {
         name: "description",
-        content:
+        content: tr(
           "تواصل مع خدمة عملاء أورا للذهب على الرقم الموحد 17608 أو عبر البريد الإلكتروني أو نموذج التواصل.",
+        ),
       },
-      { property: "og:title", content: "إتصل بنا | أورا للذهب" },
-      { property: "og:description", content: "خدمة عملاء أورا للذهب." },
+      { property: "og:title", content: tr("إتصل بنا | أورا للذهب") },
+      { property: "og:description", content: tr("خدمة عملاء أورا للذهب.") },
     ],
   }),
   component: ContactPage,
@@ -25,6 +29,7 @@ export const Route = createFileRoute("/contact")({
 const TOPICS = ["استفسار عن منتج", "مشكلة في طلب", "المحفظة والأرصدة", "شكوى", "أخرى"] as const;
 
 function ContactPage() {
+  const t = useT();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -41,8 +46,8 @@ function ContactPage() {
       !/^01\d{9}$/.test(form.phone.trim()) ||
       form.message.trim().length < 10
     ) {
-      toast.error("راجع البيانات", {
-        description: "الاسم ورقم موبايل مصري صحيح ورسالة لا تقل عن 10 أحرف.",
+      toast.error(t("راجع البيانات"), {
+        description: t("الاسم ورقم موبايل مصري صحيح ورسالة لا تقل عن 10 أحرف."),
       });
       return;
     }
@@ -63,9 +68,9 @@ function ContactPage() {
           {sent ? (
             <div className="py-12 text-center">
               <CheckCircle2 className="mx-auto h-12 w-12 text-gold-deep" />
-              <p className="mt-4 font-display text-xl text-primary">وصلتنا رسالتك</p>
+              <p className="mt-4 font-display text-xl text-primary">{t("وصلتنا رسالتك")}</p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                سيتواصل معك فريقنا على الرقم {form.phone} خلال ساعات العمل.
+                {t("سيتواصل معك فريقنا على الرقم")} {form.phone} {t("خلال ساعات العمل.")}
               </p>
               <button
                 onClick={() => {
@@ -74,24 +79,24 @@ function ContactPage() {
                 }}
                 className="mt-6 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
               >
-                إرسال رسالة أخرى
+                {t("إرسال رسالة أخرى")}
               </button>
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-4">
-              <h2 className="font-display text-lg text-primary">أرسل لنا رسالة</h2>
+              <h2 className="font-display text-lg text-primary">{t("أرسل لنا رسالة")}</h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="c-name" className="mb-1 block text-xs font-semibold text-primary">
-                    الاسم بالكامل
+                    {t("الاسم بالكامل")}
                   </label>
                   <input
                     id="c-name"
                     className={input}
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="مثال: أحمد محمد"
+                    placeholder={t("مثال: أحمد محمد")}
                     required
                   />
                 </div>
@@ -100,7 +105,7 @@ function ContactPage() {
                     htmlFor="c-phone"
                     className="mb-1 block text-xs font-semibold text-primary"
                   >
-                    رقم الموبايل
+                    {t("رقم الموبايل")}
                   </label>
                   <input
                     id="c-phone"
@@ -121,7 +126,7 @@ function ContactPage() {
                     htmlFor="c-topic"
                     className="mb-1 block text-xs font-semibold text-primary"
                   >
-                    موضوع الرسالة
+                    {t("موضوع الرسالة")}
                   </label>
                   <select
                     id="c-topic"
@@ -129,8 +134,10 @@ function ContactPage() {
                     value={form.topic}
                     onChange={(e) => setForm({ ...form, topic: e.target.value })}
                   >
-                    {TOPICS.map((t) => (
-                      <option key={t}>{t}</option>
+                    {TOPICS.map((topic) => (
+                      <option key={topic} value={topic}>
+                        {t(topic)}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -139,7 +146,7 @@ function ContactPage() {
                     htmlFor="c-order"
                     className="mb-1 block text-xs font-semibold text-primary"
                   >
-                    رقم الطلب <span className="text-muted-foreground">(اختياري)</span>
+                    {t("رقم الطلب")} <span className="text-muted-foreground">({t("اختياري")})</span>
                   </label>
                   <input
                     id="c-order"
@@ -154,7 +161,7 @@ function ContactPage() {
 
               <div>
                 <label htmlFor="c-msg" className="mb-1 block text-xs font-semibold text-primary">
-                  رسالتك
+                  {t("رسالتك")}
                 </label>
                 <textarea
                   id="c-msg"
@@ -162,7 +169,7 @@ function ContactPage() {
                   className={input}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="اكتب تفاصيل استفسارك…"
+                  placeholder={t("اكتب تفاصيل استفسارك…")}
                   required
                 />
               </div>
@@ -172,7 +179,7 @@ function ContactPage() {
                 className="flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
               >
                 <Send className="h-4 w-4" />
-                إرسال
+                {t("إرسال")}
               </button>
             </form>
           )}
@@ -180,12 +187,12 @@ function ContactPage() {
 
         <aside className="space-y-4">
           <div className="rounded-2xl border border-border bg-card p-5">
-            <h2 className="font-display text-lg text-primary">قنوات التواصل</h2>
+            <h2 className="font-display text-lg text-primary">{t("قنوات التواصل")}</h2>
             <ul className="mt-4 space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
                 <div>
-                  <p className="font-semibold text-primary">الرقم الموحد</p>
+                  <p className="font-semibold text-primary">{t("الرقم الموحد")}</p>
                   <p dir="ltr" className="text-xs text-muted-foreground">
                     17608
                   </p>
@@ -194,7 +201,7 @@ function ContactPage() {
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
                 <div>
-                  <p className="font-semibold text-primary">البريد الإلكتروني</p>
+                  <p className="font-semibold text-primary">{t("البريد الإلكتروني")}</p>
                   <p dir="ltr" className="text-xs text-muted-foreground">
                     support@ora-gold.com
                   </p>
@@ -203,14 +210,16 @@ function ContactPage() {
               <li className="flex items-start gap-3">
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
                 <div>
-                  <p className="font-semibold text-primary">ساعات العمل</p>
-                  <p className="text-xs text-muted-foreground">يوميًا من 10 صباحًا حتى 10 مساءً</p>
+                  <p className="font-semibold text-primary">{t("ساعات العمل")}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("يوميًا من 10 صباحًا حتى 10 مساءً")}
+                  </p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Instagram className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
                 <div>
-                  <p className="font-semibold text-primary">وسائل التواصل</p>
+                  <p className="font-semibold text-primary">{t("وسائل التواصل")}</p>
                   <p className="text-xs text-muted-foreground">@oragold.eg</p>
                 </div>
               </li>
@@ -219,16 +228,16 @@ function ContactPage() {
 
           <div className="rounded-2xl border border-border bg-card p-5">
             <h2 className="flex items-center gap-2 font-display text-lg text-primary">
-              <MapPin className="h-4 w-4 text-gold-deep" /> المقر الرئيسي
+              <MapPin className="h-4 w-4 text-gold-deep" /> {t("المقر الرئيسي")}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              {branches[0]?.address}
+              {t(branches[0]?.address ?? "")}
             </p>
             <Link
               to="/branches"
               className="mt-3 inline-block text-xs font-semibold text-gold-deep hover:underline"
             >
-              شاهد كل الفروع ({branches.length})
+              {t("شاهد كل الفروع")} ({branches.length})
             </Link>
           </div>
         </aside>

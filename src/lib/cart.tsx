@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
+import { useT } from "./i18n";
 import { useAuth } from "./use-auth";
 
 export type CartItem = {
@@ -43,6 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const t = useT();
 
   useEffect(() => {
     try {
@@ -67,7 +69,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (item: Omit<CartItem, "qty">, qty = 1) => {
       if (loading) return false;
       if (!user) {
-        toast.error("سجّل الدخول أولاً", { description: "لازم تسجّل الدخول قبل الإضافة للسلة" });
+        toast.error(t("سجّل الدخول أولاً"), {
+          description: t("لازم تسجّل الدخول قبل الإضافة للسلة"),
+        });
         navigate({ to: "/auth", search: { next: window.location.pathname } });
         return false;
       }
@@ -84,7 +88,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
       return true;
     },
-    [loading, user, navigate],
+    [loading, user, navigate, t],
   );
 
   const setQty = useCallback((id: string, qty: number) => {

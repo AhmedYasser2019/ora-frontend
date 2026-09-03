@@ -25,17 +25,19 @@ const searchSchema = z.object({
   next: z.string().optional(),
 });
 
+import { tr, useT } from "@/lib/i18n";
+
 export const Route = createFileRoute("/auth")({
   validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
     meta: [
-      { title: "تسجيل الدخول | أورا للذهب" },
+      { title: tr("تسجيل الدخول | أورا للذهب") },
       {
         name: "description",
-        content: "سجّل الدخول أو أنشئ حسابك في أورا للذهب لمتابعة طلباتك وحفظ بياناتك.",
+        content: tr("سجّل الدخول أو أنشئ حسابك في أورا للذهب لمتابعة طلباتك وحفظ بياناتك."),
       },
-      { property: "og:title", content: "تسجيل الدخول | أورا للذهب" },
-      { property: "og:description", content: "حسابك في أورا للذهب والسبائك." },
+      { property: "og:title", content: tr("تسجيل الدخول | أورا للذهب") },
+      { property: "og:description", content: tr("حسابك في أورا للذهب والسبائك.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -53,17 +55,19 @@ function Field({
   label: string;
   icon: typeof Mail;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
+  const t = useT();
+
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-primary">
-        {label}
+        {t(label)}
       </label>
       <div className="relative">
-        <Icon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Icon className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           id={id}
           {...props}
-          className="w-full rounded-xl border border-input bg-background py-2.5 pl-3 pr-10 text-sm outline-none transition-colors focus:border-gold focus:ring-1 focus:ring-gold"
+          className="w-full rounded-xl border border-input bg-background py-2.5 pe-3 ps-10 text-sm outline-none transition-colors focus:border-gold focus:ring-1 focus:ring-gold"
         />
       </div>
     </div>
@@ -82,6 +86,7 @@ function ImageDrop({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const t = useT();
 
   useEffect(() => {
     if (!file) return setPreview(null);
@@ -92,18 +97,18 @@ function ImageDrop({
 
   return (
     <div>
-      <p className="mb-1.5 text-xs font-semibold text-gold-deep">{label}</p>
+      <p className="mb-1.5 text-xs font-semibold text-gold-deep">{t(label)}</p>
       <button
         type="button"
         onClick={() => ref.current?.click()}
         className="flex h-44 w-full items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gold/60 bg-cream/40 transition-colors hover:border-gold"
       >
         {preview ? (
-          <img src={preview} alt={label} className="h-full w-full object-contain" />
+          <img src={preview} alt={t(label)} className="h-full w-full object-contain" />
         ) : (
           <span className="flex flex-col items-center gap-2 text-xs text-muted-foreground">
             <ImageIcon className="h-6 w-6 text-gold" />
-            اختر صورة
+            {t("اختر صورة")}
           </span>
         )}
       </button>
@@ -132,6 +137,8 @@ const EXPERIENCE = [
 ] as const;
 
 function StepRail({ step }: { step: number }) {
+  const t = useT();
+
   return (
     <ol className="grid gap-5">
       {STEPS.map((s) => {
@@ -152,14 +159,14 @@ function StepRail({ step }: { step: number }) {
             </span>
             <div>
               <p className={`text-xs ${active ? "text-gold" : "text-muted-foreground"}`}>
-                الخطوة {s.n}
+                {t("الخطوة")} {s.n}
               </p>
               <p
                 className={`text-sm font-semibold ${
                   active || done ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                {s.title}
+                {t(s.title)}
               </p>
             </div>
           </li>
@@ -173,6 +180,7 @@ function AuthPage() {
   const { next } = Route.useSearch();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const t = useT();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [step, setStep] = useState(1);
   const [busy, setBusy] = useState(false);
@@ -200,11 +208,11 @@ function AuthPage() {
         password: form.password,
       });
       if (error) throw error;
-      toast.success("مرحبًا بعودتك");
+      toast.success(t("مرحبًا بعودتك"));
       navigate({ to: target });
     } catch (err) {
-      toast.error("تعذر تسجيل الدخول", {
-        description: err instanceof Error ? err.message : "حاول مرة أخرى",
+      toast.error(t("تعذر تسجيل الدخول"), {
+        description: err instanceof Error ? err.message : t("حاول مرة أخرى"),
       });
     } finally {
       setBusy(false);
@@ -214,11 +222,11 @@ function AuthPage() {
   const submitAccount = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password.length < 6) {
-      toast.error("كلمة المرور يجب ألا تقل عن 6 أحرف");
+      toast.error(t("كلمة المرور يجب ألا تقل عن 6 أحرف"));
       return;
     }
     if (!/^01[0-9]{9}$/.test(form.phone.trim())) {
-      toast.error("رقم موبايل غير صحيح", { description: "مثال: 01012345678" });
+      toast.error(t("رقم موبايل غير صحيح"), { description: "01012345678" });
       return;
     }
     setStep(2);
@@ -229,15 +237,15 @@ function AuthPage() {
     e.preventDefault();
     const num = kyc.docNumber.trim();
     if (kyc.docType === "id" ? !/^[0-9]{14}$/.test(num) : num.length < 6) {
-      toast.error(kyc.docType === "id" ? "الرقم القومي 14 رقمًا" : "رقم جواز غير صحيح");
+      toast.error(kyc.docType === "id" ? t("الرقم القومي 14 رقمًا") : t("رقم جواز غير صحيح"));
       return;
     }
     if (!docFront) {
-      toast.error("ارفع صورة الوجه الأمامي للهوية");
+      toast.error(t("ارفع صورة الوجه الأمامي للهوية"));
       return;
     }
     if (kyc.docType === "id" && !docBack) {
-      toast.error("ارفع صورة الوجه الخلفي للهوية");
+      toast.error(t("ارفع صورة الوجه الخلفي للهوية"));
       return;
     }
     setStep(3);
@@ -246,7 +254,7 @@ function AuthPage() {
   const submitOtp = (e: React.FormEvent) => {
     e.preventDefault();
     if (!/^[0-9]{6}$/.test(otp.trim())) {
-      toast.error("الكود 6 أرقام");
+      toast.error(t("الكود 6 أرقام"));
       return;
     }
     setStep(4);
@@ -279,16 +287,18 @@ function AuthPage() {
         password: form.password,
       });
       if (signInErr) {
-        toast.success("تم إنشاء حسابك", { description: "أكد بريدك الإلكتروني ثم سجّل الدخول." });
+        toast.success(t("تم إنشاء حسابك"), {
+          description: t("أكد بريدك الإلكتروني ثم سجّل الدخول."),
+        });
         setMode("login");
         setStep(1);
         return;
       }
-      toast.success("تم إنشاء حسابك");
+      toast.success(t("تم إنشاء حسابك"));
       navigate({ to: target });
     } catch (err) {
-      toast.error("تعذر إنشاء الحساب", {
-        description: err instanceof Error ? err.message : "حاول مرة أخرى",
+      toast.error(t("تعذر إنشاء الحساب"), {
+        description: err instanceof Error ? err.message : t("حاول مرة أخرى"),
       });
     } finally {
       setBusy(false);
@@ -302,7 +312,7 @@ function AuthPage() {
       className="mt-1 flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
     >
       {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-      {label}
+      {t(label)}
     </button>
   );
 
@@ -315,7 +325,7 @@ function AuthPage() {
           onClick={() => setStep(back)}
           className="rounded-full border border-border px-5 py-3 text-sm font-semibold text-primary"
         >
-          رجوع
+          {t("رجوع")}
         </button>
         <div className="grid flex-1">{submitBtn(label)}</div>
       </div>
@@ -325,7 +335,7 @@ function AuthPage() {
           onClick={() => setStep(skipTo)}
           className="text-xs font-semibold text-muted-foreground underline"
         >
-          تخطي هذه الخطوة (وضع التجربة)
+          {t("تخطي هذه الخطوة (وضع التجربة)")}
         </button>
       )}
     </>
@@ -354,7 +364,7 @@ function AuthPage() {
                 mode === m ? "bg-primary text-primary-foreground" : "text-primary/70"
               }`}
             >
-              {label}
+              {t(label)}
             </button>
           ))}
         </div>
@@ -391,16 +401,16 @@ function AuthPage() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
             <aside className="rounded-3xl border border-border bg-card p-6">
-              <h2 className="font-display text-xl text-primary">أنشئ حسابك الآن</h2>
+              <h2 className="font-display text-xl text-primary">{t("أنشئ حسابك الآن")}</h2>
               <p className="mb-6 mt-1 text-xs text-muted-foreground">
-                وابدأ أول عملية شراء أو استثمار في الذهب.
+                {t("وابدأ أول عملية شراء أو استثمار في الذهب.")}
               </p>
               <StepRail step={step} />
             </aside>
 
             <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8">
               <h3 className="mb-6 border-b border-border pb-3 text-center font-display text-xl text-gold-deep">
-                {STEPS[step - 1]?.title}
+                {t(STEPS[step - 1]?.title ?? "")}
               </h3>
 
               {step === 1 && (
@@ -412,7 +422,7 @@ function AuthPage() {
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="أحمد الباز"
+                    placeholder={t("أحمد الباز")}
                   />
                   <Field
                     id="phone"
@@ -455,7 +465,7 @@ function AuthPage() {
               {step === 2 && (
                 <form onSubmit={submitKyc} className="grid gap-4">
                   <p className="text-xs text-muted-foreground">
-                    لتأكيد هويتك، صوّر أو ارفع أحد المستندات التالية:
+                    {t("لتأكيد هويتك، صوّر أو ارفع أحد المستندات التالية:")}
                   </p>
                   <div className="flex flex-wrap gap-6 text-sm text-primary">
                     {(
@@ -473,7 +483,7 @@ function AuthPage() {
                           onChange={() => setKyc({ ...kyc, docType: v })}
                           className="accent-gold"
                         />
-                        {label}
+                        {t(label)}
                       </label>
                     ))}
                   </div>
@@ -485,10 +495,10 @@ function AuthPage() {
                     required
                     value={kyc.docNumber}
                     onChange={(e) => setKyc({ ...kyc, docNumber: e.target.value })}
-                    placeholder="اكتب رقم البطاقة أو جواز السفر"
+                    placeholder={t("اكتب رقم البطاقة أو جواز السفر")}
                   />
                   <p className="text-xs text-muted-foreground">
-                    التعليمات تتطلب رفع صورة المستند. بياناتك تبقى آمنة وخاصة.
+                    {t("التعليمات تتطلب رفع صورة المستند. بياناتك تبقى آمنة وخاصة.")}
                   </p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <ImageDrop
@@ -507,8 +517,8 @@ function AuthPage() {
               {step === 3 && (
                 <form onSubmit={submitOtp} className="grid gap-4">
                   <p className="text-xs text-muted-foreground">
-                    اكتب كود التأكيد المرسل إلى <span dir="ltr">{form.email}</span> (أي 6 أرقام
-                    أثناء التجربة).
+                    {t("اكتب كود التأكيد المرسل إلى")} <span dir="ltr">{form.email}</span>{" "}
+                    {t("(أي 6 أرقام أثناء التجربة).")}
                   </p>
                   <Field
                     id="otp"
@@ -528,7 +538,7 @@ function AuthPage() {
               {step === 4 && (
                 <form onSubmit={finish} className="grid gap-4">
                   <p className="text-xs text-muted-foreground">
-                    اختر ما يصف خبرتك، عشان نرشّح لك المنتجات المناسبة.
+                    {t("اختر ما يصف خبرتك، عشان نرشّح لك المنتجات المناسبة.")}
                   </p>
                   {EXPERIENCE.map((x) => (
                     <label
@@ -544,7 +554,7 @@ function AuthPage() {
                         onChange={() => setExperience(x)}
                         className="accent-gold"
                       />
-                      {x}
+                      {t(x)}
                     </label>
                   ))}
                   {stepNav(3, "إنهاء التسجيل")}

@@ -3,19 +3,23 @@ import { useState } from "react";
 import { Banknote, Building2, Check, Copy, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+
+import { tr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/payment-methods")({
   head: () => ({
     meta: [
-      { title: "طرق الدفع | أورا للذهب" },
+      { title: tr("طرق الدفع | أورا للذهب") },
       {
         name: "description",
-        content:
+        content: tr(
           "ادفع عبر InstaPay أو التحويل البنكي أو رصيد المحفظة أو نقدًا في الفرع — بدون رسوم خدمة.",
+        ),
       },
-      { property: "og:title", content: "طرق الدفع | أورا للذهب" },
-      { property: "og:description", content: "طرق الدفع المتاحة في أورا للذهب." },
+      { property: "og:title", content: tr("طرق الدفع | أورا للذهب") },
+      { property: "og:description", content: tr("طرق الدفع المتاحة في أورا للذهب.") },
     ],
   }),
   component: PaymentMethodsPage,
@@ -60,16 +64,17 @@ const METHODS = [
 ];
 
 function PaymentMethodsPage() {
+  const t = useT();
   const [copied, setCopied] = useState("");
 
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
       setCopied(value);
-      toast.success("تم النسخ");
+      toast.success(t("تم النسخ"));
       setTimeout(() => setCopied(""), 1500);
     } catch {
-      toast.error("تعذر النسخ، انسخه يدويًا");
+      toast.error(t("تعذر النسخ، انسخه يدويًا"));
     }
   };
 
@@ -88,23 +93,23 @@ function PaymentMethodsPage() {
                   <m.icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <h2 className="font-display text-lg text-primary">{m.name}</h2>
+                  <h2 className="font-display text-lg text-primary">{t(m.name)}</h2>
                   <p className="text-[11px] text-gold-deep">
-                    {m.fee} · {m.time}
+                    {t(m.fee)} · {t(m.time)}
                   </p>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{m.desc}</p>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t(m.desc)}</p>
 
               <div className="mt-5 rounded-xl bg-secondary/60 p-3">
-                <p className="text-[11px] text-muted-foreground">{m.detail.label}</p>
+                <p className="text-[11px] text-muted-foreground">{t(m.detail.label)}</p>
                 {isLink ? (
                   <Link
                     to={m.detail.value as "/wallet" | "/branches"}
                     className="mt-1 inline-block text-sm font-semibold text-gold-deep hover:underline"
                   >
-                    افتح الصفحة
+                    {t("افتح الصفحة")}
                   </Link>
                 ) : (
                   <div className="mt-1 flex items-center justify-between gap-2">
@@ -113,7 +118,7 @@ function PaymentMethodsPage() {
                     </code>
                     <button
                       onClick={() => copy(m.detail.value)}
-                      aria-label={`نسخ ${m.detail.label}`}
+                      aria-label={`${t("نسخ")} ${t(m.detail.label)}`}
                       className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground"
                     >
                       {copied === m.detail.value ? (
@@ -121,7 +126,7 @@ function PaymentMethodsPage() {
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
-                      نسخ
+                      {t("نسخ")}
                     </button>
                   </div>
                 )}
@@ -132,11 +137,11 @@ function PaymentMethodsPage() {
       </div>
 
       <div className="mt-8 rounded-2xl border border-border bg-card p-6">
-        <h2 className="font-display text-lg text-primary">بيانات الحساب البنكي</h2>
+        <h2 className="font-display text-lg text-primary">{t("بيانات الحساب البنكي")}</h2>
         <dl className="mt-4 grid gap-3 sm:grid-cols-3">
           {[
-            ["اسم المستفيد", "شركة أورا للذهب والسبائك"],
-            ["رقم الحساب", ACCOUNT],
+            [t("اسم المستفيد"), t("شركة أورا للذهب والسبائك")],
+            [t("رقم الحساب"), ACCOUNT],
             ["IBAN", IBAN],
           ].map(([k, v]) => (
             <div key={k} className="rounded-xl bg-secondary/60 p-3">
@@ -152,12 +157,13 @@ function PaymentMethodsPage() {
       <p className="mt-6 flex items-start gap-2 rounded-2xl border border-gold/40 bg-secondary/40 p-4 text-xs leading-relaxed text-muted-foreground">
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
         <span>
-          حوّل فقط إلى الحساب المعلن على هذه الصفحة. لن يطلب منك أي موظف التحويل إلى حساب شخصي، ولن
-          يطلب منك رمز التحقق OTP أو كلمة المرور. راجع{" "}
+          {t(
+            "حوّل فقط إلى الحساب المعلن على هذه الصفحة. لن يطلب منك أي موظف التحويل إلى حساب شخصي، ولن يطلب منك رمز التحقق OTP أو كلمة المرور. راجع",
+          )}{" "}
           <Link to="/faq" className="font-semibold text-gold-deep hover:underline">
-            الأسئلة الشائعة
+            {t("الأسئلة الشائعة")}
           </Link>{" "}
-          عند الشك.
+          {t("عند الشك.")}
         </span>
       </p>
     </PageShell>

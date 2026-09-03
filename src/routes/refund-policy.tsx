@@ -3,18 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
 import { Policy } from "@/components/Policy";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/refund-policy")({
   head: () => ({
     meta: [
-      { title: "سياسة الاسترجاع واسترداد الأموال | أورا للذهب" },
+      { title: tr("سياسة الاسترجاع واسترداد الأموال | أورا للذهب") },
       {
         name: "description",
-        content: "شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من أورا للذهب.",
+        content: tr("شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من أورا للذهب."),
       },
-      { property: "og:title", content: "سياسة الاسترجاع واسترداد الأموال | أورا للذهب" },
+      { property: "og:title", content: tr("سياسة الاسترجاع واسترداد الأموال | أورا للذهب") },
       {
         property: "og:description",
-        content: "شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من أورا للذهب.",
+        content: tr("شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من أورا للذهب."),
       },
     ],
   }),

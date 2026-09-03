@@ -3,18 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
 import { Policy } from "@/components/Policy";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/shipping-policy")({
   head: () => ({
     meta: [
-      { title: "سياسة الشحن والتوصيل | أورا للذهب" },
+      { title: tr("سياسة الشحن والتوصيل | أورا للذهب") },
       {
         name: "description",
-        content: "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من أورا لكل محافظات مصر.",
+        content: tr("مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من أورا لكل محافظات مصر."),
       },
-      { property: "og:title", content: "سياسة الشحن والتوصيل | أورا للذهب" },
+      { property: "og:title", content: tr("سياسة الشحن والتوصيل | أورا للذهب") },
       {
         property: "og:description",
-        content: "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من أورا لكل محافظات مصر.",
+        content: tr("مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من أورا لكل محافظات مصر."),
       },
     ],
   }),
