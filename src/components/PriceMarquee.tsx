@@ -1,5 +1,6 @@
 import { WifiOff, Radio } from "lucide-react";
 
+import { intlLocale, useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { buyPrice, productBySlug } from "@/lib/site";
@@ -10,30 +11,36 @@ const itemPrice = (slug: string, gram: Parameters<typeof buyPrice>[1]) => {
 };
 
 const time = (ts: number) =>
-  ts ? new Intl.DateTimeFormat("ar-EG", { timeStyle: "medium" }).format(new Date(ts)) : "—";
+  ts ? new Intl.DateTimeFormat(intlLocale(), { timeStyle: "medium" }).format(new Date(ts)) : "—";
 
 export function PriceMarquee() {
   const { data, live, dataUpdatedAt } = useLivePrices();
+  const t = useT();
+
+  const perGram = `${t("ج.م")} / ${t("جرام")}`;
 
   const priceItems = data
     ? [
-        { label: "ذهب عيار 24", value: `${egp(data.gram.k24)} ج.م / جرام` },
-        { label: "ذهب عيار 22", value: `${egp(data.gram.k22)} ج.م / جرام` },
-        { label: "ذهب عيار 21", value: `${egp(data.gram.k21)} ج.م / جرام` },
-        { label: "ذهب عيار 18", value: `${egp(data.gram.k18)} ج.م / جرام` },
-        { label: "الفضة", value: `${egp(data.gram.silver)} ج.م / جرام` },
-        { label: "الدولار", value: `${data.usdEgp.toFixed(2)} ج.م` },
-        { label: "سبيكة 10 جرام", value: `${egp(itemPrice("gold-bar-10g", data.gram))} ج.م` },
+        { label: t("ذهب عيار 24"), value: `${egp(data.gram.k24)} ${perGram}` },
+        { label: t("ذهب عيار 22"), value: `${egp(data.gram.k22)} ${perGram}` },
+        { label: t("ذهب عيار 21"), value: `${egp(data.gram.k21)} ${perGram}` },
+        { label: t("ذهب عيار 18"), value: `${egp(data.gram.k18)} ${perGram}` },
+        { label: t("الفضة"), value: `${egp(data.gram.silver)} ${perGram}` },
+        { label: t("الدولار"), value: `${data.usdEgp.toFixed(2)} ${t("ج.م")}` },
         {
-          label: "جنيه ذهب 8 جرام",
-          value: `${egp(itemPrice("gold-sovereign-coin", data.gram))} ج.م`,
+          label: t("سبيكة 10 جرام"),
+          value: `${egp(itemPrice("gold-bar-10g", data.gram))} ${t("ج.م")}`,
+        },
+        {
+          label: t("جنيه ذهب 8 جرام"),
+          value: `${egp(itemPrice("gold-sovereign-coin", data.gram))} ${t("ج.م")}`,
         },
       ]
-    : [{ label: "جارٍ تحميل الأسعار", value: "..." }];
+    : [{ label: t("جارٍ تحميل الأسعار"), value: "..." }];
 
   const statusItem = {
-    label: live ? "بث مباشر" : "الاتصال متعذر",
-    value: live ? "متصل" : "غير متصل",
+    label: live ? t("بث مباشر") : t("الاتصال متعذر"),
+    value: live ? t("متصل") : t("غير متصل"),
     status: live ? ("live" as const) : ("offline" as const),
   };
 
@@ -45,11 +52,11 @@ export function PriceMarquee() {
       {!live && (
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 bg-destructive/15 px-4 py-1.5 text-center text-[11px] text-gold">
           <WifiOff className="h-3.5 w-3.5" />
-          <span className="font-semibold">انقطع الاتصال بالبث اللحظي</span>
+          <span className="font-semibold">{t("انقطع الاتصال بالبث اللحظي")}</span>
           <span className="text-primary-foreground/70">
             {data
-              ? `الأسعار المعروضة هي آخر أسعار معروفة — آخر تحديث ${time(dataUpdatedAt)}`
-              : "جارٍ إعادة المحاولة..."}
+              ? `${t("الأسعار المعروضة هي آخر أسعار معروفة — آخر تحديث")} ${time(dataUpdatedAt)}`
+              : t("جارٍ إعادة المحاولة...")}
           </span>
         </div>
       )}

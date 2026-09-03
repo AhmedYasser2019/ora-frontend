@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeftRight, TrendingDown, TrendingUp } from "lucide-react";
 
+import { useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
 import type { GramPrices } from "@/lib/prices.server";
 
@@ -32,6 +33,7 @@ export function PriceBoard({
   sell?: GramPrices | undefined;
   spreadPct?: number | undefined;
 }) {
+  const t = useT();
   const rows = metal === "gold" ? GOLD_ROWS : SILVER_ROWS;
   const [active, setActive] = useState<keyof GramPrices>(rows[0]!.key);
 
@@ -53,7 +55,7 @@ export function PriceBoard({
                   : "border-border bg-card text-primary hover:border-gold"
               }`}
             >
-              {r.label}
+              {t(r.label)}
             </button>
           ))}
         </div>
@@ -62,44 +64,44 @@ export function PriceBoard({
       <div className="rounded-2xl border border-gold/40 bg-gradient-green p-6 text-primary-foreground">
         <div className="flex items-center justify-between">
           <p className="font-display text-lg text-gold">
-            {rows.find((r) => r.key === active)?.label}
+            {t(rows.find((r) => r.key === active)?.label ?? "")}
           </p>
           <span className="rounded-full bg-gold/15 px-3 py-1 text-[11px] font-semibold text-gold">
-            السعر الرئيسي
+            {t("السعر الرئيسي")}
           </span>
         </div>
 
         <dl className="mt-5 grid gap-4 sm:grid-cols-3">
           <div>
             <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
-              <TrendingUp className="h-3.5 w-3.5 text-gold" /> سعر الشراء
+              <TrendingUp className="h-3.5 w-3.5 text-gold" /> {t("سعر الشراء")}
             </dt>
             <dd className="mt-1 font-display text-2xl text-gold">
-              {buyValue ? egp(buyValue) : "—"} <span className="text-sm">ج.م</span>
+              {buyValue ? egp(buyValue) : "—"} <span className="text-sm">{t("ج.م")}</span>
             </dd>
           </div>
           <div>
             <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
-              <TrendingDown className="h-3.5 w-3.5 text-gold" /> سعر البيع
+              <TrendingDown className="h-3.5 w-3.5 text-gold" /> {t("سعر البيع")}
             </dt>
             <dd className="mt-1 font-display text-2xl text-gold">
-              {sellValue ? egp(sellValue) : "—"} <span className="text-sm">ج.م</span>
+              {sellValue ? egp(sellValue) : "—"} <span className="text-sm">{t("ج.م")}</span>
             </dd>
           </div>
           <div>
             <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
-              <ArrowLeftRight className="h-3.5 w-3.5 text-gold" /> فرق السعر
+              <ArrowLeftRight className="h-3.5 w-3.5 text-gold" /> {t("فرق السعر")}
             </dt>
             <dd className="mt-1 font-display text-2xl text-gold">
-              {diff !== undefined ? egp(diff) : "—"} <span className="text-sm">ج.م</span>
+              {diff !== undefined ? egp(diff) : "—"} <span className="text-sm">{t("ج.م")}</span>
             </dd>
           </div>
         </dl>
 
         <p className="mt-4 text-[11px] leading-relaxed text-primary-foreground/70">
-          سعر الشراء هو ما تدفعه عند الشراء، وسعر البيع هو ما ندفعه لك عند إعادة الشراء منك. الفرق
-          بينهما {spreadPct ? (spreadPct * 100).toFixed(1) : "—"}% ويمثل هامش التشغيل، وهو ثابت
-          ومعلن.
+          {t("سعر الشراء هو ما تدفعه عند الشراء، وسعر البيع هو ما ندفعه لك عند إعادة الشراء منك.")}{" "}
+          {t("الفرق بينهما")} {spreadPct ? (spreadPct * 100).toFixed(1) : "—"}%{" "}
+          {t("ويمثل هامش التشغيل، وهو ثابت ومعلن.")}
         </p>
       </div>
 
@@ -107,10 +109,10 @@ export function PriceBoard({
         <table className="w-full min-w-[420px] text-sm">
           <thead className="bg-cream text-primary">
             <tr>
-              <th className="px-4 py-3 text-right font-semibold">العيار</th>
-              <th className="px-4 py-3 text-right font-semibold">سعر الشراء</th>
-              <th className="px-4 py-3 text-right font-semibold">سعر البيع</th>
-              <th className="px-4 py-3 text-right font-semibold">الفرق</th>
+              <th className="px-4 py-3 text-start font-semibold">{t("العيار")}</th>
+              <th className="px-4 py-3 text-start font-semibold">{t("سعر الشراء")}</th>
+              <th className="px-4 py-3 text-start font-semibold">{t("سعر البيع")}</th>
+              <th className="px-4 py-3 text-start font-semibold">{t("الفرق")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -125,7 +127,7 @@ export function PriceBoard({
                     active === r.key ? "bg-gold/5" : ""
                   }`}
                 >
-                  <td className="px-4 py-3 text-primary">{r.label}</td>
+                  <td className="px-4 py-3 text-primary">{t(r.label)}</td>
                   <td className="px-4 py-3 font-display text-base text-gold-deep">
                     {b ? egp(b) : "—"}
                   </td>

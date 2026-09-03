@@ -3,18 +3,21 @@ import { useCallback, useEffect, useState } from "react";
 import { LoaderCircle, MapPin, Package, Store, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
+import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { supabase } from "@/integrations/supabase/client";
 import { egp } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
-      { title: "طلباتي | أورا للذهب" },
-      { name: "description", content: "تابع حالة طلباتك في أورا للذهب وتفاصيل كل طلب." },
-      { property: "og:title", content: "طلباتي | أورا للذهب" },
-      { property: "og:description", content: "متابعة حالة الطلبات." },
+      { title: tr("طلباتي | أورا للذهب") },
+      { name: "description", content: tr("تابع حالة طلباتك في أورا للذهب وتفاصيل كل طلب.") },
+      { property: "og:title", content: tr("طلباتي | أورا للذهب") },
+      { property: "og:description", content: tr("متابعة حالة الطلبات.") },
     ],
   }),
   component: OrdersPage,
@@ -61,13 +64,14 @@ const CANCEL_ERRORS: Record<string, string> = {
 };
 
 const when = (iso: string) =>
-  new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium", timeStyle: "short" }).format(
+  new Intl.DateTimeFormat(intlLocale(), { dateStyle: "medium", timeStyle: "short" }).format(
     new Date(iso),
   );
 
 function OrdersPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const t = useT();
   const [orders, setOrders] = useState<Order[]>([]);
   const [fetching, setFetching] = useState(true);
   const [busy, setBusy] = useState("");
@@ -98,10 +102,10 @@ function OrdersPage() {
     const { error } = await supabase.rpc("cancel_order", { p_order_id: id });
     setBusy("");
     if (error) {
-      toast.error(CANCEL_ERRORS[error.code ?? ""] ?? "تعذر إلغاء الطلب");
+      toast.error(t(CANCEL_ERRORS[error.code ?? ""] ?? "تعذر إلغاء الطلب"));
       return;
     }
-    toast.success("تم إلغاء الطلب");
+    toast.success(t("تم إلغاء الطلب"));
     void refresh(user.id);
   };
 
@@ -123,15 +127,15 @@ function OrdersPage() {
       {orders.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
           <Package className="mx-auto h-10 w-10 text-gold-deep" />
-          <p className="mt-4 text-lg text-primary">لا توجد طلبات بعد</p>
+          <p className="mt-4 text-lg text-primary">{t("لا توجد طلبات بعد")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            ابدأ من مجموعتنا واختر السبيكة أو العملة المناسبة لك.
+            {t("ابدأ من مجموعتنا واختر السبيكة أو العملة المناسبة لك.")}
           </p>
           <Link
             to="/collection"
             className="mt-6 inline-block rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
           >
-            تصفح المجموعة
+            {t("تصفح المجموعة")}
           </Link>
         </div>
       ) : (
@@ -151,7 +155,7 @@ function OrdersPage() {
                   <span
                     className={`rounded-full px-3 py-1 text-[11px] font-semibold ${status.className}`}
                   >
-                    {status.label}
+                    {t(status.label)}
                   </span>
                 </div>
 
@@ -159,10 +163,10 @@ function OrdersPage() {
                   {o.order_items.map((i) => (
                     <li key={i.id} className="flex justify-between gap-3 text-sm">
                       <span className="text-primary">
-                        {i.title} <span className="text-muted-foreground">× {i.qty}</span>
+                        {t(i.title)} <span className="text-muted-foreground">× {i.qty}</span>
                       </span>
                       <span className="shrink-0 text-muted-foreground">
-                        {egp(Number(i.unit_price) * i.qty)} ج.م
+                        {egp(Number(i.unit_price) * i.qty)} {t("ج.م")}
                       </span>
                     </li>
                   ))}
@@ -173,27 +177,30 @@ function OrdersPage() {
                     <p className="flex items-center gap-1.5">
                       {o.fulfilment === "pickup" ? (
                         <>
-                          <Store className="h-3.5 w-3.5 text-gold-deep" /> استلام من {o.branch}
+                          <Store className="h-3.5 w-3.5 text-gold-deep" /> {t("استلام من")}{" "}
+                          {t(o.branch ?? "")}
                         </>
                       ) : (
                         <>
-                          <MapPin className="h-3.5 w-3.5 text-gold-deep" /> {o.governorate} —{" "}
-                          {o.address}
+                          <MapPin className="h-3.5 w-3.5 text-gold-deep" /> {t(o.governorate ?? "")}{" "}
+                          — {o.address}
                         </>
                       )}
                     </p>
-                    <p>طريقة الدفع: {PAYMENT[o.payment_method] ?? o.payment_method}</p>
                     <p>
-                      الإجمالي الفرعي {egp(Number(o.subtotal))} ج.م · التوصيل{" "}
+                      {t("طريقة الدفع")}: {t(PAYMENT[o.payment_method] ?? o.payment_method)}
+                    </p>
+                    <p>
+                      {t("الإجمالي الفرعي")} {egp(Number(o.subtotal))} {t("ج.م")} · {t("التوصيل")}{" "}
                       {Number(o.delivery_fee) === 0
-                        ? "مجاني"
-                        : `${egp(Number(o.delivery_fee))} ج.م`}
+                        ? t("مجاني")
+                        : `${egp(Number(o.delivery_fee))} ${t("ج.م")}`}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-4">
                     <p className="font-display text-2xl text-gold-deep">
-                      {egp(Number(o.total))} ج.م
+                      {egp(Number(o.total))} {t("ج.م")}
                     </p>
                     {cancellable && (
                       <button
@@ -206,7 +213,7 @@ function OrdersPage() {
                         ) : (
                           <XCircle className="h-3.5 w-3.5" />
                         )}
-                        إلغاء الطلب
+                        {t("إلغاء الطلب")}
                       </button>
                     )}
                   </div>

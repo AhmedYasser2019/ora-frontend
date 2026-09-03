@@ -1,5 +1,6 @@
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
+import { intlLocale, useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
 import type { PriceTick } from "@/lib/use-live-prices";
 
@@ -31,11 +32,12 @@ function Sparkline({ values }: { values: number[] }) {
 }
 
 function Delta({ diff }: { diff: number }) {
+  const t = useT();
   const rounded = Math.round(diff);
   if (rounded === 0)
     return (
       <span className="flex items-center gap-1 text-muted-foreground">
-        <Minus className="h-3 w-3" /> ثابت
+        <Minus className="h-3 w-3" /> {t("ثابت")}
       </span>
     );
   const up = rounded > 0;
@@ -49,9 +51,10 @@ function Delta({ diff }: { diff: number }) {
 }
 
 const time = (at: number) =>
-  new Date(at).toLocaleTimeString("ar-EG", { minute: "2-digit", second: "2-digit" });
+  new Date(at).toLocaleTimeString(intlLocale(), { minute: "2-digit", second: "2-digit" });
 
 export function LiveTicker({ history }: { history: PriceTick[] }) {
+  const t = useT();
   const rows = [...history].reverse().slice(0, 8);
   const first = history[0];
   const last = history[history.length - 1];
@@ -59,18 +62,20 @@ export function LiveTicker({ history }: { history: PriceTick[] }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="font-display text-lg text-primary">سجل آخر 60 ثانية</h3>
-        <span className="text-xs text-muted-foreground">{history.length} تحديث</span>
+        <h3 className="font-display text-lg text-primary">{t("سجل آخر 60 ثانية")}</h3>
+        <span className="text-xs text-muted-foreground">
+          {history.length} {t("تحديث")}
+        </span>
       </div>
 
       {history.length < 2 ? (
         <p className="py-4 text-center text-xs text-muted-foreground">
-          جاري تجميع التحديثات اللحظية…
+          {t("جاري تجميع التحديثات اللحظية…")}
         </p>
       ) : (
         <>
           <div className="mb-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">جرام عيار 24</span>
+            <span className="text-muted-foreground">{t("جرام عيار 24")}</span>
             <Delta diff={(last?.k24 ?? 0) - (first?.k24 ?? 0)} />
           </div>
           <Sparkline values={history.map((h) => h.k24)} />

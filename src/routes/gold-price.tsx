@@ -1,24 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { LiveTicker } from "@/components/LiveTicker";
 import { PriceBoard } from "@/components/PriceBoard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/gold-price")({
   head: () => ({
     meta: [
-      { title: "سعر الذهب اليوم لحظة بلحظة في مصر | أورا" },
+      { title: tr("سعر الذهب اليوم لحظة بلحظة في مصر | أورا") },
       {
         name: "description",
-        content:
+        content: tr(
           "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و22 و21 و18 وسعر الفضة والأوقية والدولار، بتحديث مباشر كل ثوانٍ.",
+        ),
       },
-      { property: "og:title", content: "سعر الذهب اليوم لحظة بلحظة | أورا" },
+      { property: "og:title", content: tr("سعر الذهب اليوم لحظة بلحظة | أورا") },
       {
         property: "og:description",
-        content: "أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.",
+        content: tr("أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات."),
       },
     ],
   }),
@@ -28,9 +32,10 @@ export const Route = createFileRoute("/gold-price")({
 
 function GoldPricePage() {
   const { data, isFetching, dataUpdatedAt, live, pushedAt, history } = useLivePrices();
+  const t = useT();
 
   const updated = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString("ar-EG", {
+    ? new Date(dataUpdatedAt).toLocaleTimeString(intlLocale(), {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -48,9 +53,9 @@ function GoldPricePage() {
             key={pushedAt}
             className={`h-2 w-2 rounded-full bg-gold-deep ${live || isFetching ? "animate-pulse" : ""}`}
           />
-          آخر تحديث {updated}
+          {t("آخر تحديث")} {updated}
         </span>
-        <span>{live ? "بث مباشر متصل · تحديث فوري" : "جاري الاتصال بالبث المباشر…"}</span>
+        <span>{live ? t("بث مباشر متصل · تحديث فوري") : t("جاري الاتصال بالبث المباشر…")}</span>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
@@ -60,19 +65,19 @@ function GoldPricePage() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">الدولار / الجنيه</p>
+          <p className="text-xs text-muted-foreground">{t("الدولار / الجنيه")}</p>
           <p className="mt-1 font-display text-2xl text-primary">
             {data ? data.usdEgp.toFixed(2) : "—"}
           </p>
         </div>
         <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">أوقية الذهب (عيار 24)</p>
+          <p className="text-xs text-muted-foreground">{t("أوقية الذهب (عيار 24)")}</p>
           <p className="mt-1 font-display text-2xl text-primary">
             {data ? egp(data.gram.k24 * 31.1035) : "—"}
           </p>
         </div>
         <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">أوقية الفضة</p>
+          <p className="text-xs text-muted-foreground">{t("أوقية الفضة")}</p>
           <p className="mt-1 font-display text-2xl text-primary">
             {data ? egp(data.gram.silver * 31.1035) : "—"}
           </p>

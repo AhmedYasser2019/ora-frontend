@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { intlLocale } from "./i18n";
 import { getLivePrices } from "./prices.functions";
 
 export const livePricesQuery = queryOptions({
@@ -11,4 +12,4 @@ export const livePricesQuery = queryOptions({
 });
 
 export const egp = (n: number) =>
-  new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 0 }).format(Math.round(n));
+  new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: 0 }).format(Math.round(n));

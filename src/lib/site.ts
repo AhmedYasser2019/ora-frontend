@@ -3,6 +3,7 @@ import coinsImg from "@/assets/coins.jpg";
 import silverImg from "@/assets/silver.jpg";
 import jewelryImg from "@/assets/jewelry.jpg";
 
+import { lang } from "./i18n";
 import type { GramPrices } from "./prices.server";
 
 export const navLinks = [
@@ -73,7 +74,11 @@ export const buyPrice = (p: Product, gram?: GramPrices): number | undefined =>
 export const sellPrice = (p: Product, sell?: GramPrices): number | undefined =>
   sell && sell[gramKeyOf(p)] * p.weightG * (1 + p.fabrication * p.cashbackPct);
 
-export const weightLabel = (g: number) => (g >= 1000 ? `${g / 1000} كيلو` : `${g} جرام`);
+// ponytail: يقرأ اللغة من حالة عامة بدل hook لأنه يُستدعى من دوال خالصة؛ حوّله لـ hook لو احتجت تعدد لغات متزامن.
+export const weightLabel = (g: number) =>
+  g >= 1000
+    ? `${g / 1000} ${lang() === "en" ? "kg" : "كيلو"}`
+    : `${g} ${lang() === "en" ? "g" : "جرام"}`;
 
 export const allProducts: Product[] = [
   {

@@ -1,21 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/zakat")({
   head: () => ({
     meta: [
-      { title: "حساب زكاة الذهب والفضة | أورا" },
+      { title: tr("حساب زكاة الذهب والفضة | أورا") },
       {
         name: "description",
-        content:
+        content: tr(
           "احسب زكاة الذهب والفضة بدقة بناءً على أسعار السوق اللحظية في مصر مع نصاب الزكاة ونسبة 2.5%.",
+        ),
       },
-      { property: "og:title", content: "حساب زكاة الذهب | أورا" },
-      { property: "og:description", content: "حاسبة زكاة الذهب والفضة بأسعار لحظية." },
+      { property: "og:title", content: tr("حساب زكاة الذهب | أورا") },
+      { property: "og:description", content: tr("حاسبة زكاة الذهب والفضة بأسعار لحظية.") },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
@@ -31,6 +35,7 @@ const karats = [
 
 function ZakatPage() {
   const { data } = useLivePrices();
+  const t = useT();
   const [grams, setGrams] = useState(100);
   const [karat, setKarat] = useState(2); // عيار 21
   const [silverGrams, setSilverGrams] = useState(0);
@@ -50,7 +55,7 @@ function ZakatPage() {
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-6">
-          <label className="block text-sm text-primary">وزن الذهب (جرام)</label>
+          <label className="block text-sm text-primary">{t("وزن الذهب (جرام)")}</label>
           <input
             type="number"
             min={0}
@@ -59,7 +64,7 @@ function ZakatPage() {
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-primary outline-none focus:border-gold"
           />
 
-          <p className="mt-5 text-sm text-primary">العيار</p>
+          <p className="mt-5 text-sm text-primary">{t("العيار")}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {karats.map((k, i) => (
               <button
@@ -71,12 +76,12 @@ function ZakatPage() {
                     : "border-border bg-card text-primary hover:border-gold"
                 }`}
               >
-                {k.k}
+                {t(k.k)}
               </button>
             ))}
           </div>
 
-          <label className="mt-5 block text-sm text-primary">وزن الفضة (جرام)</label>
+          <label className="mt-5 block text-sm text-primary">{t("وزن الفضة (جرام)")}</label>
           <input
             type="number"
             min={0}
@@ -87,33 +92,43 @@ function ZakatPage() {
         </div>
 
         <div className="rounded-2xl bg-gradient-green p-6 text-primary-foreground">
-          <p className="text-xs tracking-[0.2em] text-gold">النتيجة</p>
+          <p className="text-xs tracking-[0.2em] text-gold">{t("النتيجة")}</p>
           <dl className="mt-5 space-y-4 text-sm">
             <div className="flex items-center justify-between border-b border-primary-foreground/10 pb-3">
-              <dt className="text-primary-foreground/75">قيمة الذهب</dt>
-              <dd className="font-display text-lg text-gold">{egp(goldValue)} ج.م</dd>
+              <dt className="text-primary-foreground/75">{t("قيمة الذهب")}</dt>
+              <dd className="font-display text-lg text-gold">
+                {egp(goldValue)} {t("ج.م")}
+              </dd>
             </div>
             <div className="flex items-center justify-between border-b border-primary-foreground/10 pb-3">
-              <dt className="text-primary-foreground/75">قيمة الفضة</dt>
-              <dd className="font-display text-lg text-gold">{egp(silverValue)} ج.م</dd>
+              <dt className="text-primary-foreground/75">{t("قيمة الفضة")}</dt>
+              <dd className="font-display text-lg text-gold">
+                {egp(silverValue)} {t("ج.م")}
+              </dd>
             </div>
             <div className="flex items-center justify-between border-b border-primary-foreground/10 pb-3">
-              <dt className="text-primary-foreground/75">إجمالي القيمة</dt>
-              <dd className="font-display text-lg text-gold">{egp(total)} ج.م</dd>
+              <dt className="text-primary-foreground/75">{t("إجمالي القيمة")}</dt>
+              <dd className="font-display text-lg text-gold">
+                {egp(total)} {t("ج.م")}
+              </dd>
             </div>
             <div className="flex items-center justify-between border-b border-primary-foreground/10 pb-3">
-              <dt className="text-primary-foreground/75">النصاب (85 جرام ذهب)</dt>
-              <dd className="font-display text-lg text-gold">{egp(nisab)} ج.م</dd>
+              <dt className="text-primary-foreground/75">{t("النصاب (85 جرام ذهب)")}</dt>
+              <dd className="font-display text-lg text-gold">
+                {egp(nisab)} {t("ج.م")}
+              </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-primary-foreground">الزكاة المستحقة (2.5%)</dt>
-              <dd className="font-display text-2xl text-gradient-gold">{egp(due)} ج.م</dd>
+              <dt className="text-primary-foreground">{t("الزكاة المستحقة (2.5%)")}</dt>
+              <dd className="font-display text-2xl text-gradient-gold">
+                {egp(due)} {t("ج.م")}
+              </dd>
             </div>
           </dl>
           <p className="mt-6 text-xs leading-relaxed text-primary-foreground/60">
             {total >= nisab
-              ? "بلغت ممتلكاتك النصاب، والزكاة واجبة بعد حَوْل كامل."
-              : "لم تبلغ ممتلكاتك النصاب، فلا زكاة واجبة عليها حاليًا."}
+              ? t("بلغت ممتلكاتك النصاب، والزكاة واجبة بعد حَوْل كامل.")
+              : t("لم تبلغ ممتلكاتك النصاب، فلا زكاة واجبة عليها حاليًا.")}
           </p>
         </div>
       </div>

@@ -3,15 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
 import { Policy } from "@/components/Policy";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "سياسة الخصوصية | أورا للذهب" },
-      { name: "description", content: "كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها." },
-      { property: "og:title", content: "سياسة الخصوصية | أورا للذهب" },
+      { title: tr("سياسة الخصوصية | أورا للذهب") },
+      {
+        name: "description",
+        content: tr("كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها."),
+      },
+      { property: "og:title", content: tr("سياسة الخصوصية | أورا للذهب") },
       {
         property: "og:description",
-        content: "كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها.",
+        content: tr("كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها."),
       },
     ],
   }),

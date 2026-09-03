@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
 
+import { useT } from "@/lib/i18n";
 import newsGlobal from "@/assets/news-global.jpg";
 import newsLocal from "@/assets/news-local.jpg";
 
@@ -38,6 +39,7 @@ const articles = [
 
 export function FinancialNews() {
   const scroller = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   const scrollBy = (dir: 1 | -1) => {
     scroller.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
@@ -49,30 +51,31 @@ export function FinancialNews() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="font-display text-3xl text-gold">
-              الأخبار المالية
+              {t("الأخبار المالية")}
               <span className="mt-2 block h-0.5 w-32 rounded-full bg-gold/70" />
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-primary-foreground/70">
-              ابقَ على اطلاع بآخر الأخبار المالية وأخبار سوق الذهب، مع تحليلات وتحديثات تساعدك على
-              اتخاذ قرارات أذكى وفهم أفضل لحركة السوق.
+              {t(
+                "ابقَ على اطلاع بآخر الأخبار المالية وأخبار سوق الذهب، مع تحليلات وتحديثات تساعدك على اتخاذ قرارات أذكى وفهم أفضل لحركة السوق.",
+              )}
             </p>
           </div>
           <div className="flex gap-3">
             <button
               type="button"
-              aria-label="السابق"
+              aria-label={t("السابق")}
               onClick={() => scrollBy(-1)}
               className="flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 text-gold transition-colors hover:bg-gold/10"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 ltr:rotate-180" />
             </button>
             <button
               type="button"
-              aria-label="التالي"
+              aria-label={t("التالي")}
               onClick={() => scrollBy(1)}
               className="flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 text-gold transition-colors hover:bg-gold/10"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 ltr:rotate-180" />
             </button>
           </div>
         </div>
@@ -88,7 +91,7 @@ export function FinancialNews() {
             >
               <img
                 src={a.img}
-                alt={a.t}
+                alt={t(a.t)}
                 loading="lazy"
                 width={1088}
                 height={608}
@@ -96,12 +99,14 @@ export function FinancialNews() {
               />
               <div className="p-4">
                 <div className="flex items-center justify-between text-[11px] text-gold/80">
-                  <span className="rounded-full border border-gold/30 px-2 py-0.5">{a.kind}</span>
-                  <span>{a.date}</span>
+                  <span className="rounded-full border border-gold/30 px-2 py-0.5">
+                    {t(a.kind)}
+                  </span>
+                  <span>{t(a.date)}</span>
                 </div>
-                <h3 className="mt-3 text-base leading-snug text-primary-foreground">{a.t}</h3>
+                <h3 className="mt-3 text-base leading-snug text-primary-foreground">{t(a.t)}</h3>
                 <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-primary-foreground/60">
-                  {a.d}
+                  {t(a.d)}
                 </p>
               </div>
             </article>
@@ -112,7 +117,7 @@ export function FinancialNews() {
           to="/news"
           className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-gold-deep"
         >
-          مشاهدة الكل <ArrowLeft className="h-4 w-4" />
+          {t("مشاهدة الكل")} <ArrowLeft className="h-4 w-4 ltr:rotate-180" />
         </Link>
       </div>
     </section>

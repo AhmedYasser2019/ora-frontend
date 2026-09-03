@@ -1,22 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import newsGlobal from "@/assets/news-global.jpg";
 import newsLocal from "@/assets/news-local.jpg";
 
+import { tr } from "@/lib/i18n";
+
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "الأخبار المالية وتحليلات سوق الذهب | أورا" },
+      { title: tr("الأخبار المالية وتحليلات سوق الذهب | أورا") },
       {
         name: "description",
-        content:
+        content: tr(
           "تحليلات وأخبار عالمية ومحلية عن سوق الذهب والفضة في مصر والعالم، وتأثير السياسات النقدية على أسعار المعادن الثمينة.",
+        ),
       },
-      { property: "og:title", content: "الأخبار المالية | أورا للذهب" },
+      { property: "og:title", content: tr("الأخبار المالية | أورا للذهب") },
       {
         property: "og:description",
-        content: "آخر أخبار وتحليلات سوق الذهب والفضة عالميًا ومحليًا.",
+        content: tr("آخر أخبار وتحليلات سوق الذهب والفضة عالميًا ومحليًا."),
       },
     ],
   }),
@@ -69,6 +73,8 @@ const articles = [
 ];
 
 function NewsPage() {
+  const t = useT();
+
   return (
     <PageShell
       title="الأخبار المالية"
@@ -82,7 +88,7 @@ function NewsPage() {
           >
             <img
               src={a.img}
-              alt={a.t}
+              alt={t(a.t)}
               loading="lazy"
               width={800}
               height={500}
@@ -90,11 +96,11 @@ function NewsPage() {
             />
             <div className="p-5">
               <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold text-primary">
-                {a.kind}
+                {t(a.kind)}
               </span>
-              <h2 className="mt-3 text-base leading-snug text-primary">{a.t}</h2>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{a.d}</p>
-              <p className="mt-4 text-[11px] text-gold-deep">{a.date}</p>
+              <h2 className="mt-3 text-base leading-snug text-primary">{t(a.t)}</h2>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t(a.d)}</p>
+              <p className="mt-4 text-[11px] text-gold-deep">{t(a.date)}</p>
             </div>
           </article>
         ))}

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 
+import { useT } from "@/lib/i18n";
 import { marketStatus, splitDuration } from "@/lib/market-hours";
 
 export function MarketCountdown() {
   const [status, setStatus] = useState(() => marketStatus());
+  const t = useT();
 
   useEffect(() => {
     const id = setInterval(() => setStatus(marketStatus()), 1000);
@@ -12,10 +14,10 @@ export function MarketCountdown() {
 
   const { days, hours, minutes, seconds } = splitDuration(status.secondsToOpen);
   const boxes = [
-    { v: seconds, l: "ثانية" },
-    { v: minutes, l: "دقيقة" },
-    { v: hours, l: "ساعة" },
-    { v: days, l: "يوم" },
+    { v: seconds, l: t("ثانية") },
+    { v: minutes, l: t("دقيقة") },
+    { v: hours, l: t("ساعة") },
+    { v: days, l: t("يوم") },
   ];
 
   return (
@@ -27,18 +29,18 @@ export function MarketCountdown() {
               status.openNow ? "bg-primary" : "animate-pulse bg-destructive"
             }`}
           />
-          <div className="text-right">
+          <div className="text-start">
             <p
               className={`text-lg font-semibold ${
                 status.openNow ? "text-primary" : "text-destructive"
               }`}
             >
-              {status.openNow ? "السوق مفتوح الآن" : "السوق مغلق الآن"}
+              {status.openNow ? t("السوق مفتوح الآن") : t("السوق مغلق الآن")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               {status.openNow
-                ? "التداول متاح · الأحد إلى الخميس من 10 ص حتى 5 م"
-                : "برجاء الانتظار، سيفتح السوق بعد"}
+                ? t("التداول متاح · الأحد إلى الخميس من 10 ص حتى 5 م")
+                : t("برجاء الانتظار، سيفتح السوق بعد")}
             </p>
           </div>
         </div>

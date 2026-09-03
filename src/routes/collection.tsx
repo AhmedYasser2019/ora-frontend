@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 
+import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { livePricesQuery } from "@/lib/prices.queries";
@@ -14,21 +15,25 @@ import {
   type Category,
   type Metal,
   type Provider,
+  weightLabel,
 } from "@/lib/site";
+
+import { tr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/collection")({
   head: () => ({
     meta: [
-      { title: "مجموعتنا | سبائك وعملات ومشغولات الذهب — أورا" },
+      { title: tr("مجموعتنا | سبائك وعملات ومشغولات الذهب — أورا") },
       {
         name: "description",
-        content:
+        content: tr(
           "تصفح مجموعة أورا من سبائك الذهب والعملات الذهبية والمشغولات وسبائك الفضة بأسعار لحظية، مع فلاتر بالمعدن والفئة والوزن والمورّد.",
+        ),
       },
-      { property: "og:title", content: "مجموعتنا | أورا للذهب" },
+      { property: "og:title", content: tr("مجموعتنا | أورا للذهب") },
       {
         property: "og:description",
-        content: "سبائك ذهب وعملات ذهبية ومشغولات وسبائك فضة بأسعار لحظية.",
+        content: tr("سبائك ذهب وعملات ذهبية ومشغولات وسبائك فضة بأسعار لحظية."),
       },
     ],
   }),
@@ -52,6 +57,7 @@ const MAX_W = Math.max(...WEIGHTS);
 
 function CollectionPage() {
   const { data } = useLivePrices();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [metal, setMetal] = useState<Metal | "all">("all");
   const [cats, setCats] = useState<Category[]>([]);
@@ -124,18 +130,18 @@ function CollectionPage() {
         <aside className={`${open ? "block" : "hidden"} lg:block`}>
           <div className="rounded-2xl border border-border bg-card p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-base text-primary">تصفية المنتجات</h2>
+              <h2 className="font-display text-base text-primary">{t("تصفية المنتجات")}</h2>
               {active > 0 && (
                 <button
                   onClick={reset}
                   className="flex items-center gap-1 text-[11px] font-semibold text-destructive hover:underline"
                 >
-                  <X className="h-3 w-3" /> مسح
+                  <X className="h-3 w-3" /> {t("مسح")}
                 </button>
               )}
             </div>
 
-            <p className="mb-2 text-xs font-semibold text-primary">نوع المعدن</p>
+            <p className="mb-2 text-xs font-semibold text-primary">{t("نوع المعدن")}</p>
             <div className="mb-5 flex flex-wrap gap-2">
               {(
                 [
@@ -152,12 +158,12 @@ function CollectionPage() {
                   }}
                   className={chip(metal === k)}
                 >
-                  {label}
+                  {t(label)}
                 </button>
               ))}
             </div>
 
-            <p className="mb-2 text-xs font-semibold text-primary">الفئة</p>
+            <p className="mb-2 text-xs font-semibold text-primary">{t("الفئة")}</p>
             <div className="mb-5 flex flex-wrap gap-2">
               {visibleCats.map((c) => (
                 <button
@@ -165,13 +171,13 @@ function CollectionPage() {
                   onClick={() => toggle(cats, c, setCats)}
                   className={chip(cats.includes(c))}
                 >
-                  {c}
+                  {t(c)}
                 </button>
               ))}
             </div>
 
             <p className="mb-2 text-xs font-semibold text-primary">
-              نطاق الوزن — حتى {maxW >= 1000 ? `${maxW / 1000} كيلو` : `${maxW} جرام`}
+              {t("نطاق الوزن — حتى")} {weightLabel(maxW)}
             </p>
             <input
               type="range"
@@ -180,15 +186,19 @@ function CollectionPage() {
               step="0.25"
               value={maxW}
               onChange={(e) => setMaxW(Number(e.target.value))}
-              aria-label="الحد الأقصى للوزن بالجرام"
+              aria-label={t("الحد الأقصى للوزن بالجرام")}
               className="mb-1 w-full accent-[var(--color-gold-deep,#b8860b)]"
             />
             <div dir="ltr" className="mb-5 flex justify-between text-[11px] text-muted-foreground">
-              <span>{MIN_W} جم</span>
-              <span>{MAX_W} جم</span>
+              <span>
+                {MIN_W} {t("جم")}
+              </span>
+              <span>
+                {MAX_W} {t("جم")}
+              </span>
             </div>
 
-            <p className="mb-2 text-xs font-semibold text-primary">المورّد</p>
+            <p className="mb-2 text-xs font-semibold text-primary">{t("المورّد")}</p>
             <div className="mb-5 flex flex-wrap gap-2">
               {PROVIDERS.map((pr) => (
                 <button
@@ -196,7 +206,7 @@ function CollectionPage() {
                   onClick={() => toggle(provs, pr, setProvs)}
                   className={chip(provs.includes(pr))}
                 >
-                  {pr}
+                  {t(pr)}
                 </button>
               ))}
             </div>
@@ -208,7 +218,7 @@ function CollectionPage() {
                 onChange={(e) => setInStock(e.target.checked)}
                 className="h-4 w-4 accent-[var(--color-gold-deep,#b8860b)]"
               />
-              المتوفر فقط
+              {t("المتوفر فقط")}
             </label>
           </div>
         </aside>
@@ -220,24 +230,24 @@ function CollectionPage() {
               className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-semibold text-primary lg:hidden"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              الفلاتر {active > 0 && `(${active})`}
+              {t("الفلاتر")} {active > 0 && `(${active})`}
             </button>
 
             <p className="text-xs text-muted-foreground">
-              {list.length} من {allProducts.length} منتج
+              {list.length} {t("من")} {allProducts.length} {t("منتج")}
             </p>
 
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              ترتيب حسب:
+              {t("ترتيب حسب")}:
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as Sort)}
-                aria-label="ترتيب المنتجات"
+                aria-label={t("ترتيب المنتجات")}
                 className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-primary outline-none focus:border-gold"
               >
                 {SORTS.map((s) => (
                   <option key={s.key} value={s.key}>
-                    {s.label}
+                    {t(s.label)}
                   </option>
                 ))}
               </select>
@@ -246,12 +256,12 @@ function CollectionPage() {
 
           {list.length === 0 ? (
             <div className="rounded-2xl border border-border bg-card p-12 text-center">
-              <p className="text-lg text-primary">لا توجد منتجات مطابقة</p>
+              <p className="text-lg text-primary">{t("لا توجد منتجات مطابقة")}</p>
               <button
                 onClick={reset}
                 className="mt-6 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
               >
-                مسح الفلاتر
+                {t("مسح الفلاتر")}
               </button>
             </div>
           ) : (
