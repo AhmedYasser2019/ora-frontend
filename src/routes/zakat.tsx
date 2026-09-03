@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
+import { GOLD_NISAB_GRAMS, SILVER_NISAB_GRAMS, zakat } from "@/lib/zakat";
 
 import { tr } from "@/lib/i18n";
 
@@ -27,11 +28,11 @@ export const Route = createFileRoute("/zakat")({
 });
 
 const karats = [
-  { k: "عيار 24", f: (g: { k24: number; k22: number; k21: number; k18: number }) => g.k24 },
-  { k: "عيار 22", f: (g: { k22: number }) => g.k22 },
-  { k: "عيار 21", f: (g: { k21: number }) => g.k21 },
-  { k: "عيار 18", f: (g: { k18: number }) => g.k18 },
-];
+  { label: "عيار 24", key: "k24" },
+  { label: "عيار 22", key: "k22" },
+  { label: "عيار 21", key: "k21" },
+  { label: "عيار 18", key: "k18" },
+] as const;
 
 function ZakatPage() {
   const { data } = useLivePrices();
@@ -41,17 +42,18 @@ function ZakatPage() {
   const [silverGrams, setSilverGrams] = useState(0);
 
   const gram = data?.gram;
-  const goldRate = gram ? (karats[karat]!.f(gram as never) as number) : 0;
-  const goldValue = goldRate * grams;
+  const goldValue = (gram?.[karats[karat]!.key] ?? 0) * grams;
   const silverValue = (gram?.silver ?? 0) * silverGrams;
-  const total = goldValue + silverValue;
-  const nisab = (gram?.k24 ?? 0) * 85; // 85 جرام ذهب
-  const due = total >= nisab ? total * 0.025 : 0;
+  const { total, nisab, due } = zakat(goldValue, silverValue, gram?.k21 ?? 0, gram?.silver ?? 0);
+  const nisabLabel =
+    goldValue > 0
+      ? `النصاب (${GOLD_NISAB_GRAMS} جرام ذهب عيار 21)`
+      : `النصاب (${SILVER_NISAB_GRAMS} جرام فضة)`;
 
   return (
     <PageShell
       title="حساب الزكاة"
-      subtitle="نصاب زكاة الذهب 85 جرامًا من عيار 24، ونسبة الزكاة 2.5% من قيمة ما تملكه بعد مرور عام هجري."
+      subtitle="نصاب الزكاة 85 جرامًا من الذهب عيار 21، أو 595 جرامًا من الفضة لمن يملك فضة وحدها، ونسبتها 2.5% بعد مرور حَوْل هجري كامل — وفق ما تعتمده دار الإفتاء المصرية."
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-6">
@@ -68,7 +70,7 @@ function ZakatPage() {
           <div className="mt-2 flex flex-wrap gap-2">
             {karats.map((k, i) => (
               <button
-                key={k.k}
+                key={k.label}
                 onClick={() => setKarat(i)}
                 className={`rounded-full border px-4 py-2 text-xs font-semibold ${
                   karat === i
@@ -76,7 +78,7 @@ function ZakatPage() {
                     : "border-border bg-card text-primary hover:border-gold"
                 }`}
               >
-                {t(k.k)}
+                {t(k.label)}
               </button>
             ))}
           </div>
@@ -113,7 +115,7 @@ function ZakatPage() {
               </dd>
             </div>
             <div className="flex items-center justify-between border-b border-primary-foreground/10 pb-3">
-              <dt className="text-primary-foreground/75">{t("النصاب (85 جرام ذهب)")}</dt>
+              <dt className="text-primary-foreground/75">{t(nisabLabel)}</dt>
               <dd className="font-display text-lg text-gold">
                 {egp(nisab)} {t("ج.م")}
               </dd>
@@ -129,6 +131,11 @@ function ZakatPage() {
             {total >= nisab
               ? t("بلغت ممتلكاتك النصاب، والزكاة واجبة بعد حَوْل كامل.")
               : t("لم تبلغ ممتلكاتك النصاب، فلا زكاة واجبة عليها حاليًا.")}
+          </p>
+          <p className="mt-3 text-xs leading-relaxed text-primary-foreground/60">
+            {t(
+              "ذهب الزينة المستعمل بالقدر المعتاد دون إسراف لا زكاة فيه، وإنما تجب في المدَّخر والمُقتنى. النتيجة استرشادية وفق فتاوى دار الإفتاء المصرية.",
+            )}
           </p>
         </div>
       </div>
