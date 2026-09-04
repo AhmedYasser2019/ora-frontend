@@ -20,6 +20,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as GoldPriceRouteImport } from './routes/gold-price'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -88,6 +89,11 @@ const ContactRoute = ContactRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GoldPriceRoute = GoldPriceRouteImport.update({
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/collection': typeof CollectionRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/favorites': typeof FavoritesRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
   '/orders': typeof OrdersRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/collection': typeof CollectionRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/favorites': typeof FavoritesRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
   '/orders': typeof OrdersRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/collection': typeof CollectionRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/favorites': typeof FavoritesRoute
   '/gold-price': typeof GoldPriceRoute
   '/news': typeof NewsRoute
   '/orders': typeof OrdersRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/contact'
     | '/faq'
+    | '/favorites'
     | '/gold-price'
     | '/news'
     | '/orders'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/contact'
     | '/faq'
+    | '/favorites'
     | '/gold-price'
     | '/news'
     | '/orders'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/contact'
     | '/faq'
+    | '/favorites'
     | '/gold-price'
     | '/news'
     | '/orders'
@@ -339,6 +351,7 @@ export interface RootRouteChildren {
   CollectionRoute: typeof CollectionRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  FavoritesRoute: typeof FavoritesRoute
   GoldPriceRoute: typeof GoldPriceRoute
   NewsRoute: typeof NewsRoute
   OrdersRoute: typeof OrdersRoute
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gold-price': {
@@ -547,6 +567,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionRoute: CollectionRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  FavoritesRoute: FavoritesRoute,
   GoldPriceRoute: GoldPriceRoute,
   NewsRoute: NewsRoute,
   OrdersRoute: OrdersRoute,

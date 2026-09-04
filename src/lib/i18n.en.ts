@@ -112,6 +112,23 @@ export const en: Record<string, string> = {
   "جنيه / جرام": "EGP / gram",
   "جنيه / أونصة": "EGP / ounce",
 
+  // المفضلة
+  المفضلة: "Favorites",
+  "أضف للمفضلة": "Add to favorites",
+  "إزالة من المفضلة": "Remove from favorites",
+  "تمت الإضافة للمفضلة": "Added to favorites",
+  "تمت الإزالة من المفضلة": "Removed from favorites",
+  "المفضلة | أورا للذهب": "Favorites | ORA Gold",
+  "المنتجات اللي حفظتها في المفضلة بأسعار الذهب اللحظية من أورا.":
+    "The products you saved to your favorites, with ORA's live gold prices.",
+  "منتجاتك المحفوظة بأسعار لحظية.": "Your saved products at live prices.",
+  "المنتجات اللي حفظتها للرجوع ليها، بأسعار محدثة لحظيًا مع سعر الذهب.":
+    "The products you saved for later, priced live with the gold rate.",
+  "جاري تحميل المفضلة…": "Loading your favorites…",
+  "مفيش منتجات في المفضلة": "No favorites yet",
+  "اضغط على القلب في أي منتج عشان تحفظه هنا.": "Tap the heart on any product to save it here.",
+  "إفراغ المفضلة": "Clear favorites",
+
   // المنتجات والسلة
   "تمت الإضافة للسلة": "Added to cart",
   "غير متوفر": "Out of stock",
