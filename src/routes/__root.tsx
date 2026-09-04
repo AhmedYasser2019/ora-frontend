@@ -12,6 +12,7 @@ import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { LangProvider, readLang, useT, tr } from "@/lib/i18n";
 import { CartProvider } from "../lib/cart";
+import { FavoritesProvider } from "@/lib/favorites";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -139,9 +140,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <LangProvider>
         <CartProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-          <Toaster position="top-center" richColors />
+          <FavoritesProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+            <Toaster position="top-center" richColors />
+          </FavoritesProvider>
         </CartProvider>
       </LangProvider>
     </QueryClientProvider>

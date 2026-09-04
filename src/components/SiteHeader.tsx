@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Package, Phone, ShoppingBag, User, Wallet, X } from "lucide-react";
+import { Heart, Menu, Package, Phone, ShoppingBag, User, Wallet, X } from "lucide-react";
 import { useState } from "react";
 
 import { useCart } from "@/lib/cart";
+import { useFavorites } from "@/lib/favorites";
 import { useLang } from "@/lib/i18n";
 import { navLinks } from "@/lib/site";
 
@@ -11,6 +12,7 @@ import { PriceMarquee } from "./PriceMarquee";
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { count, ready } = useCart();
+  const favorites = useFavorites();
   const { lang, setLang, t } = useLang();
 
   return (
@@ -62,6 +64,18 @@ export function SiteHeader() {
               className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
             >
               <User className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/favorites"
+              aria-label={t("المفضلة")}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary"
+            >
+              <Heart className="h-5 w-5" />
+              {favorites.ready && favorites.count > 0 && (
+                <span className="absolute -end-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-primary">
+                  {favorites.count}
+                </span>
+              )}
             </Link>
             <Link
               to="/wallet"

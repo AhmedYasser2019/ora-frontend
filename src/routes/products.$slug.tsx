@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { tr, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
@@ -170,6 +171,7 @@ function ProductPage() {
               >
                 {t("اشترِ الآن")}
               </button>
+              <FavoriteButton slug={p.slug} title={p.t} className="h-11 w-11" />
             </div>
           </div>
 

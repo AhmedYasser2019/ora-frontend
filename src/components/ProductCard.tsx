@@ -3,6 +3,7 @@ import { Check, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { useCart } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
@@ -30,7 +31,8 @@ export function ProductCard({ p, price }: { p: Product; price?: number | undefin
   };
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft">
+    <article className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft">
+      <FavoriteButton slug={p.slug} title={p.t} className="absolute start-2 top-2 z-10" />
       <Link
         to="/products/$slug"
         params={{ slug: p.slug }}
