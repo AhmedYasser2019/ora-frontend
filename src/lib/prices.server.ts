@@ -9,11 +9,9 @@ export const SPREAD_PCT = 0.008;
 
 export type GramPrices = {
   k24: number;
+  /** عيار 22: للجنيه الذهب فقط، غير معروض في لوحات الأسعار. */
   k22: number;
   k21: number;
-  k18: number;
-  k14: number;
-  k12: number;
   silver: number;
 };
 
@@ -55,9 +53,6 @@ export async function fetchLivePrices(): Promise<LivePrices> {
     k24,
     k22: k24 * (22 / 24),
     k21: k24 * (21 / 24),
-    k18: k24 * (18 / 24),
-    k14: k24 * (14 / 24),
-    k12: k24 * (12 / 24),
     silver: silverGramUsd * usdEgp * 1.15,
   };
 

@@ -4,7 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { livePricesQuery } from "./prices.queries";
 import type { LivePrices } from "./prices.server";
 
-export type PriceTick = { at: number; k24: number; silver: number };
+export type PriceTick = { at: number; k24: number; k21: number; silver: number };
+export type TickKey = "k24" | "k21" | "silver";
 
 const WINDOW_MS = 60_000;
 
@@ -33,7 +34,7 @@ export function useLivePrices() {
         const at = Date.now();
         setPushedAt(at);
         setHistory((prev) =>
-          [...prev, { at, k24: data.gram.k24, silver: data.gram.silver }].filter(
+          [...prev, { at, k24: data.gram.k24, k21: data.gram.k21, silver: data.gram.silver }].filter(
             (tick) => at - tick.at <= WINDOW_MS,
           ),
         );

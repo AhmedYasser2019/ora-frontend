@@ -71,7 +71,7 @@ function SilverPricePage() {
           sell={data?.sell}
           spreadPct={data?.spreadPct}
         />
-        <LiveTicker history={history} />
+        <LiveTicker history={history} series="silver" label={t("الفضة")} />
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">

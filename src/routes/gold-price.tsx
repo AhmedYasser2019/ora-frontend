@@ -60,7 +60,7 @@ function GoldPricePage() {
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <PriceBoard metal="gold" gram={data?.gram} sell={data?.sell} spreadPct={data?.spreadPct} />
-        <LiveTicker history={history} />
+        <LiveTicker history={history} series="k24" label={t("عيار 24")} />
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">

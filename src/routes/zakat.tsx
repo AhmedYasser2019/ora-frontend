@@ -29,16 +29,14 @@ export const Route = createFileRoute("/zakat")({
 
 const karats = [
   { label: "عيار 24", key: "k24" },
-  { label: "عيار 22", key: "k22" },
   { label: "عيار 21", key: "k21" },
-  { label: "عيار 18", key: "k18" },
 ] as const;
 
 function ZakatPage() {
   const { data } = useLivePrices();
   const t = useT();
   const [grams, setGrams] = useState(100);
-  const [karat, setKarat] = useState(2); // عيار 21
+  const [karat, setKarat] = useState(1); // عيار 21
   const [silverGrams, setSilverGrams] = useState(0);
 
   const gram = data?.gram;

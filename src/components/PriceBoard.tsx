@@ -7,11 +7,7 @@ import type { GramPrices } from "@/lib/prices.server";
 
 const GOLD_ROWS: { key: keyof GramPrices; label: string }[] = [
   { key: "k24", label: "عيار 24" },
-  { key: "k22", label: "عيار 22" },
   { key: "k21", label: "عيار 21" },
-  { key: "k18", label: "عيار 18" },
-  { key: "k14", label: "عيار 14" },
-  { key: "k12", label: "عيار 12" },
 ];
 
 const SILVER_ROWS: { key: keyof GramPrices; label: string }[] = [

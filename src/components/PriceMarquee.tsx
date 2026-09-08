@@ -22,9 +22,7 @@ export function PriceMarquee() {
   const priceItems = data
     ? [
         { label: t("ذهب عيار 24"), value: `${egp(data.gram.k24)} ${perGram}` },
-        { label: t("ذهب عيار 22"), value: `${egp(data.gram.k22)} ${perGram}` },
         { label: t("ذهب عيار 21"), value: `${egp(data.gram.k21)} ${perGram}` },
-        { label: t("ذهب عيار 18"), value: `${egp(data.gram.k18)} ${perGram}` },
         { label: t("الفضة"), value: `${egp(data.gram.silver)} ${perGram}` },
         { label: t("الدولار"), value: `${data.usdEgp.toFixed(2)} ${t("ج.م")}` },
         {
