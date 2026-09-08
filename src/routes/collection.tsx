@@ -47,6 +47,7 @@ const SORTS = [
   { key: "price-desc", label: "السعر: من الأعلى" },
   { key: "weight-asc", label: "الوزن: من الأقل" },
   { key: "weight-desc", label: "الوزن: من الأعلى" },
+  { key: "fab-asc", label: "المصنعية: من الأقل" },
 ] as const;
 
 type Sort = (typeof SORTS)[number]["key"];
@@ -54,6 +55,12 @@ type Sort = (typeof SORTS)[number]["key"];
 const WEIGHTS = allProducts.map((p) => p.weightG);
 const MIN_W = Math.min(...WEIGHTS);
 const MAX_W = Math.max(...WEIGHTS);
+
+// المصنعية كنسبة مئوية مقرّبة لتفادي كسور الفاصلة العائمة في الشريط.
+const fabPct = (p: (typeof allProducts)[number]) => Math.round(p.fabrication * 1000) / 10;
+const FABS = allProducts.map(fabPct);
+const MIN_F = Math.floor(Math.min(...FABS));
+const MAX_F = Math.ceil(Math.max(...FABS));
 
 function CollectionPage() {
   const { data } = useLivePrices();
@@ -63,6 +70,7 @@ function CollectionPage() {
   const [cats, setCats] = useState<Category[]>([]);
   const [provs, setProvs] = useState<Provider[]>([]);
   const [maxW, setMaxW] = useState(MAX_W);
+  const [maxF, setMaxF] = useState(MAX_F);
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState<Sort>("featured");
 
@@ -74,6 +82,7 @@ function CollectionPage() {
     setCats([]);
     setProvs([]);
     setMaxW(MAX_W);
+    setMaxF(MAX_F);
     setInStock(false);
     setSort("featured");
   };
@@ -89,6 +98,7 @@ function CollectionPage() {
       .filter((p) => cats.length === 0 || cats.includes(p.cat))
       .filter((p) => provs.length === 0 || provs.includes(p.provider))
       .filter((p) => p.weightG <= maxW)
+      .filter((p) => fabPct(p) <= maxF)
       .filter((p) => !inStock || p.available);
 
     const priceOf = (p: (typeof allProducts)[number]) => buyPrice(p, data?.gram) ?? 0;
@@ -102,16 +112,19 @@ function CollectionPage() {
         return [...out].sort((a, b) => a.weightG - b.weightG);
       case "weight-desc":
         return [...out].sort((a, b) => b.weightG - a.weightG);
+      case "fab-asc":
+        return [...out].sort((a, b) => fabPct(a) - fabPct(b));
       default:
         return out;
     }
-  }, [metal, cats, provs, maxW, inStock, sort, data]);
+  }, [metal, cats, provs, maxW, maxF, inStock, sort, data]);
 
   const active =
     (metal !== "all" ? 1 : 0) +
     cats.length +
     provs.length +
     (maxW !== MAX_W ? 1 : 0) +
+    (maxF !== MAX_F ? 1 : 0) +
     (inStock ? 1 : 0);
 
   const chip = (on: boolean) =>
@@ -196,6 +209,24 @@ function CollectionPage() {
               <span>
                 {MAX_W} {t("جم")}
               </span>
+            </div>
+
+            <p className="mb-2 text-xs font-semibold text-primary">
+              {t("المصنعية — حتى")} {maxF}%
+            </p>
+            <input
+              type="range"
+              min={MIN_F}
+              max={MAX_F}
+              step="0.5"
+              value={maxF}
+              onChange={(e) => setMaxF(Number(e.target.value))}
+              aria-label={t("الحد الأقصى لنسبة المصنعية")}
+              className="mb-1 w-full accent-[var(--color-gold-deep,#b8860b)]"
+            />
+            <div dir="ltr" className="mb-5 flex justify-between text-[11px] text-muted-foreground">
+              <span>{MIN_F}%</span>
+              <span>{MAX_F}%</span>
             </div>
 
             <p className="mb-2 text-xs font-semibold text-primary">{t("المورّد")}</p>
