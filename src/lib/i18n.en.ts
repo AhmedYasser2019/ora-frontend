@@ -490,6 +490,7 @@ export const en: Record<string, string> = {
   "السعر: من الأعلى": "Price: high to low",
   "الوزن: من الأقل": "Weight: low to high",
   "الوزن: من الأعلى": "Weight: high to low",
+  "المصنعية: من الأقل": "Fabrication fee: lowest first",
   "سبائك وعملات ذهبية معتمدة بشهادات أصل، وأسعار محدثة لحظيًا حسب سعر السوق.":
     "Certified gold bars and coins with certificates of authenticity, priced live against the market.",
   "تصفية المنتجات": "Filter products",
@@ -502,6 +503,8 @@ export const en: Record<string, string> = {
   "نطاق الوزن — حتى": "Weight range — up to",
   "الحد الأقصى للوزن بالجرام": "Maximum weight in grams",
   المورّد: "Supplier",
+  "المصنعية — حتى": "Fabrication fee — up to",
+  "الحد الأقصى لنسبة المصنعية": "Maximum fabrication percentage",
   "المتوفر فقط": "In stock only",
   الفلاتر: "Filters",
   من: "of",
