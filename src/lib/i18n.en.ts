@@ -159,6 +159,7 @@ export const en: Record<string, string> = {
   "حاسبة الميزانية": "Budget calculator",
   "حساب الزكاة": "Zakat calculator",
   الأخبار: "News",
+  التقارير: "Reports",
   فروعنا: "Branches",
   "من نحن": "About us",
   "إتصل بنا": "Contact us",
@@ -1142,4 +1143,35 @@ export const en: Record<string, string> = {
   "عيار 24 – 4 جرام": "24K – 4g",
   "عيار 21 – 12 جرام": "21K – 12g",
   "عيار 18 – 6 جرام": "18K – 6g",
+  // التقارير
+  شهري: "Monthly",
+  أسبوعي: "Weekly",
+  "ربع سنوي": "Quarterly",
+  سنوي: "Annual",
+  "تقارير سوق الذهب والفضة | أورا": "Gold and silver market reports | Ora",
+  "تقارير دورية أسبوعية وشهرية وسنوية عن أداء الذهب والفضة في مصر والعالم، مع أرقام الطلب والعرض وحركة الأسعار.":
+    "Weekly, monthly and annual reports on gold and silver performance in Egypt and worldwide, with supply, demand and price data.",
+  "التقارير | أورا للذهب": "Reports | Ora Gold",
+  "تقارير دورية عن أداء سوق الذهب والفضة محليًا وعالميًا.":
+    "Regular reports on the performance of the gold and silver market locally and globally.",
+  "تقارير دورية عن أداء سوق الذهب والفضة محليًا وعالميًا، بأرقام ومؤشرات تساعدك على قراءة السوق قبل قرار الشراء أو البيع.":
+    "Regular reports on the local and global gold and silver market, with figures and indicators that help you read the market before buying or selling.",
+  "تقرير أداء الذهب العالمي | أغسطس 2026": "Global gold performance report | August 2026",
+  "ملخّص شهري لحركة أونصة الذهب عالميًا، ومشتريات البنوك المركزية، وتدفقات صناديق المؤشرات المدعومة بالذهب.":
+    "A monthly summary of the gold ounce worldwide, central bank purchases and flows into gold-backed ETFs.",
+  "تقرير سوق الذهب المصري | أغسطس 2026": "Egyptian gold market report | August 2026",
+  "متوسط أسعار عيار 21 و24 خلال الشهر، وحجم الطلب على السبائك والعملات، وأثر سعر الصرف على أسعار المحلات.":
+    "Average 21K and 24K prices for the month, demand for bars and coins, and the effect of the exchange rate on retail prices.",
+  "التقرير الأسبوعي للمعادن الثمينة": "Weekly precious metals report",
+  "أهم تحركات الذهب والفضة خلال الأسبوع، ومستويات الدعم والمقاومة، وأبرز البيانات الاقتصادية المؤثرة.":
+    "Key gold and silver moves during the week, support and resistance levels, and the economic data that mattered.",
+  "تقرير الطلب على الذهب | الربع الثاني 2026": "Gold demand report | Q2 2026",
+  "توزيع الطلب العالمي بين المشغولات والسبائك والعملات والاستخدامات الصناعية، ومقارنة بالربع المماثل من العام السابق.":
+    "Global demand split across jewelry, bars, coins and industrial uses, compared with the same quarter last year.",
+  "تقرير الفضة في مصر | الربع الثاني 2026": "Silver in Egypt report | Q2 2026",
+  "أداء سعر جرام الفضة محليًا، ونمو الطلب على سبائك الفضة، ونسبة الذهب إلى الفضة خلال الربع.":
+    "Local silver gram price performance, growth in silver bar demand, and the gold-to-silver ratio over the quarter.",
+  "التقرير السنوي لسوق الذهب | 2025": "Annual gold market report | 2025",
+  "مراجعة كاملة لعام 2025: أعلى وأدنى سعر، عوائد الاستثمار في السبائك والعملات، وتوقعات 2026.":
+    "A full review of 2025: highs and lows, returns on bars and coins, and the outlook for 2026.",
 };
