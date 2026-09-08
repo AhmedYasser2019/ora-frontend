@@ -60,8 +60,7 @@ export const en: Record<string, string> = {
   يوم: "day",
   "السوق مفتوح الآن": "The market is open",
   "السوق مغلق الآن": "The market is closed",
-  "التداول متاح · الأحد إلى الخميس من 10 ص حتى 5 م":
-    "Trading is open · Sunday to Thursday, 10am to 5pm",
+  "التداول متاح · يغلق السوق بعد": "Trading is open · closes in",
   "برجاء الانتظار، سيفتح السوق بعد": "Please wait — the market opens in",
   "آخر تحديث": "Last updated",
   "عيار 24": "24K",

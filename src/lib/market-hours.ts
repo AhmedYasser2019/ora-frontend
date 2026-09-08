@@ -1,8 +1,8 @@
-// سوق الذهب المصري: الأحد–الخميس، 10 ص – 5 م بتوقيت القاهرة.
+// سوق الذهب المصري: الاثنين–السبت، 10 ص – 10 م بتوقيت القاهرة (الأحد إجازة).
 const TZ = "Africa/Cairo";
 const OPEN_HOUR = 10;
-const CLOSE_HOUR = 17;
-const OPEN_DAYS = [0, 1, 2, 3, 4]; // Sun–Thu
+const CLOSE_HOUR = 22;
+const OPEN_DAYS = [1, 2, 3, 4, 5, 6]; // Mon–Sat
 const DAY = 86400;
 const WEEK = 7 * DAY;
 
@@ -35,10 +35,12 @@ export function marketStatus(at: Date = new Date()) {
   const now = secondsOfWeek(at);
   const opens = OPEN_DAYS.map((d) => d * DAY + OPEN_HOUR * 3600);
 
-  const openNow = opens.some((o) => now >= o && now < o + (CLOSE_HOUR - OPEN_HOUR) * 3600);
-  const secondsToOpen = Math.min(...opens.map((o) => (o - now + WEEK) % WEEK));
+  const closes = opens.map((o) => o + (CLOSE_HOUR - OPEN_HOUR) * 3600);
 
-  return { openNow, secondsToOpen };
+  const openNow = opens.some((o, i) => now >= o && now < closes[i]);
+  const next = (openNow ? closes : opens).map((t) => (t - now + WEEK) % WEEK);
+
+  return { openNow, secondsToNext: Math.min(...next) };
 }
 
 export function splitDuration(total: number) {
