@@ -32,7 +32,7 @@ export const Route = createFileRoute("/budget-calculator")({
   component: BudgetCalculatorPage,
 });
 
-const GOLD_KARATS = [24, 22, 21, 18] as const;
+const GOLD_KARATS = [24, 21] as const;
 
 function BudgetCalculatorPage() {
   const { data, live } = useLivePrices();

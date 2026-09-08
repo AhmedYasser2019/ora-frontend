@@ -17,7 +17,7 @@ import { intlLocale, tr, useT } from "@/lib/i18n";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { buyPrice, productBySlug } from "@/lib/site";
 import { useLivePrices } from "@/lib/use-live-prices";
-import { LiveTicker } from "@/components/LiveTicker";
+import { PriceChart } from "@/components/LiveTicker";
 import { MarketCountdown } from "@/components/MarketCountdown";
 import { FinancialNews } from "@/components/FinancialNews";
 import { ProductCard } from "@/components/ProductCard";
@@ -79,10 +79,9 @@ function Home() {
   const t = useT();
 
   const gramRows = [
-    { k: t("عيار 24"), v: data?.gram.k24, u: t("جنيه / جرام") },
-    { k: t("عيار 21"), v: data?.gram.k21, u: t("جنيه / جرام") },
-    { k: t("عيار 18"), v: data?.gram.k18, u: t("جنيه / جرام") },
-    { k: t("الفضة"), v: data?.gram.silver, u: t("جنيه / جرام") },
+    { key: "k24" as const, k: t("عيار 24"), v: data?.gram.k24, u: t("جنيه / جرام") },
+    { key: "k21" as const, k: t("عيار 21"), v: data?.gram.k21, u: t("جنيه / جرام") },
+    { key: "silver" as const, k: t("الفضة"), v: data?.gram.silver, u: t("جنيه / جرام") },
   ];
 
   const updatedLabel = dataUpdatedAt
@@ -149,17 +148,19 @@ function Home() {
           </span>
           <span>{live ? t("بث مباشر متصل · تحديث فوري") : t("جاري الاتصال بالبث المباشر…")}</span>
         </div>
-        <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-          <div className="grid grid-cols-2 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-4">
-            {gramRows.map((p) => (
-              <div key={p.k} className="rounded-xl bg-card px-4 py-4 text-center">
-                <p className="text-xs text-muted-foreground">{p.k}</p>
-                <p className="mt-1 font-display text-2xl text-primary">{p.v ? egp(p.v) : "—"}</p>
-                <p className="text-[11px] text-gold-deep">{p.u}</p>
+        <div className="grid grid-cols-1 gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-3">
+          {gramRows.map((p) => (
+            <div key={p.key} className="rounded-xl bg-card px-4 py-4">
+              <p className="text-center text-xs text-muted-foreground">{p.k}</p>
+              <p className="mt-1 text-center font-display text-2xl text-primary">
+                {p.v ? egp(p.v) : "—"}
+              </p>
+              <p className="text-center text-[11px] text-gold-deep">{p.u}</p>
+              <div className="mt-3">
+                <PriceChart history={history} series={p.key} label={p.k} compact />
               </div>
-            ))}
-          </div>
-          <LiveTicker history={history} />
+            </div>
+          ))}
         </div>
       </section>
 

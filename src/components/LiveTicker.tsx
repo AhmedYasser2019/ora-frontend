@@ -1,35 +1,9 @@
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { intlLocale, useT } from "@/lib/i18n";
+import { useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
-import type { PriceTick } from "@/lib/use-live-prices";
-
-function Sparkline({ values }: { values: number[] }) {
-  if (values.length < 2) return <div className="h-8" />;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = max - min || 1;
-  const points = values
-    .map((v, i) => {
-      const x = (i / (values.length - 1)) * 100;
-      const y = 28 - ((v - min) / span) * 24 - 2;
-      return `${x.toFixed(2)},${y.toFixed(2)}`;
-    })
-    .join(" ");
-
-  return (
-    <svg viewBox="0 0 100 28" preserveAspectRatio="none" className="h-8 w-full">
-      <polyline
-        points={points}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        vectorEffect="non-scaling-stroke"
-        className="text-gold-deep"
-      />
-    </svg>
-  );
-}
+import type { PriceTick, TickKey } from "@/lib/use-live-prices";
 
 function Delta({ diff }: { diff: number }) {
   const t = useT();
@@ -50,14 +24,103 @@ function Delta({ diff }: { diff: number }) {
   );
 }
 
-const time = (at: number) =>
-  new Date(at).toLocaleTimeString(intlLocale(), { minute: "2-digit", second: "2-digit" });
-
-export function LiveTicker({ history }: { history: PriceTick[] }) {
+/**
+ * رسم بياني لحظي لسعر الجرام خلال آخر 60 ثانية.
+ * المحور الأفقي بالثواني الماضية (−60ث … الآن) لأن النافذة دقيقة واحدة.
+ */
+export function PriceChart({
+  history,
+  series,
+  label,
+  compact = false,
+}: {
+  history: PriceTick[];
+  series: TickKey;
+  label: string;
+  compact?: boolean;
+}) {
   const t = useT();
-  const rows = [...history].reverse().slice(0, 8);
-  const first = history[0];
-  const last = history[history.length - 1];
+  const now = history[history.length - 1]?.at ?? Date.now();
+  const ago = (at: number) => `${Math.round((at - now) / 1000)}${t("ث")}`;
+
+  if (history.length < 2)
+    return (
+      <p
+        className={`text-center text-xs text-muted-foreground ${compact ? "py-6" : "py-16"}`}
+        style={compact ? { height: 92 } : undefined}
+      >
+        {t("جاري تجميع التحديثات اللحظية…")}
+      </p>
+    );
+
+  return (
+    <ResponsiveContainer width="100%" height={compact ? 92 : 200}>
+      <AreaChart data={history} margin={{ top: 6, right: 2, bottom: 0, left: 2 }}>
+        <defs>
+          <linearGradient id={`fill-${series}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--gold-deep)" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="var(--gold-deep)" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis
+          dataKey="at"
+          hide={compact}
+          tickFormatter={ago}
+          tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+          axisLine={false}
+          tickLine={false}
+          minTickGap={40}
+          reversed
+        />
+        <YAxis
+          domain={["dataMin - 2", "dataMax + 2"]}
+          width={compact ? 46 : 56}
+          tickCount={compact ? 2 : 4}
+          tick={{ fontSize: compact ? 9 : 10, fill: "var(--muted-foreground)" }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(v: number) => egp(v)}
+          orientation="right"
+        />
+        <Tooltip
+          cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+          labelFormatter={ago}
+          formatter={(v: number) => [`${egp(v)} ${t("ج.م")}`, label]}
+          contentStyle={{
+            borderRadius: 12,
+            border: "1px solid var(--border)",
+            background: "var(--card)",
+            fontSize: 12,
+          }}
+        />
+        <Area
+          type="monotone"
+          dataKey={series}
+          stroke="var(--gold-deep)"
+          strokeWidth={2}
+          fill={`url(#fill-${series})`}
+          isAnimationActive={false}
+          dot={false}
+          activeDot={{ r: 4, stroke: "var(--card)", strokeWidth: 2 }}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+/** لوحة السجل اللحظي: الفرق خلال الدقيقة الأخيرة + الرسم البياني. */
+export function LiveTicker({
+  history,
+  series,
+  label,
+}: {
+  history: PriceTick[];
+  series: TickKey;
+  label: string;
+}) {
+  const t = useT();
+  const first = history[0]?.[series] ?? 0;
+  const last = history[history.length - 1]?.[series] ?? 0;
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
@@ -68,32 +131,16 @@ export function LiveTicker({ history }: { history: PriceTick[] }) {
         </span>
       </div>
 
-      {history.length < 2 ? (
-        <p className="py-4 text-center text-xs text-muted-foreground">
-          {t("جاري تجميع التحديثات اللحظية…")}
-        </p>
-      ) : (
-        <>
-          <div className="mb-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">{t("جرام عيار 24")}</span>
-            <Delta diff={(last?.k24 ?? 0) - (first?.k24 ?? 0)} />
-          </div>
-          <Sparkline values={history.map((h) => h.k24)} />
-
-          <ul className="mt-3 divide-y divide-border text-xs">
-            {rows.map((tick, i) => {
-              const prev = rows[i + 1];
-              return (
-                <li key={tick.at} className="flex items-center justify-between gap-2 py-1.5">
-                  <span className="text-muted-foreground">{time(tick.at)}</span>
-                  <span className="font-display text-sm text-primary">{egp(tick.k24)}</span>
-                  <Delta diff={prev ? tick.k24 - prev.k24 : 0} />
-                </li>
-              );
-            })}
-          </ul>
-        </>
+      {history.length >= 2 && (
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">
+            {t("جرام")} {label}
+          </span>
+          <Delta diff={last - first} />
+        </div>
       )}
+
+      <PriceChart history={history} series={series} label={label} />
     </div>
   );
 }
