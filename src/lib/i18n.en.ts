@@ -173,7 +173,6 @@ export const en: Record<string, string> = {
   // الفئات والموردون
   "سبائك ذهب": "Gold bars",
   "عملات ذهبية": "Gold coins",
-  مشغولات: "Jewellery",
   "سبائك فضة": "Silver bars",
   أورا: "ORA",
   سام: "Sam",
@@ -254,8 +253,8 @@ export const en: Record<string, string> = {
   "سبائك وعملات ذهب أورا": "ORA gold bars and coins",
   "بدأت أورا برؤية بسيطة: أن يكون شراء الذهب في مصر تجربة واضحة وآمنة، بعيدًا عن غموض الأسعار والمصاريف المخفية. لذلك نعرض سعر السوق لحظة بلحظة، ونوضح المصنعية قبل الشراء.":
     "ORA started with a simple idea: buying gold in Egypt should be clear and safe, free of opaque pricing and hidden costs. That's why we show the market price second by second and state the fabrication fee before you buy.",
-  "نقدم سبائك ذهب وعملات ذهبية بأوزان متعددة تناسب المستثمر المبتدئ والمحترف، إلى جانب سبائك الفضة والمشغولات، مع خدمة إعادة شراء تضمن لك سيولة في أي وقت.":
-    "We offer gold bars and coins in a range of weights to suit both first-time and seasoned investors, alongside silver bars and jewellery, plus a buy-back service that keeps your holdings liquid at any time.",
+  "نقدم سبائك ذهب وعملات ذهبية بأوزان متعددة تناسب المستثمر المبتدئ والمحترف، إلى جانب سبائك الفضة، مع خدمة إعادة شراء تضمن لك سيولة في أي وقت.":
+    "We offer gold bars and coins in a range of weights to suit both first-time and seasoned investors, alongside silver bars, plus a buy-back service that keeps your holdings liquid at any time.",
   "فريقنا موجود في فروعنا بالإسكندرية والقاهرة والجيزة والمنصورة لمساعدتك في اختيار الأنسب لهدفك الاستثماري.":
     "Our team is on hand at our branches in Alexandria, Cairo, Giza and Mansoura to help you pick what fits your investment goal.",
   "تصفح مجموعتنا": "Browse our collection",
@@ -480,20 +479,19 @@ export const en: Record<string, string> = {
   التوصيل: "Delivery",
 
   // المجموعة
-  "مجموعتنا | سبائك وعملات ومشغولات الذهب — أورا":
-    "Our collection | Gold bars, coins and jewellery — ORA",
-  "تصفح مجموعة أورا من سبائك الذهب والعملات الذهبية والمشغولات وسبائك الفضة بأسعار لحظية، مع فلاتر بالمعدن والفئة والوزن والمورّد.":
-    "Browse ORA's range of gold bars, gold coins, jewellery and silver bars at live prices, with filters by metal, category, weight and supplier.",
+  "مجموعتنا | سبائك وعملات الذهب — أورا": "Our collection | Gold bars and coins — ORA",
+  "تصفح مجموعة أورا من سبائك الذهب والعملات الذهبية وسبائك الفضة بأسعار لحظية، مع فلاتر بالمعدن والفئة والوزن والمورّد.":
+    "Browse ORA's range of gold bars, gold coins and silver bars at live prices, with filters by metal, category, weight and supplier.",
   "مجموعتنا | أورا للذهب": "Our collection | ORA Gold",
-  "سبائك ذهب وعملات ذهبية ومشغولات وسبائك فضة بأسعار لحظية.":
-    "Gold bars, gold coins, jewellery and silver bars at live prices.",
+  "سبائك ذهب وعملات ذهبية وسبائك فضة بأسعار لحظية.":
+    "Gold bars, gold coins and silver bars at live prices.",
   "الأكثر رواجًا": "Most popular",
   "السعر: من الأقل": "Price: low to high",
   "السعر: من الأعلى": "Price: high to low",
   "الوزن: من الأقل": "Weight: low to high",
   "الوزن: من الأعلى": "Weight: high to low",
-  "سبائك وعملات ومشغولات ذهبية معتمدة بشهادات أصل، وأسعار محدثة لحظيًا حسب سعر السوق.":
-    "Certified gold bars, coins and jewellery with certificates of authenticity, priced live against the market.",
+  "سبائك وعملات ذهبية معتمدة بشهادات أصل، وأسعار محدثة لحظيًا حسب سعر السوق.":
+    "Certified gold bars and coins with certificates of authenticity, priced live against the market.",
   "تصفية المنتجات": "Filter products",
   مسح: "Clear",
   "نوع المعدن": "Metal type",

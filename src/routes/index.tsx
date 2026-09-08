@@ -167,11 +167,10 @@ function Home() {
 
       {/* Categories */}
       <section className="mx-auto max-w-6xl px-4">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
             { icon: Coins, label: "سبائك ذهب", to: "/collection" as const },
             { icon: BadgeCheck, label: "عملات ذهبية", to: "/collection" as const },
-            { icon: Gem, label: "مشغولات", to: "/collection" as const },
             { icon: ShieldCheck, label: "سبائك فضة", to: "/silver" as const },
           ].map(({ icon: Icon, label, to }) => (
             <Link
