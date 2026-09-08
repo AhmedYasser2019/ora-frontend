@@ -1,7 +1,6 @@
 import barImg from "@/assets/bar.jpg";
 import coinsImg from "@/assets/coins.jpg";
 import silverImg from "@/assets/silver.jpg";
-import jewelryImg from "@/assets/jewelry.jpg";
 
 import { lang } from "./i18n";
 import type { GramPrices } from "./prices.server";
@@ -33,7 +32,7 @@ export const helpLinks = [
 export type Metal = "gold" | "silver";
 export type Karat = 24 | 22 | 21 | 18;
 
-export const CATEGORIES = ["سبائك ذهب", "عملات ذهبية", "مشغولات", "سبائك فضة"] as const;
+export const CATEGORIES = ["سبائك ذهب", "عملات ذهبية", "سبائك فضة"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 export const PROVIDERS = ["أورا", "سام", "بي تي سي", "جولد إيرا"] as const;
@@ -304,54 +303,6 @@ export const allProducts: Product[] = [
     cashbackPct: 0.5,
     available: true,
     desc: "عملة ذهب أورا 4 جرام عيار 24 بوزن 4 جرام، من أكثر العملات الذهبية تداولًا في السوق المصري وأسرعها في إعادة البيع. مرفق معها شهادة أصل وعبوة محكمة الغلق.",
-  },
-  {
-    slug: "classic-gold-set",
-    img: jewelryImg,
-    t: "طقم ذهب كلاسيك",
-    s: "عيار 21 – 12 جرام",
-    metal: "gold",
-    cat: "مشغولات",
-    weightG: 12,
-    karat: 21,
-    purity: "875",
-    provider: "أورا",
-    fabrication: 0.09,
-    cashbackPct: 0.0,
-    available: true,
-    desc: "طقم ذهب كلاسيك عيار 21 بوزن 12 جرام، مدموغ بمصلحة الدمغة والموازين ومرفق معه فاتورة ضريبية معتمدة وشهادة ضمان.",
-  },
-  {
-    slug: "egyptian-gold-bangle",
-    img: jewelryImg,
-    t: "غويشة ذهب مصرية",
-    s: "عيار 21 – 12 جرام",
-    metal: "gold",
-    cat: "مشغولات",
-    weightG: 12,
-    karat: 21,
-    purity: "875",
-    provider: "أورا",
-    fabrication: 0.09,
-    cashbackPct: 0.0,
-    available: true,
-    desc: "غويشة ذهب مصرية عيار 21 بوزن 12 جرام، مدموغ بمصلحة الدمغة والموازين ومرفق معه فاتورة ضريبية معتمدة وشهادة ضمان.",
-  },
-  {
-    slug: "gold-chain-18k",
-    img: jewelryImg,
-    t: "سلسلة ذهب عيار 18",
-    s: "عيار 18 – 6 جرام",
-    metal: "gold",
-    cat: "مشغولات",
-    weightG: 6,
-    karat: 18,
-    purity: "750",
-    provider: "أورا",
-    fabrication: 0.1,
-    cashbackPct: 0.0,
-    available: false,
-    desc: "سلسلة ذهب عيار 18 عيار 18 بوزن 6 جرام، مدموغ بمصلحة الدمغة والموازين ومرفق معه فاتورة ضريبية معتمدة وشهادة ضمان.",
   },
   {
     slug: "silver-bar-5g",
