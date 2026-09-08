@@ -9,12 +9,12 @@ import type { GramPrices } from "./prices.server";
 export const navLinks = [
   { label: "الرئيسية", to: "/" },
   { label: "مجموعتنا", to: "/collection" },
-  { label: "الفضة", to: "/silver" },
   { label: "سعر الذهب", to: "/gold-price" },
   { label: "سعر الفضة", to: "/silver-price" },
   { label: "حاسبة الميزانية", to: "/budget-calculator" },
   { label: "حساب الزكاة", to: "/zakat" },
   { label: "الأخبار", to: "/news" },
+  { label: "التقارير", to: "/reports" },
   { label: "فروعنا", to: "/branches" },
 ] as const;
 
