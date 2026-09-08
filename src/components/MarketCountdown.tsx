@@ -12,7 +12,7 @@ export function MarketCountdown() {
     return () => clearInterval(id);
   }, []);
 
-  const { days, hours, minutes, seconds } = splitDuration(status.secondsToOpen);
+  const { days, hours, minutes, seconds } = splitDuration(status.secondsToNext);
   const boxes = [
     { v: seconds, l: t("ثانية") },
     { v: minutes, l: t("دقيقة") },
@@ -39,24 +39,22 @@ export function MarketCountdown() {
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               {status.openNow
-                ? t("التداول متاح · الأحد إلى الخميس من 10 ص حتى 5 م")
+                ? t("التداول متاح · يغلق السوق بعد")
                 : t("برجاء الانتظار، سيفتح السوق بعد")}
             </p>
           </div>
         </div>
 
-        {!status.openNow && (
-          <div className="mt-5 grid grid-cols-4 gap-3">
-            {boxes.map((b) => (
-              <div key={b.l} className="rounded-xl bg-cream px-2 py-4 text-center">
-                <p suppressHydrationWarning className="font-display text-2xl text-primary">
-                  {String(b.v).padStart(2, "0")}
-                </p>
-                <p className="mt-1 text-[11px] text-muted-foreground">{b.l}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="mt-5 grid grid-cols-4 gap-3">
+          {boxes.map((b) => (
+            <div key={b.l} className="rounded-xl bg-cream px-2 py-4 text-center">
+              <p suppressHydrationWarning className="font-display text-2xl text-primary">
+                {String(b.v).padStart(2, "0")}
+              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">{b.l}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
