@@ -1177,4 +1177,31 @@ export const en: Record<string, string> = {
   "التقرير السنوي لسوق الذهب | 2025": "Annual gold market report | 2025",
   "مراجعة كاملة لعام 2025: أعلى وأدنى سعر، عوائد الاستثمار في السبائك والعملات، وتوقعات 2026.":
     "A full review of 2025: highs and lows, returns on bars and coins, and the outlook for 2026.",
+  // ممتلكاتي
+  ممتلكاتي: "My Holdings",
+  "ممتلكاتي | أورا للذهب": "My Holdings | Ora Gold",
+  "سجّل ما تملكه من ذهب وفضة وتابع قيمته الحالية وأرباحه بالسعر اللحظي.":
+    "Log the gold and silver you own and track its current value and gains at live prices.",
+  "تقييم لحظي لما تملكه من ذهب وفضة.": "Live valuation of the gold and silver you own.",
+  "سجّل ما تملكه من ذهب وفضة، وتابع قيمته الحالية بسعر البيع اللحظي وأرباحه عن سعر الشراء. البيانات محفوظة على جهازك وحده.":
+    "Log the gold and silver you own and track its current value at the live sell price, plus its gain over what you paid. Your data stays on your device.",
+  "إجمالي قيمة الممتلكات": "Total holdings value",
+  "إظهار القيم": "Show values",
+  "إخفاء القيم": "Hide values",
+  عناصر: "Items",
+  الكل: "All",
+  "لم تسجّل أي ممتلكات بعد — أضف أول قطعة من النموذج.":
+    "No holdings yet — add your first piece using the form.",
+  "لا عناصر في هذا التصنيف.": "No items in this category.",
+  "القيمة الحالية": "Current value",
+  "إضافة قطعة": "Add a piece",
+  الاسم: "Name",
+  "النوع والعيار": "Type and karat",
+  "الوزن (جرام)": "Weight (g)",
+  العدد: "Quantity",
+  "سعر الشراء الإجمالي": "Total purchase price",
+  "سجّله ليُحسب الربح أو الخسارة.": "Record it to see profit or loss.",
+  "أضف إلى ممتلكاتي": "Add to my holdings",
+  "التقييم بسعر إعادة البيع اللحظي — أي ما ستقبضه لو بعت الآن، دون خصم المصنعية. بياناتك محفوظة على هذا المتصفح ولا تُرسل لأي خادم.":
+    "Valued at the live buy-back price — what you would receive if you sold now, before any fabrication deduction. Your data stays in this browser and is never sent to a server.",
 };

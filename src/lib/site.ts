@@ -12,6 +12,7 @@ export const navLinks = [
   { label: "سعر الفضة", to: "/silver-price" },
   { label: "حاسبة الميزانية", to: "/budget-calculator" },
   { label: "حساب الزكاة", to: "/zakat" },
+  { label: "ممتلكاتي", to: "/holdings" },
   { label: "الأخبار", to: "/news" },
   { label: "التقارير", to: "/reports" },
   { label: "فروعنا", to: "/branches" },
