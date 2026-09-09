@@ -22,6 +22,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as GoldPriceRouteImport } from './routes/gold-price'
+import { Route as HoldingsRouteImport } from './routes/holdings'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
@@ -100,6 +101,11 @@ const FavoritesRoute = FavoritesRouteImport.update({
 const GoldPriceRoute = GoldPriceRouteImport.update({
   id: '/gold-price',
   path: '/gold-price',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HoldingsRoute = HoldingsRouteImport.update({
+  id: '/holdings',
+  path: '/holdings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/favorites': typeof FavoritesRoute
   '/gold-price': typeof GoldPriceRoute
+  '/holdings': typeof HoldingsRoute
   '/news': typeof NewsRoute
   '/orders': typeof OrdersRoute
   '/payment-methods': typeof PaymentMethodsRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/favorites': typeof FavoritesRoute
   '/gold-price': typeof GoldPriceRoute
+  '/holdings': typeof HoldingsRoute
   '/news': typeof NewsRoute
   '/orders': typeof OrdersRoute
   '/payment-methods': typeof PaymentMethodsRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/favorites': typeof FavoritesRoute
   '/gold-price': typeof GoldPriceRoute
+  '/holdings': typeof HoldingsRoute
   '/news': typeof NewsRoute
   '/orders': typeof OrdersRoute
   '/payment-methods': typeof PaymentMethodsRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/favorites'
     | '/gold-price'
+    | '/holdings'
     | '/news'
     | '/orders'
     | '/payment-methods'
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/favorites'
     | '/gold-price'
+    | '/holdings'
     | '/news'
     | '/orders'
     | '/payment-methods'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/favorites'
     | '/gold-price'
+    | '/holdings'
     | '/news'
     | '/orders'
     | '/payment-methods'
@@ -365,6 +377,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   FavoritesRoute: typeof FavoritesRoute
   GoldPriceRoute: typeof GoldPriceRoute
+  HoldingsRoute: typeof HoldingsRoute
   NewsRoute: typeof NewsRoute
   OrdersRoute: typeof OrdersRoute
   PaymentMethodsRoute: typeof PaymentMethodsRoute
@@ -472,6 +485,13 @@ declare module '@tanstack/react-router' {
       path: '/gold-price'
       fullPath: '/gold-price'
       preLoaderRoute: typeof GoldPriceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/holdings': {
+      id: '/holdings'
+      path: '/holdings'
+      fullPath: '/holdings'
+      preLoaderRoute: typeof HoldingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -589,6 +609,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   FavoritesRoute: FavoritesRoute,
   GoldPriceRoute: GoldPriceRoute,
+  HoldingsRoute: HoldingsRoute,
   NewsRoute: NewsRoute,
   OrdersRoute: OrdersRoute,
   PaymentMethodsRoute: PaymentMethodsRoute,
