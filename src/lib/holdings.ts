@@ -1,54 +1,67 @@
-import type { GramPrices } from "./prices.server";
+import { queryOptions } from "@tanstack/react-query";
 
-/** عيارات الذهب المتاحة في أسعار الجرام + الفضة. */
-export type Karat = keyof GramPrices;
+import { api } from "./api";
 
-export type Holding = {
-  id: string;
+/**
+ * ممتلكاتي من الخادم: القطع التي اشتُريت فعلًا وسُوِّيت أوامرها، بتكلفتها وقيمتها اليوم.
+ *
+ * لا حساب هنا. التقييم بسعر إعادة البيع — ما يدفعه المكتب لو بعتَ الآن — ويحسبه
+ * `GET /holdings` بنفس المعادلة التي يُعرض بها `sell_price_piasters` في الكتالوج.
+ * القطعة التي لا يعرف المكتب سعرها الآن (معدن موقوف أو عيار غير مدرج) تصل بلا قيمة
+ * ومعها `reason`، ولا تدخل أي مجموع.
+ */
+
+export type HoldingProduct = {
+  sku: string;
   name: string;
-  karat: Karat;
-  grams: number;
-  qty: number;
-  /** إجمالي ما دُفع عند الشراء — اختياري، وبدونه لا يُحسب ربح لهذا العنصر. */
-  cost?: number;
+  subtitle: string | null;
+  metal: "gold" | "silver";
+  karat: number;
+  purity: string;
+  weight_grams: string;
+  image_url: string | null;
 };
 
-export const KARATS: { key: Karat; label: string }[] = [
-  { key: "k24", label: "عيار 24" },
-  { key: "k21", label: "عيار 21" },
-  { key: "silver", label: "فضة 999" },
-];
+export type HoldingLine = {
+  product: HoldingProduct;
+  quantity: number;
+  cost_piasters: number;
+  value_piasters: number | null;
+  gain_piasters: number | null;
+  gain_pct: number | null;
+  /** سبب تعذّر التسعير، حين تكون القيمة غائبة. */
+  reason?: string;
+};
 
-/** القيمة الحالية بسعر إعادة البيع: هو ما ستقبضه فعليًا لو بعت الآن. */
-// المعدن الموقوف تداوله لا يصل بسعر، فقيمته صفر حتى يعود — لا سعر قديم.
-export const holdingValue = (h: Holding, sell: Partial<GramPrices>) =>
-  (sell[h.karat] ?? 0) * h.grams * h.qty;
+export type MetalTotals = {
+  metal: "gold" | "silver";
+  items: number;
+  lines: number;
+  cost_piasters: number;
+  value_piasters: number;
+  gain_piasters: number;
+  gain_pct: number | null;
+};
 
-export function totals(items: Holding[], sell: Partial<GramPrices>) {
-  let gold = 0;
-  let silver = 0;
-  let cost = 0;
-  // الربح يُقاس على العناصر المسجَّل سعر شرائها فقط، وإلا ظهرت كل حيازة بلا تكلفة كربح كامل.
-  let costedValue = 0;
+export type HoldingsTotals = {
+  items: number;
+  lines: number;
+  /** أسطر تعذّر تسعيرها — المجاميع أدناه لا تشملها. */
+  unpriced: number;
+  cost_piasters: number;
+  value_piasters: number;
+  gain_piasters: number;
+  gain_pct: number | null;
+  by_metal: MetalTotals[];
+};
 
-  for (const h of items) {
-    const v = holdingValue(h, sell);
-    if (h.karat === "silver") silver += v;
-    else gold += v;
-    if (h.cost != null) {
-      cost += h.cost;
-      costedValue += v;
-    }
-  }
+export type Holdings = { as_of: string; totals: HoldingsTotals; items: HoldingLine[] };
 
-  const gain = costedValue - cost;
-  return {
-    total: gold + silver,
-    gold,
-    silver,
-    cost,
-    gain,
-    gainPct: cost > 0 ? gain / cost : 0,
-    count: items.length,
-  };
-}
+export const holdingsQuery = queryOptions({
+  queryKey: ["holdings"],
+  queryFn: () => api<Holdings>("/holdings"),
+  staleTime: 30_000,
+});
+
+export const egpOf = (piasters: number | null | undefined) =>
+  piasters == null ? null : piasters / 100;

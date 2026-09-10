@@ -135,9 +135,7 @@ function CheckoutPage() {
         <div className="mx-auto max-w-lg rounded-2xl border border-border bg-card p-10 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-gold-deep" />
           <p className="mt-4 text-xl text-primary">
-            {placed.refs.length === 1
-              ? t("طلبك رقم")
-              : `${t("عدد الطلبات")} ${placed.refs.length}`}
+            {placed.refs.length === 1 ? t("طلبك رقم") : `${t("عدد الطلبات")} ${placed.refs.length}`}
           </p>
           {/* كل قطعة طلب مستقل: سعره مثبَّت وحده، ويُتابَع ويُلغى وحده. */}
           <ul dir="ltr" className="mt-1 space-y-0.5 text-xs text-muted-foreground">
@@ -358,9 +356,10 @@ function CheckoutPage() {
           <h2 className="font-display text-lg text-primary">{t("ملخص الطلب")}</h2>
           <ul className="mt-4 space-y-3 border-b border-border pb-4">
             {items.map((i) => (
-              <li key={i.id} className="flex justify-between gap-3 text-xs">
+              <li key={i.slug} className="flex justify-between gap-3 text-xs">
                 <span className="text-primary">
-                  {t(i.title)} <span className="text-muted-foreground">× {i.qty}</span>
+                  {t(bySlug(catalog, i.slug)?.t ?? i.slug)}{" "}
+                  <span className="text-muted-foreground">× {i.qty}</span>
                 </span>
                 <span className="shrink-0 text-muted-foreground">
                   {egp(priceOf(i.slug) * i.qty)}

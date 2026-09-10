@@ -50,32 +50,30 @@ export function useLivePrices() {
     connection.bind("disconnected", () => setLive(false));
     connection.bind("failed", () => setLive(false));
 
-    echo
-      .channel("prices")
-      .listen(".board.updated", (payload: { snapshot: LivePrices }) => {
-        const data = payload.snapshot;
-        if (!data) return;
+    echo.channel("prices").listen(".board.updated", (payload: { snapshot: LivePrices }) => {
+      const data = payload.snapshot;
+      if (!data) return;
 
-        queryClient.setQueryData(livePricesQuery.queryKey, data);
-        setLive(true);
+      queryClient.setQueryData(livePricesQuery.queryKey, data);
+      setLive(true);
 
-        // أسعار المنتجات محسوبة على الخادم من نفس السعر، فهي تتغيّر مع كل بثّ. نطلبها
-        // من جديد بدل حسابها هنا — الحساب في الواجهة نسخة ثانية من قواعد التسعير.
-        void queryClient.invalidateQueries({ queryKey: ["products"] });
+      // أسعار المنتجات محسوبة على الخادم من نفس السعر، فهي تتغيّر مع كل بثّ. نطلبها
+      // من جديد بدل حسابها هنا — الحساب في الواجهة نسخة ثانية من قواعد التسعير.
+      void queryClient.invalidateQueries({ queryKey: ["products"] });
 
-        const at = Date.now();
-        setPushedAt(at);
+      const at = Date.now();
+      setPushedAt(at);
 
-        // المعدن الموقوف لا يرسل سعرًا، فلا نضيف نقطة للرسم البياني عنه.
-        const { k24, k21, silver } = data.gram;
-        if (k24 === undefined && k21 === undefined && silver === undefined) return;
+      // المعدن الموقوف لا يرسل سعرًا، فلا نضيف نقطة للرسم البياني عنه.
+      const { k24, k21, silver } = data.gram;
+      if (k24 === undefined && k21 === undefined && silver === undefined) return;
 
-        setHistory((prev) =>
-          [...prev, { at, k24: k24 ?? 0, k21: k21 ?? 0, silver: silver ?? 0 }].filter(
-            (tick) => at - tick.at <= WINDOW_MS,
-          ),
-        );
-      });
+      setHistory((prev) =>
+        [...prev, { at, k24: k24 ?? 0, k21: k21 ?? 0, silver: silver ?? 0 }].filter(
+          (tick) => at - tick.at <= WINDOW_MS,
+        ),
+      );
+    });
 
     return () => {
       echo.leave("prices");
