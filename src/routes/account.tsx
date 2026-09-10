@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { supabase } from "@/integrations/supabase/client";
+import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/use-auth";
 
 import { tr } from "@/lib/i18n";
@@ -40,35 +40,26 @@ function AccountPage() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("profiles")
-      .select("full_name, phone")
-      .eq("id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setProfile({
-          full_name: data?.full_name ?? (user.user_metadata["full_name"] as string) ?? "",
-          phone: data?.phone ?? "",
-        });
-        setFetching(false);
-      });
+    // useAuth حمّل /me بالفعل، فالبيانات هنا هي نفسها بلا نداء ثانٍ.
+    setProfile({ full_name: user.name ?? "", phone: user.phone ?? "" });
+    setFetching(false);
   }, [user]);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: profile.full_name.trim(),
-        phone: profile.phone.trim(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
-    setSaving(false);
-    if (error) toast.error(t("تعذر حفظ البيانات"));
-    else toast.success(t("تم حفظ بياناتك"));
+    try {
+      await api("/me", {
+        method: "PATCH",
+        body: { name: profile.full_name.trim(), phone: profile.phone.trim() },
+      });
+      toast.success(t("تم حفظ بياناتك"));
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر حفظ البيانات"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const logout = async () => {

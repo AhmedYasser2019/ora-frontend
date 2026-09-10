@@ -36,7 +36,6 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ZakatRouteImport } from './routes/zakat'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
-import { Route as ApiPublicPricesStreamRouteImport } from './routes/api/public/prices-stream'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -173,11 +172,6 @@ const ProductsSlugRoute = ProductsSlugRouteImport.update({
   path: '/products/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicPricesStreamRoute = ApiPublicPricesStreamRouteImport.update({
-  id: '/api/public/prices-stream',
-  path: '/api/public/prices-stream',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -207,7 +201,6 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/products/$slug': typeof ProductsSlugRoute
-  '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -237,7 +230,6 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/products/$slug': typeof ProductsSlugRoute
-  '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -268,7 +260,6 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/products/$slug': typeof ProductsSlugRoute
-  '/api/public/prices-stream': typeof ApiPublicPricesStreamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -300,7 +291,6 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/zakat'
     | '/products/$slug'
-    | '/api/public/prices-stream'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -330,7 +320,6 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/zakat'
     | '/products/$slug'
-    | '/api/public/prices-stream'
   id:
     | '__root__'
     | '/'
@@ -360,7 +349,6 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/zakat'
     | '/products/$slug'
-    | '/api/public/prices-stream'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -391,7 +379,6 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   ZakatRoute: typeof ZakatRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
-  ApiPublicPricesStreamRoute: typeof ApiPublicPricesStreamRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -585,13 +572,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/prices-stream': {
-      id: '/api/public/prices-stream'
-      path: '/api/public/prices-stream'
-      fullPath: '/api/public/prices-stream'
-      preLoaderRoute: typeof ApiPublicPricesStreamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -623,7 +603,6 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   ZakatRoute: ZakatRoute,
   ProductsSlugRoute: ProductsSlugRoute,
-  ApiPublicPricesStreamRoute: ApiPublicPricesStreamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -453,6 +453,7 @@ export const en: Record<string, string> = {
   "تم استلام طلبك": "We've received your order",
   "شكرًا لثقتك في أورا.": "Thank you for trusting ORA.",
   "طلبك رقم": "Order",
+  "عدد الطلبات": "Orders placed:",
   "تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم.":
     "The amount was deducted from your wallet and the order is confirmed. Our team will contact you to arrange delivery.",
   "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.":
@@ -573,8 +574,8 @@ export const en: Record<string, string> = {
     "Yes, from the My account page. If the account is ID-verified we may ask for extra confirmation first.",
   الأسعار: "Prices",
   "كيف يتم تحديد سعر الذهب؟": "How is the gold price set?",
-  "نأخذ سعر الأوقية العالمي لحظيًا، نحوّله للجرام، نضربه في سعر صرف الدولار مقابل الجنيه، ثم نضيف هامش السوق المحلي المعتاد. النتيجة هي سعر الجرام المعروض.":
-    "We take the live global price per ounce, convert it to grams, multiply by the USD/EGP exchange rate, then add the usual local market margin. The result is the gram price you see.",
+  "مكتب التسعير عندنا ينشر سعر الجرام بالجنيه المصري مباشرة، لعيار 21 وعيار 24 كلٍّ على حدة، ويُراجَع مقابل السوق قبل أن يُعرض. سعر أي قطعة هو قيمة معدنها بعيارها زائد مصنعيتها، ويُحسب لحظة عرضه.":
+    "Our price desk publishes the gram price in Egyptian pounds directly — 21k and 24k each on their own number — checked against the market before it goes out. A piece is priced as the metal at its karat plus its making charge, computed the moment it is shown.",
   "هل يتم تحديث الأسعار تلقائيًا؟": "Do prices update automatically?",
   "نعم. الأسعار تصلك عبر بث مباشر ويتم تحديثها كل بضع ثوانٍ دون الحاجة لإعادة تحميل الصفحة. مؤشر (بث مباشر) أعلى الصفحة يوضح حالة الاتصال.":
     "Yes. Prices arrive over a live feed and refresh every few seconds without reloading the page. The Live indicator at the top of the page shows the connection status.",
@@ -585,8 +586,8 @@ export const en: Record<string, string> = {
   "نعرض أسعار عيار 24 و22 و21 و18 و14 و12 للذهب، بالإضافة إلى الفضة عيار 999.":
     "We publish prices for 24K, 22K, 21K, 18K, 14K and 12K gold, plus 999 silver.",
   "لماذا يتغير سعر الذهب؟": "Why does the gold price change?",
-  "لأنه يتحرك مع سعر الذهب العالمي (المتأثر بأسعار الفائدة والتضخم والدولار) ومع سعر صرف الجنيه أمام الدولار.":
-    "Because it moves with the global gold price — driven by interest rates, inflation and the dollar — and with the EGP/USD exchange rate.",
+  "لأن سعر الذهب المحلي يتحرك مع السوق العالمي وسعر صرف الجنيه، ويعيد المكتب نشر السعر كلما تحرك.":
+    "Because the local gold price moves with the global market and the pound's exchange rate, and the desk republishes whenever it moves.",
   "لماذا لا يتحدث سعر الذهب عندي؟": "Why isn't the gold price updating for me?",
   "غالبًا انقطاع مؤقت في الاتصال. المؤشر سيظهر (غير متصل) ثم يعيد الاتصال تلقائيًا. جرّب تحديث الصفحة إذا استمر الأمر.":
     "Usually a temporary connection drop. The indicator will show Offline and then reconnect automatically. Refresh the page if it persists.",
@@ -691,8 +692,8 @@ export const en: Record<string, string> = {
   "سعر الذهب اليوم لحظة بلحظة | أورا": "Today's live gold price | ORA",
   "أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.":
     "Live gold and silver prices in Egyptian pounds with a live update feed.",
-  "أسعار مباشرة مرتبطة بسعر الأوقية العالمي وسعر الدولار مقابل الجنيه، محدثة تلقائيًا كل ثوانٍ.":
-    "Live prices tied to the global ounce price and the USD/EGP rate, refreshed automatically every few seconds.",
+  "سعر الجرام كما ينشره مكتب التسعير بالجنيه المصري، لعيار 21 وعيار 24، ويصلك لحظة تغيّره.":
+    "The gram price as published by our price desk in Egyptian pounds, for 21k and 24k, reaching you the moment it changes.",
   "الدولار / الجنيه": "USD / EGP",
   "أوقية الذهب (عيار 24)": "Gold ounce (24K)",
   "أوقية الفضة": "Silver ounce",
@@ -703,8 +704,8 @@ export const en: Record<string, string> = {
   "أسعار الفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.":
     "Live silver prices in Egyptian pounds with a live update feed.",
   "سعر الفضة اليوم": "Today's silver price",
-  "سعر الفضة النقية 999 بالجنيه المصري، مرتبط بسعر الأوقية العالمي وسعر الدولار، ومحدَّث تلقائيًا كل ثوانٍ.":
-    "The price of pure 999 silver in Egyptian pounds, tied to the global ounce price and the dollar, updated automatically every few seconds.",
+  "سعر جرام الفضة النقية 999 بالجنيه المصري كما ينشره مكتب التسعير، ويصلك لحظة تغيّره.":
+    "The price per gram of 999 fine silver in Egyptian pounds as published by our price desk, reaching you the moment it changes.",
   "سعر الصرف": "Exchange rate",
   "نسبة الذهب للفضة": "Gold-to-silver ratio",
   "جرام ذهب 24 مقابل الفضة": "1g of 24K gold vs silver",
@@ -717,8 +718,8 @@ export const en: Record<string, string> = {
     "999 silver bars in a range of weights with the live silver gram price in Egypt and a certificate of authenticity for every bar.",
   "سبائك الفضة | أورا": "Silver bars | ORA",
   "سعر الفضة اللحظي وسبائك فضة 999 معتمدة.": "Live silver prices and certified 999 silver bars.",
-  "سبائك فضة نقية 999 بأوزان متعددة، بسعر مرتبط بسعر الفضة العالمي لحظة بلحظة.":
-    "Pure 999 silver bars in a range of weights, priced against the global silver price second by second.",
+  "سبائك فضة نقية 999 بأوزان متعددة، بسعر الجرام المنشور لحظة بلحظة.":
+    "999 fine silver bars in a range of weights, at the published gram price, moment by moment.",
   "سعر جرام الفضة": "Silver price per gram",
   النقاء: "Purity",
   "فضة نقية": "Pure silver",
@@ -1007,8 +1008,8 @@ export const en: Record<string, string> = {
   "لا تشارك رمز التحقق OTP مع أي شخص، بما في ذلك موظفي أورا. لن يطلبه منك أي موظف.":
     "Never share your OTP with anyone, including ORA staff. No member of staff will ask you for it.",
   "الأسعار وتثبيت السعر": "Prices and price locking",
-  "الأسعار المعروضة على الموقع مرتبطة بسعر الذهب والفضة العالمي وسعر صرف الدولار، وتتغير لحظيًا.":
-    "Prices on the site are tied to global gold and silver prices and the dollar exchange rate, and change by the second.",
+  "الأسعار المعروضة على الموقع هي الأسعار التي ينشرها مكتب التسعير لدينا بالجنيه المصري، وتتغير لحظيًا. السعر المُلزِم هو الذي يُثبَّت لك عند تأكيد الطلب، لا السعر المعروض قبله.":
+    "The prices shown on the site are those published by our price desk in Egyptian pounds and change moment to moment. The binding price is the one locked for you when you confirm an order, not the one displayed beforehand.",
   "يوجد فرق بين سعر الشراء وسعر إعادة البيع يمثل هامش التاجر، وهو معلن على صفحة الأسعار.":
     "There is a gap between the buy price and the buy-back price representing the dealer margin, which is published on the prices page.",
   "يُثبَّت السعر النهائي لحظة تأكيد الطلب فقط. أي سعر معروض قبل التأكيد هو سعر استرشادي قابل للتغير.":

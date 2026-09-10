@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, ChevronLeft, Minus, Plus, Recycle, ShieldCheck, Truck } from "lucide-react";
 import { useState } from "react";
@@ -9,15 +10,21 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
-import { allProducts, buyPrice, productBySlug, sellPrice, weightLabel } from "@/lib/site";
-import { useLivePrices } from "@/lib/use-live-prices";
+import { bySlug, productsQuery } from "@/lib/catalog.queries";
+import { productImage } from "@/lib/product-image";
+import { weightLabel } from "@/lib/site";
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ context, params }) => {
-    const product = productBySlug(params.slug);
+    const [, catalog] = await Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]);
+
+    const product = bySlug(catalog, params.slug);
     if (!product) throw notFound();
-    await context.queryClient.ensureQueryData(livePricesQuery);
-    return { product };
+
+    return { product, catalog };
   },
   head: ({ loaderData }) => {
     const p = loaderData?.product;
@@ -29,7 +36,7 @@ export const Route = createFileRoute("/products/$slug")({
         { name: "description", content: tr(p.desc) },
         { property: "og:title", content: title },
         { property: "og:description", content: tr(p.desc) },
-        { property: "og:image", content: p.img },
+        { property: "og:image", content: productImage(p) },
       ],
     };
   },
@@ -53,22 +60,22 @@ const trust = [
 ];
 
 function ProductPage() {
-  const { product: p } = Route.useLoaderData();
-  const { data } = useLivePrices();
+  const { product: loaded } = Route.useLoaderData();
+  // الاستعلام هو المصدر الحيّ: البثّ يُبطله مع كل سعر جديد فيصل السعر المحدّث هنا.
+  const { data: catalog } = useQuery(productsQuery);
+  const p = bySlug(catalog, loaded.slug) ?? loaded;
+  const related = (catalog ?? []).filter((x) => x.cat === p.cat && x.slug !== p.slug).slice(0, 4);
   const { add } = useCart();
   const navigate = useNavigate();
   const t = useT();
   const [qty, setQty] = useState(1);
 
-  const price = buyPrice(p, data?.gram);
-  const resale = sellPrice(p, data?.sell);
-  const related = allProducts.filter((x) => x.cat === p.cat && x.slug !== p.slug).slice(0, 4);
+  const price = p.price;
+  const resale = p.resale;
+  const img = productImage(p);
 
   const addToCart = () => {
-    const ok = add(
-      { id: p.t, slug: p.slug, title: p.t, sub: p.s, img: p.img, lastPrice: price ?? 0 },
-      qty,
-    );
+    const ok = add(p.slug, qty);
     if (ok) toast.success(t("تمت الإضافة للسلة"), { description: `${t(p.t)} × ${qty}` });
     return ok;
   };
@@ -80,7 +87,7 @@ function ProductPage() {
     [t("العيار"), p.karat ? String(p.karat) : "—"],
     [t("النقاء"), p.purity],
     [t("الوزن"), weightLabel(p.weightG)],
-    [t("المصنعية"), `${(p.fabrication * 100).toFixed(1)}%`],
+    [t("المصنعية"), p.premium === undefined ? "—" : `${egp(p.premium)} ${t("ج.م")}`],
     [t("التوفر"), p.available ? t("متوفر") : t("غير متوفر")],
     [t("كود المنتج"), `ORA-${p.slug.toUpperCase()}`],
   ];
@@ -105,7 +112,7 @@ function ProductPage() {
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="overflow-hidden rounded-2xl border border-border bg-cream">
           <img
-            src={p.img}
+            src={img}
             alt={t(p.t)}
             width={1000}
             height={1000}
@@ -175,7 +182,7 @@ function ProductPage() {
             </div>
           </div>
 
-          {p.cashbackPct > 0 && (
+          {p.cashbackBps > 0 && (
             <div className="mt-4 rounded-2xl border border-gold/40 bg-secondary/40 p-5">
               <div className="flex items-center gap-2">
                 <Recycle className="h-4 w-4 text-gold-deep" />
@@ -193,7 +200,7 @@ function ProductPage() {
                 <div>
                   <dt className="text-xs text-muted-foreground">{t("المصنعية المستردّة")}</dt>
                   <dd className="mt-1 font-display text-xl text-gold-deep">
-                    {t("حتى")} {Math.round(p.cashbackPct * 100)}%
+                    {t("حتى")} {p.cashbackBps / 100}%
                   </dd>
                 </div>
               </dl>
@@ -237,7 +244,7 @@ function ProductPage() {
           <h2 className="font-display text-2xl text-primary">{t("منتجات ذات صلة")}</h2>
           <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {related.map((r) => (
-              <ProductCard key={r.slug} p={r} price={buyPrice(r, data?.gram)} />
+              <ProductCard key={r.slug} p={r} />
             ))}
           </div>
         </section>
