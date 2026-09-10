@@ -7,6 +7,8 @@
  * لا ننفّذ عليه.
  */
 
+import { readLang } from "./i18n";
+
 const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
 
 export type GramPrices = {
@@ -33,7 +35,7 @@ export type LivePrices = {
  */
 export async function fetchLivePrices(): Promise<LivePrices> {
   const res = await fetch(`${API_URL}/api/v1/prices`, {
-    headers: { accept: "application/json" },
+    headers: { accept: "application/json", "accept-language": readLang() },
   });
 
   if (!res.ok) throw new Error(`prices fetch failed: ${res.status}`);

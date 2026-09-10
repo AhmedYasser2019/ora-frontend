@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+import { newsDate, newsQuery } from "@/lib/news.queries";
 import newsGlobal from "@/assets/news-global.jpg";
 import newsLocal from "@/assets/news-local.jpg";
 
@@ -24,87 +26,57 @@ export const Route = createFileRoute("/news")({
       },
     ],
   }),
+  // تُقرأ على الخادم: محرّكات البحث تقرأ هذه الصفحة، ولا تنتظر استعلامًا في المتصفح.
+  loader: ({ context }) => context.queryClient.ensureQueryData(newsQuery),
   component: NewsPage,
 });
 
-const articles = [
-  {
-    img: newsGlobal,
-    kind: "عالمي",
-    t: "المشهد النقدي العالمي وآفاق الذهب والمعادن الثمينة — 2026",
-    d: "يدخل العالم عام 2026 في مرحلة نقدية ومالية غير مسبوقة، تتسم بارتفاع قياسي في مستويات الدين وهشاشة متزايدة في أسواق السندات، ما يدفع البنوك المركزية لزيادة حيازاتها من الذهب.",
-    date: "24 أغسطس 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "محلي",
-    t: "المشهد المحلي لسوق الذهب في مصر",
-    d: "يشهد سوق الذهب في مصر تفاعلًا مباشرًا مع التحولات النقدية العالمية، مع طلب قوي على السبائك والعملات كوسيلة للحفاظ على القيمة أمام تحركات سعر الصرف.",
-    date: "22 أغسطس 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "محلي",
-    t: "نظرة على الذهب والفضة في مصر | مارس 2026",
-    d: "يواصل سوق المعادن الثمينة في مصر التأثر بمزيج من الاتجاهات العالمية والعوامل المحلية، وما يزال الذهب مدعومًا بالطلب الاستثماري ومشتريات الأفراد.",
-    date: "12 مارس 2026",
-  },
-  {
-    img: newsGlobal,
-    kind: "عالمي",
-    t: "الرؤية العالمية للذهب والفضة | مارس 2026",
-    d: "يظل الذهب والفضة في دائرة الاهتمام العالمي مع استمرار المستثمرين في الموازنة بين الاستقرار والمخاطر والتمركز طويل الأجل.",
-    date: "05 مارس 2026",
-  },
-  {
-    img: newsGlobal,
-    kind: "عالمي",
-    t: "الفضة: معدن صناعي واستثماري في وقت واحد",
-    d: "الطلب الصناعي على الفضة من الطاقة الشمسية والإلكترونيات يضيف بعدًا جديدًا لتحركات سعرها إلى جانب دورها كملاذ آمن.",
-    date: "18 يناير 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "محلي",
-    t: "دليل المستثمر المبتدئ في سبائك الذهب بمصر",
-    d: "الفرق بين السبائك والعملات والمشغولات، ومصاريف المصنعية، وكيف تختار الوزن المناسب لبدء استثمارك بأمان.",
-    date: "02 يناير 2026",
-  },
-];
+/** صورة القسم حين لا يرفع المحرّر صورة للمقال. */
+const fallbackImage = { global: newsGlobal, local: newsLocal } as const;
+
+const categoryLabel = { global: "عالمي", local: "محلي" } as const;
 
 function NewsPage() {
   const t = useT();
+  const { data: articles } = useQuery(newsQuery);
 
   return (
     <PageShell
       title="الأخبار المالية"
       subtitle="ابقَ على اطلاع بآخر الأخبار المالية وأخبار سوق الذهب، مع تحليلات وتحديثات تساعدك على اتخاذ قرارات أذكى."
     >
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {articles.map((a) => (
-          <article
-            key={a.t}
-            className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
-          >
-            <img
-              src={a.img}
-              alt={t(a.t)}
-              loading="lazy"
-              width={800}
-              height={500}
-              className="aspect-[16/10] w-full object-cover"
-            />
-            <div className="p-5">
-              <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold text-primary">
-                {t(a.kind)}
-              </span>
-              <h2 className="mt-3 text-base leading-snug text-primary">{t(a.t)}</h2>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t(a.d)}</p>
-              <p className="mt-4 text-[11px] text-gold-deep">{t(a.date)}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {articles?.length ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {articles.map((a) => (
+            <article
+              key={a.id}
+              className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
+            >
+              <img
+                src={a.img ?? fallbackImage[a.category]}
+                alt={a.title}
+                loading="lazy"
+                width={800}
+                height={500}
+                className="aspect-[16/10] w-full object-cover"
+              />
+              <div className="p-5">
+                <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold text-primary">
+                  {t(categoryLabel[a.category])}
+                </span>
+                {/* العنوان والمقتطف يصلان مترجمين من الخادم، فلا يمرّان على t(). */}
+                <h2 className="mt-3 text-base leading-snug text-primary">{a.title}</h2>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{a.excerpt}</p>
+                <p className="mt-4 text-[11px] text-gold-deep">{newsDate(a.publishedAt)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
+          {t("لا توجد أخبار منشورة حاليًا. تابعنا قريبًا.")}
+        </p>
+      )}
     </PageShell>
   );
 }

@@ -6,6 +6,8 @@
  * شخصي لهذا الجهاز.
  */
 
+import { lang } from "./i18n";
+
 // `?.` لأن الاختبارات تشغّل هذه الوحدة في node، حيث لا `import.meta.env`.
 const BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
@@ -45,6 +47,33 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * جسم أي ردّ من الباك إند. عند الفشل يضع ApiEnvelope أخطاء التحقق في `data` لا في `errors`،
+ * فنقرأ الاثنين: `data` هو ما يرسله الخادم فعلًا، و`errors` احتياط لو تغيّر الغلاف.
+ */
+type Envelope<T> = {
+  msg?: string;
+  message?: string;
+  data?: T | Record<string, string[]> | { reason?: string } | null;
+  errors?: Record<string, string[]>;
+};
+
+/** أخطاء التحقق حقلًا بحقل، أيًّا كان المكان الذي وضعها فيه الغلاف. */
+export function fieldErrors(body: Envelope<unknown> | null): Record<string, string[]> {
+  if (body?.errors) return body.errors;
+
+  const data = body?.data;
+  if (!data || typeof data !== "object") return {};
+
+  // `data` عند الفشل إمّا خريطة حقل ← رسائل، وإمّا `{reason}` لرفض تجاري — والثاني ليس خطأ حقل.
+  return Object.fromEntries(
+    Object.entries(data as Record<string, unknown>).filter(
+      (entry): entry is [string, string[]] =>
+        Array.isArray(entry[1]) && entry[1].every((m) => typeof m === "string"),
+    ),
+  );
+}
+
 type Options = {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
@@ -55,7 +84,11 @@ type Options = {
 export async function api<T>(path: string, options: Options = {}): Promise<T> {
   const token = getToken();
 
-  const headers: Record<string, string> = { accept: "application/json" };
+  // الباك إند يترجم من Accept-Language — بدونه تعود كل رسائله بالعربية مهما اختار المستخدم.
+  const headers: Record<string, string> = {
+    accept: "application/json",
+    "accept-language": lang(),
+  };
   if (options.body !== undefined) headers["content-type"] = "application/json";
   if (token) headers["authorization"] = `Bearer ${token}`;
   if (options.idempotencyKey) headers["idempotency-key"] = options.idempotencyKey;
@@ -66,12 +99,7 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
   });
 
-  const body = (await res.json().catch(() => null)) as {
-    msg?: string;
-    data?: T;
-    errors?: Record<string, string[]>;
-    message?: string;
-  } | null;
+  const body = (await res.json().catch(() => null)) as Envelope<T> | null;
 
   if (!res.ok) {
     // رمز منتهٍ أو ملغى: ننهي الجلسة محليًا بدل ترك المستخدم يضغط أزرارًا لا تعمل.
@@ -80,7 +108,7 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     throw new ApiError(
       res.status,
       body?.msg || body?.message || `request failed: ${res.status}`,
-      body?.errors ?? {},
+      fieldErrors(body),
     );
   }
 
@@ -93,24 +121,22 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
 export async function upload<T>(path: string, form: FormData): Promise<T> {
   const token = getToken();
 
-  const headers: Record<string, string> = { accept: "application/json" };
+  const headers: Record<string, string> = {
+    accept: "application/json",
+    "accept-language": lang(),
+  };
   if (token) headers["authorization"] = `Bearer ${token}`;
 
   const res = await fetch(`${BASE}/api/v1${path}`, { method: "POST", headers, body: form });
 
-  const body = (await res.json().catch(() => null)) as {
-    msg?: string;
-    data?: T;
-    errors?: Record<string, string[]>;
-    message?: string;
-  } | null;
+  const body = (await res.json().catch(() => null)) as Envelope<T> | null;
 
   if (!res.ok) {
     if (res.status === 401) setToken(null);
     throw new ApiError(
       res.status,
       body?.msg || body?.message || `upload failed: ${res.status}`,
-      body?.errors ?? {},
+      fieldErrors(body),
     );
   }
 
