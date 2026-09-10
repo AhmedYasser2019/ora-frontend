@@ -35,10 +35,12 @@ export function marketStatus(at: Date = new Date()) {
   const now = secondsOfWeek(at);
   const opens = OPEN_DAYS.map((d) => d * DAY + OPEN_HOUR * 3600);
 
-  const closes = opens.map((o) => o + (CLOSE_HOUR - OPEN_HOUR) * 3600);
+  // طول الجلسة يُضاف لكل فتحة عند الحاجة: مصفوفة إغلاق موازية تُفهرس بنفس الرقم هي نسخة
+  // ثانية من نفس المعلومة، وفهرستها هي ما كان يشكو منه المدقّق.
+  const SESSION = (CLOSE_HOUR - OPEN_HOUR) * 3600;
 
-  const openNow = opens.some((o, i) => now >= o && now < closes[i]);
-  const next = (openNow ? closes : opens).map((t) => (t - now + WEEK) % WEEK);
+  const openNow = opens.some((o) => now >= o && now < o + SESSION);
+  const next = opens.map((o) => (o + (openNow ? SESSION : 0) - now + WEEK) % WEEK);
 
   return { openNow, secondsToNext: Math.min(...next) };
 }

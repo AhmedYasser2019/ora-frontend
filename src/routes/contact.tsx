@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2, Clock, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { branches } from "@/lib/site";
+import { api, ApiError } from "@/lib/api";
 
 import { tr } from "@/lib/i18n";
 
@@ -26,18 +28,49 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
-const TOPICS = ["استفسار عن منتج", "مشكلة في طلب", "المحفظة والأرصدة", "شكوى", "أخرى"] as const;
+/**
+ * الموضوعات كما يقبلها الخادم — انظر TicketTopic في الباك إند. المفتاح هو ما يُرسل،
+ * والقيمة هي ما يقرأه الزائر، فتغيير الصياغة لا يكسر التحقق على الخادم.
+ */
+const TOPICS = {
+  product: "استفسار عن منتج",
+  order: "مشكلة في طلب",
+  wallet: "المحفظة والأرصدة",
+  complaint: "شكوى",
+  other: "أخرى",
+} as const;
+
+type Topic = keyof typeof TOPICS;
 
 function ContactPage() {
   const t = useT();
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    topic: TOPICS[0] as string,
+    topic: "product" as Topic,
     orderId: "",
     message: "",
   });
   const [sent, setSent] = useState(false);
+
+  /**
+   * `POST /tickets` مفتوح بلا تسجيل دخول — من لا يستطيع الوصول لحسابه هو أكثر من يحتاج
+   * النموذج. والخادم يعيد التحقق من كل حقل، والتحقق هنا فقط ليوفّر على الزائر رحلة للشبكة.
+   */
+  const send = useMutation({
+    mutationFn: (body: {
+      name: string;
+      phone: string;
+      topic: Topic;
+      order_ref?: string;
+      message: string;
+    }) => api<{ received: boolean }>("/tickets", { method: "POST", body }),
+    onSuccess: () => setSent(true),
+    onError: (e) =>
+      toast.error(t("تعذّر إرسال الرسالة"), {
+        description: e instanceof ApiError ? e.firstMessage : t("راجع اتصالك وحاول مرة أخرى."),
+      }),
+  });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,8 +84,15 @@ function ContactPage() {
       });
       return;
     }
-    // ponytail: النموذج لا يُرسل بعد — يحتاج جدول تذاكر أو خدمة بريد.
-    setSent(true);
+
+    send.mutate({
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      topic: form.topic,
+      // حقل اختياري: نرسله فقط حين يكتبه الزائر بدل سلسلة فارغة.
+      ...(form.orderId.trim() ? { order_ref: form.orderId.trim() } : {}),
+      message: form.message.trim(),
+    });
   };
 
   const input =
@@ -75,7 +115,7 @@ function ContactPage() {
               <button
                 onClick={() => {
                   setSent(false);
-                  setForm({ name: "", phone: "", topic: TOPICS[0], orderId: "", message: "" });
+                  setForm({ name: "", phone: "", topic: "product", orderId: "", message: "" });
                 }}
                 className="mt-6 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
               >
@@ -132,11 +172,11 @@ function ContactPage() {
                     id="c-topic"
                     className={input}
                     value={form.topic}
-                    onChange={(e) => setForm({ ...form, topic: e.target.value })}
+                    onChange={(e) => setForm({ ...form, topic: e.target.value as Topic })}
                   >
-                    {TOPICS.map((topic) => (
-                      <option key={topic} value={topic}>
-                        {t(topic)}
+                    {Object.entries(TOPICS).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {t(label)}
                       </option>
                     ))}
                   </select>
@@ -176,10 +216,11 @@ function ContactPage() {
 
               <button
                 type="submit"
-                className="flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                disabled={send.isPending}
+                className="flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
                 <Send className="h-4 w-4" />
-                {t("إرسال")}
+                {t(send.isPending ? "جارٍ الإرسال…" : "إرسال")}
               </button>
             </form>
           )}

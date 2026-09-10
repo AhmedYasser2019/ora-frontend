@@ -1,6 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LoaderCircle, LogOut, Save, ShieldCheck, User } from "lucide-react";
+import {
+  LoaderCircle,
+  LogOut,
+  Save,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldQuestion,
+  User,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
@@ -24,6 +33,20 @@ export const Route = createFileRoute("/account")({
   component: AccountPage,
 });
 
+/**
+ * حالة التوثيق كما يراها الخادم — `GET /kyc`. الشاشة كانت تكتب "حساب موثّق" لكل زائر،
+ * وهي جملة عن حالة لا تعرفها: الوثائق تُرفع عند التسجيل وتُراجَع بعده، فالحالة تُقرأ ولا تُفترض.
+ */
+type Kyc = { status: "unverified" | "pending" | "approved" | "rejected"; status_label: string };
+
+/** الأيقونة ولونها لكل حالة. النص نفسه يأتي مترجمًا من الخادم في status_label. */
+const KYC_LOOK = {
+  approved: { Icon: ShieldCheck, tone: "text-gold-deep" },
+  pending: { Icon: ShieldQuestion, tone: "text-muted-foreground" },
+  rejected: { Icon: ShieldAlert, tone: "text-destructive" },
+  unverified: { Icon: ShieldQuestion, tone: "text-muted-foreground" },
+} as const;
+
 function AccountPage() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -31,6 +54,13 @@ function AccountPage() {
   const [profile, setProfile] = useState({ full_name: "", phone: "" });
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
+
+  const { data: kyc } = useQuery({
+    queryKey: ["kyc"],
+    queryFn: () => api<Kyc>("/kyc"),
+    // لا نداء قبل تسجيل الدخول — المسار محميّ بالرمز.
+    enabled: !!user,
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -146,10 +176,7 @@ function AccountPage() {
           )}
 
           <div className="mt-6 flex items-center justify-between border-t border-border pt-5">
-            <span className="flex items-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-gold-deep" />{" "}
-              {t("حساب موثّق بالبريد الإلكتروني")}
-            </span>
+            <KycBadge kyc={kyc} />
             <button
               onClick={logout}
               className="flex items-center gap-1.5 text-xs font-semibold text-destructive hover:underline"
@@ -170,5 +197,22 @@ function AccountPage() {
         </p>
       </div>
     </PageShell>
+  );
+}
+
+/** شارة التوثيق. قبل وصول الردّ لا تُعرض جملة عن الحالة أصلًا. */
+function KycBadge({ kyc }: { kyc: Kyc | undefined }) {
+  const t = useT();
+
+  if (!kyc) {
+    return <span className="text-xs text-muted-foreground">{t("جارٍ قراءة حالة التوثيق…")}</span>;
+  }
+
+  const { Icon, tone } = KYC_LOOK[kyc.status];
+
+  return (
+    <span className="flex items-center gap-2 text-xs text-muted-foreground">
+      <Icon className={`h-4 w-4 ${tone}`} /> {kyc.status_label}
+    </span>
   );
 }

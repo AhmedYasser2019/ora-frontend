@@ -56,13 +56,30 @@ node .output/server/index.mjs
 Nitro بإعداد `node-server` — عملية Node طويلة العمر خلف ALB، لأن الصفحة تحتفظ بسوكت
 لكل تبويب مفتوح. تفاصيل النشر في `../ora-backend/docs/deploy-aws.md`.
 
+### تثبيت rolldown — لا تحذف `overrides`
+
+`overrides.rolldown` في `package.json` ليست زينة. النسخة التي يطلبها vite (`~1.1.5`) بها
+خلل في تقسيم الحزم: تضع مساعد `__commonJSMin` في حزمة تدخل في دورة استيراد، فيُستدعى قبل
+تعريفه ويسقط **كل** مسار على الخادم بـ 500 و`__commonJSMin is not a function`. النسخة
+`1.2.8` تصلحه.
+
+الفخّ أن **البناء ينجح على أي حال** — الخلل لا يظهر إلا وقت التشغيل. وأسوأ منه أن
+`bun install` التزايدي قد يترك نسخة `1.1.5` متداخلة تحت `node_modules/vite/` فيعود الخلل
+صامتًا. لو ظهر الخطأ، تأكّد أن هناك نسخة واحدة فقط:
+
+```bash
+find node_modules -name package.json -path "*rolldown*" -not -path "*@rolldown*"
+rm -rf node_modules bun.lock && bun install   # لو ظهرت أكثر من واحدة
+```
+
 ## الاختبارات
 
 ملفات `assert` عادية، تُشغَّل مباشرة:
 
 ```bash
-bun run src/lib/holdings.test.ts
-bun run src/lib/zakat.test.ts
-bun run src/lib/market-hours.test.ts
+bun test          # يشغّل كل ملفات src/lib/*.test.ts
 bunx tsc --noEmit
 ```
+
+التأكيدات في أعلى الملف مباشرة لا داخل `test()`، فـ `bun test` يطبع `0 pass` وهو ينفّذها
+فعلًا — أي `assert` يسقط يُفشل الأمر.
