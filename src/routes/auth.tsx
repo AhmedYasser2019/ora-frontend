@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { PageShell } from "@/components/PageShell";
-import { supabase } from "@/integrations/supabase/client";
+import { api, ApiError, setToken, upload } from "@/lib/api";
 import { safeNext, useAuth } from "@/lib/use-auth";
 
 const searchSchema = z.object({
@@ -203,16 +203,18 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: form.email.trim(),
-        password: form.password,
+      const { token } = await api<{ token: string }>("/auth/token", {
+        method: "POST",
+        // الباك إند يقبل بريدًا أو هاتفًا؛ الموقع يجمع بريدًا والتطبيق يجمع هاتفًا.
+        body: { email: form.email.trim(), password: form.password, device_name: "web" },
       });
-      if (error) throw error;
+
+      setToken(token);
       toast.success(t("مرحبًا بعودتك"));
       navigate({ to: target });
     } catch (err) {
       toast.error(t("تعذر تسجيل الدخول"), {
-        description: err instanceof Error ? err.message : t("حاول مرة أخرى"),
+        description: err instanceof ApiError ? err.firstMessage : t("حاول مرة أخرى"),
       });
     } finally {
       setBusy(false);
@@ -232,7 +234,8 @@ function AuthPage() {
     setStep(2);
   };
 
-  // ponytail: التوثيق و OTP بيانات محلية فقط لحد ما نربط الباك إند — التحقق كله في الواجهة
+  // ponytail: صور الهوية تُرفع فعلًا إلى /kyc/documents عند إنهاء التسجيل، لكن رقم الوثيقة
+  // ونوعها لا يوجد لهما حقل في الباك إند بعد، فيبقيان تحققًا في الواجهة فقط.
   const submitKyc = (e: React.FormEvent) => {
     e.preventDefault();
     const num = kyc.docNumber.trim();
@@ -251,6 +254,9 @@ function AuthPage() {
     setStep(3);
   };
 
+  // ponytail: خطوة صورية. التسجيل في الباك إند لا يتحقق من الهاتف — الـ OTP هناك لاستعادة
+  // كلمة المرور فقط، ولا توجد بوابة SMS مشتراة بعد (AuthController يسجّل الكود في اللوج).
+  // احذف الخطوة أو اربطها بـ /auth/otp حين تُشترى البوابة؛ إبقاؤها الآن يوهم بتحقق لا يحدث.
   const submitOtp = (e: React.FormEvent) => {
     e.preventDefault();
     if (!/^[0-9]{6}$/.test(otp.trim())) {
@@ -260,45 +266,59 @@ function AuthPage() {
     setStep(4);
   };
 
-  /** آخر خطوة: ننشئ الحساب فعليًا بالبريد وكلمة المرور، وباقي البيانات تتخزن كـ metadata */
+  /**
+   * آخر خطوة: إنشاء الحساب فعليًا، ثم رفع وثائق الهوية.
+   *
+   * الحساب يُنشأ أولًا لأن الرفع يحتاج رمز الجلسة الذي يعيده التسجيل. فشل رفع صورة بعد
+   * إنشاء الحساب لا يُلغي الحساب — المستخدم مسجَّل، ويعيد الرفع من شاشة حسابه.
+   */
   const finish = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     try {
-      const email = form.email.trim();
-      const { error } = await supabase.auth.signUp({
-        email,
-        password: form.password,
-        options: {
-          data: {
-            full_name: form.name.trim(),
-            phone: form.phone.trim(),
-            doc_type: kyc.docType,
-            doc_number: kyc.docNumber.trim(),
-            experience,
-          },
-          emailRedirectTo: window.location.origin + target,
+      const [first, ...rest] = form.name.trim().split(/\s+/);
+
+      const { token } = await api<{ token: string }>("/auth/register", {
+        method: "POST",
+        body: {
+          first_name: first ?? "",
+          // الباك إند يطلب اسمًا أخيرًا؛ اسم من كلمة واحدة يكرّرها بدل أن يُرفض التسجيل.
+          last_name: rest.join(" ") || (first ?? ""),
+          phone: form.phone.trim(),
+          email: form.email.trim(),
+          password: form.password,
+          password_confirmation: form.password,
+          accepted_terms: true,
+          device_name: "web",
         },
       });
-      if (error) throw error;
-      // لو تأكيد البريد مقفول في Supabase هيدخل على طول، غير كده نطلب منه التأكيد
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
-        email,
-        password: form.password,
-      });
-      if (signInErr) {
-        toast.success(t("تم إنشاء حسابك"), {
-          description: t("أكد بريدك الإلكتروني ثم سجّل الدخول."),
-        });
-        setMode("login");
-        setStep(1);
-        return;
+
+      setToken(token);
+
+      const sides: [File | null, string][] = [
+        [docFront, "national_id_front"],
+        [docBack, "national_id_back"],
+      ];
+
+      for (const [file, type] of sides) {
+        if (!file) continue;
+        const body = new FormData();
+        body.append("type", type);
+        body.append("file", file);
+        try {
+          await upload("/kyc/documents", body);
+        } catch {
+          toast.warning(t("تم إنشاء حسابك، لكن تعذر رفع صورة الهوية"), {
+            description: t("أعد المحاولة من صفحة حسابك."),
+          });
+        }
       }
+
       toast.success(t("تم إنشاء حسابك"));
       navigate({ to: target });
     } catch (err) {
       toast.error(t("تعذر إنشاء الحساب"), {
-        description: err instanceof Error ? err.message : t("حاول مرة أخرى"),
+        description: err instanceof ApiError ? err.firstMessage : t("حاول مرة أخرى"),
       });
     } finally {
       setBusy(false);

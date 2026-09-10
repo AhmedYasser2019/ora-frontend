@@ -45,7 +45,7 @@ function GoldPricePage() {
   return (
     <PageShell
       title="سعر الذهب اليوم"
-      subtitle="أسعار مباشرة مرتبطة بسعر الأوقية العالمي وسعر الدولار مقابل الجنيه، محدثة تلقائيًا كل ثوانٍ."
+      subtitle="سعر الجرام كما ينشره مكتب التسعير بالجنيه المصري، لعيار 21 وعيار 24، ويصلك لحظة تغيّره."
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-2 text-primary">
@@ -59,27 +59,27 @@ function GoldPricePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <PriceBoard metal="gold" gram={data?.gram} sell={data?.sell} spreadPct={data?.spreadPct} />
+        <PriceBoard
+          metal="gold"
+          gram={data?.gram}
+          sell={data?.sell}
+          spreadPct={data?.spreadPct}
+          halted={data?.halted["gold"]}
+        />
         <LiveTicker history={history} series="k24" label={t("عيار 24")} />
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">{t("الدولار / الجنيه")}</p>
-          <p className="mt-1 font-display text-2xl text-primary">
-            {data ? data.usdEgp.toFixed(2) : "—"}
-          </p>
-        </div>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl bg-cream p-5 text-center">
           <p className="text-xs text-muted-foreground">{t("أوقية الذهب (عيار 24)")}</p>
           <p className="mt-1 font-display text-2xl text-primary">
-            {data ? egp(data.gram.k24 * 31.1035) : "—"}
+            {data?.gram.k24 ? egp(data.gram.k24 * 31.1035) : "—"}
           </p>
         </div>
         <div className="rounded-2xl bg-cream p-5 text-center">
           <p className="text-xs text-muted-foreground">{t("أوقية الفضة")}</p>
           <p className="mt-1 font-display text-2xl text-primary">
-            {data ? egp(data.gram.silver * 31.1035) : "—"}
+            {data?.gram.silver ? egp(data.gram.silver * 31.1035) : "—"}
           </p>
         </div>
       </div>

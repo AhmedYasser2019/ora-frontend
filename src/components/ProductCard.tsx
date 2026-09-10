@@ -6,24 +6,21 @@ import { toast } from "sonner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { useCart } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
+import type { Product } from "@/lib/catalog.server";
 import { egp } from "@/lib/prices.queries";
-import type { Product } from "@/lib/site";
+import { productImage } from "@/lib/product-image";
 
-export function ProductCard({ p, price }: { p: Product; price?: number | undefined }) {
+// السعر يأتي على القطعة نفسها من الخادم؛ لا شيء هنا يحسبه.
+export function ProductCard({ p }: { p: Product }) {
+  const price = p.price;
+  const img = productImage(p);
   const { add } = useCart();
   const [added, setAdded] = useState(false);
   const t = useT();
 
   const onAdd = () => {
     if (!p.available) return;
-    const ok = add({
-      id: p.t,
-      slug: p.slug,
-      title: p.t,
-      sub: p.s,
-      img: p.img,
-      lastPrice: price ?? 0,
-    });
+    const ok = add(p.slug);
     if (!ok) return;
     setAdded(true);
     toast.success(t("تمت الإضافة للسلة"), { description: t(p.t) });
@@ -40,12 +37,15 @@ export function ProductCard({ p, price }: { p: Product; price?: number | undefin
         className="relative block"
       >
         {!p.available && (
-          <span className="absolute end-2 top-2 z-10 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-semibold text-destructive-foreground">
+          <span
+            title={p.reason ?? undefined}
+            className="absolute end-2 top-2 z-10 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-semibold text-destructive-foreground"
+          >
             {t("غير متوفر")}
           </span>
         )}
         <img
-          src={p.img}
+          src={img}
           alt={t(p.t)}
           loading="lazy"
           width={800}

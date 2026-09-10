@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -13,12 +14,12 @@ import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
+import { bySlug, productsQuery } from "@/lib/catalog.queries";
+import { orderErrorMessage, placeOrder } from "@/lib/orders";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
-import { useLivePrices } from "@/lib/use-live-prices";
-import { GOVERNORATES, branches, buyPrice, productBySlug } from "@/lib/site";
+import { GOVERNORATES, branches } from "@/lib/site";
 
 import { tr } from "@/lib/i18n";
 
@@ -31,7 +32,11 @@ export const Route = createFileRoute("/checkout")({
       { property: "og:description", content: tr("تأكيد طلب شراء الذهب بأسعار لحظية.") },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: CheckoutPage,
 });
 
@@ -42,16 +47,8 @@ const PAYMENTS = [
   { key: "cash", label: "نقدًا في الفرع", icon: Banknote },
 ] as const;
 
-/** رسائل أخطاء place_order كما ترفعها قاعدة البيانات. */
-const RPC_ERRORS: Record<string, string> = {
-  ORD01: "سلتك فاضية",
-  ORD02: "أدخل عنوان التوصيل",
-  ORD03: "قيمة الطلب غير صحيحة",
-  WLT01: "رصيد محفظتك لا يكفي لإتمام الطلب",
-};
-
 function CheckoutPage() {
-  const { data } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const { items, clear } = useCart();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -66,20 +63,20 @@ function CheckoutPage() {
     branch: branches[0]!.name,
     payment: "instapay" as (typeof PAYMENTS)[number]["key"],
   });
-  const [placed, setPlaced] = useState<{ ref: string; total: number } | null>(null);
+  // الأمر الواحد قطعة واحدة، فسلة بكمية 3 تنتج ثلاثة أرقام لا رقمًا واحدًا.
+  const [placed, setPlaced] = useState<{ refs: string[]; total: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { next: "/checkout" } });
   }, [loading, user, navigate]);
 
-  const priceOf = (slug: string, fallback: number) => {
-    const p = productBySlug(slug);
-    return (p && buyPrice(p, data?.gram)) ?? fallback;
-  };
-  const subtotal = items.reduce((s, i) => s + priceOf(i.slug, i.lastPrice) * i.qty, 0);
-  // نفس قاعدة delivery_fee_for في قاعدة البيانات — السيرفر هو المرجع النهائي.
-  const delivery = form.fulfilment === "pickup" || subtotal >= 50_000 ? 0 : 150;
+  // سعر الخادم فقط، وهو تقديري للعرض: السعر المُلزِم هو الذي يثبّته العرض عند التأكيد.
+  const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
+  const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
+  // ponytail: التوصيل مجاني حتى يقرّر التاجر رسمًا ويصير له سطر في الدفتر — رسم لا يمرّ
+  // بالقيد المزدوج رقم لا تستطيع الدفاتر تفسيره. انظر migration add_delivery_to_orders.
+  const delivery = 0;
   const total = subtotal + delivery;
 
   const submit = async (e: React.FormEvent) => {
@@ -98,33 +95,28 @@ function CheckoutPage() {
     if (items.length === 0) return;
 
     setSubmitting(true);
-    const { data: order, error } = await supabase.rpc("place_order", {
-      p_full_name: form.name.trim(),
-      p_phone: form.phone.trim(),
-      p_fulfilment: form.fulfilment,
-      p_payment_method: form.payment,
-      p_governorate: form.fulfilment === "delivery" ? form.governorate : null,
-      p_address: form.fulfilment === "delivery" ? form.address.trim() : null,
-      p_branch: form.fulfilment === "pickup" ? form.branch : null,
-      p_items: items.map((i) => {
-        const p = productBySlug(i.slug);
-        return {
-          slug: i.slug,
-          title: i.title,
-          qty: i.qty,
-          unit_price: Number(priceOf(i.slug, i.lastPrice).toFixed(2)),
-          weight_g: p?.weightG ?? 0,
-        };
-      }),
-    });
-    setSubmitting(false);
+    try {
+      const orders = await placeOrder(items, {
+        fulfilment: form.fulfilment,
+        contact_name: form.name.trim(),
+        contact_phone: form.phone.trim(),
+        payment_method: form.payment,
+        // المفاتيح غير المعنيّة تُحذف ولا تُرسل فارغة — الخادم يتحقق من وجودها لا من قيمتها.
+        ...(form.fulfilment === "delivery"
+          ? { governorate: form.governorate, address: form.address.trim() }
+          : { branch: form.branch }),
+      });
 
-    if (error || !order) {
-      toast.error(t(RPC_ERRORS[error?.code ?? ""] ?? "تعذر إتمام الطلب"));
-      return;
+      // المجموع من الخادم: ما خُصم فعلًا، لا ما عرضته الشاشة قبل تثبيت السعر.
+      const charged = orders.reduce((s, o) => s + o.gross_piasters, 0) / 100;
+
+      setPlaced({ refs: orders.map((o) => o.order_id), total: charged });
+      clear();
+    } catch (e) {
+      toast.error(t(orderErrorMessage(e)));
+    } finally {
+      setSubmitting(false);
     }
-    setPlaced({ ref: order.ref, total: Number(order.total) });
-    clear();
   };
 
   if (loading || !user) {
@@ -143,8 +135,14 @@ function CheckoutPage() {
         <div className="mx-auto max-w-lg rounded-2xl border border-border bg-card p-10 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-gold-deep" />
           <p className="mt-4 text-xl text-primary">
-            {t("طلبك رقم")} {placed.ref}
+            {placed.refs.length === 1 ? t("طلبك رقم") : `${t("عدد الطلبات")} ${placed.refs.length}`}
           </p>
+          {/* كل قطعة طلب مستقل: سعره مثبَّت وحده، ويُتابَع ويُلغى وحده. */}
+          <ul dir="ltr" className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+            {placed.refs.map((ref) => (
+              <li key={ref}>{ref}</li>
+            ))}
+          </ul>
           <p className="mt-1 font-display text-2xl text-gold-deep">
             {egp(placed.total)} {t("ج.م")}
           </p>
@@ -358,12 +356,13 @@ function CheckoutPage() {
           <h2 className="font-display text-lg text-primary">{t("ملخص الطلب")}</h2>
           <ul className="mt-4 space-y-3 border-b border-border pb-4">
             {items.map((i) => (
-              <li key={i.id} className="flex justify-between gap-3 text-xs">
+              <li key={i.slug} className="flex justify-between gap-3 text-xs">
                 <span className="text-primary">
-                  {t(i.title)} <span className="text-muted-foreground">× {i.qty}</span>
+                  {t(bySlug(catalog, i.slug)?.t ?? i.slug)}{" "}
+                  <span className="text-muted-foreground">× {i.qty}</span>
                 </span>
                 <span className="shrink-0 text-muted-foreground">
-                  {egp(priceOf(i.slug, i.lastPrice) * i.qty)}
+                  {egp(priceOf(i.slug) * i.qty)}
                 </span>
               </li>
             ))}

@@ -1,34 +1,54 @@
-import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useSyncExternalStore } from "react";
 
-import { supabase } from "@/integrations/supabase/client";
+import { api, getToken, setToken } from "./api";
 
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  [key: string]: unknown;
+};
 
-  useEffect(() => {
-    let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-    return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
-    };
-  }, []);
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
+/** `setToken` يبثّ `ora:auth`، و`storage` يغطي تبويبًا آخر — فتتفق كل الشاشات على جلسة واحدة. */
+const subscribe = (cb: () => void) => {
+  window.addEventListener("ora:auth", cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener("ora:auth", cb);
+    window.removeEventListener("storage", cb);
   };
+};
 
-  return { user, loading, signOut };
+/** الرمز كحالة تفاعلية. على الخادم لا رمز: الرمز يعيش في المتصفح وحده. */
+export const useToken = () => useSyncExternalStore(subscribe, getToken, () => null);
+
+/**
+ * الجلسة الحالية عبر Sanctum.
+ *
+ * وجود رمز لا يعني جلسة صالحة — قد يكون ملغى من لوحة التحكم — فنسأل `GET /me`. الاستعلام
+ * مشترك في react-query، فالشاشات التي تسأل عن المستخدم لا تكرّر النداء.
+ */
+export function useAuth() {
+  const token = useToken();
+  const qc = useQueryClient();
+
+  const { data, isPending } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => api<User>("/me"),
+    enabled: !!token,
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  const signOut = useCallback(async () => {
+    setToken(null);
+    // ما في الذاكرة يخصّ حسابًا انتهت جلسته — السلة والمفضلة والممتلكات معه.
+    qc.clear();
+  }, [qc]);
+
+  return { user: token ? (data ?? null) : null, loading: !!token && isPending, signOut };
 }
 
 /** Keep only same-origin relative paths for post-auth redirects. */

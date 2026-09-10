@@ -1,12 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { buyPrice, productBySlug } from "@/lib/site";
+import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { DELIVERY_FEE, FREE_DELIVERY_OVER, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
+import { productImage } from "@/lib/product-image";
 
 import { tr } from "@/lib/i18n";
 
@@ -22,20 +24,22 @@ export const Route = createFileRoute("/cart")({
       { property: "og:description", content: tr("مراجعة السلة بأسعار الذهب اللحظية قبل الشراء.") },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: CartPage,
 });
 
 function CartPage() {
-  const { data } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const { items, setQty, remove, clear, ready } = useCart();
   const t = useT();
 
-  const priceOf = (slug: string, fallback: number) => {
-    const p = productBySlug(slug);
-    return (p && buyPrice(p, data?.gram)) ?? fallback;
-  };
-  const subtotal = items.reduce((s, i) => s + priceOf(i.slug, i.lastPrice) * i.qty, 0);
+  // سعر الخادم فقط. القطعة التي لا سعر لها الآن (معدن موقوف) تُحتسب بصفر ولا تُخترع لها قيمة.
+  const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
+  const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
   const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_OVER ? 0 : DELIVERY_FEE;
 
   return (
@@ -63,12 +67,18 @@ function CartPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-4">
             {items.map((i) => {
-              const unit = priceOf(i.slug, i.lastPrice);
+              // الخادم يُسقط القطعة المشطوبة من السلة، فغيابها من الكتالوج حالة سباق عابرة.
+              const p = bySlug(catalog, i.slug);
+              if (!p) return null;
+              const unit = p.price ?? 0;
               return (
-                <div key={i.id} className="flex gap-4 rounded-2xl border border-border bg-card p-4">
+                <div
+                  key={i.slug}
+                  className="flex gap-4 rounded-2xl border border-border bg-card p-4"
+                >
                   <img
-                    src={i.img}
-                    alt={t(i.title)}
+                    src={productImage(p)}
+                    alt={t(p.t)}
                     width={200}
                     height={200}
                     className="h-24 w-24 shrink-0 rounded-xl bg-cream object-cover"
@@ -76,12 +86,12 @@ function CartPage() {
                   <div className="flex flex-1 flex-col">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h2 className="text-base text-primary">{t(i.title)}</h2>
-                        <p className="mt-1 text-xs text-muted-foreground">{t(i.sub)}</p>
+                        <h2 className="text-base text-primary">{t(p.t)}</h2>
+                        <p className="mt-1 text-xs text-muted-foreground">{t(p.s)}</p>
                       </div>
                       <button
-                        onClick={() => remove(i.id)}
-                        aria-label={`${t("حذف")} ${t(i.title)}`}
+                        onClick={() => remove(i.slug)}
+                        aria-label={`${t("حذف")} ${t(p.t)}`}
                         className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -90,7 +100,7 @@ function CartPage() {
                     <div className="mt-auto flex items-center justify-between pt-3">
                       <div className="flex items-center gap-1 rounded-full border border-border">
                         <button
-                          onClick={() => setQty(i.id, i.qty - 1)}
+                          onClick={() => setQty(i.slug, i.qty - 1)}
                           aria-label={t("إنقاص الكمية")}
                           className="flex h-8 w-8 items-center justify-center rounded-full text-primary hover:bg-secondary"
                         >
@@ -100,7 +110,7 @@ function CartPage() {
                           {i.qty}
                         </span>
                         <button
-                          onClick={() => setQty(i.id, i.qty + 1)}
+                          onClick={() => setQty(i.slug, i.qty + 1)}
                           aria-label={t("زيادة الكمية")}
                           className="flex h-8 w-8 items-center justify-center rounded-full text-primary hover:bg-secondary"
                         >

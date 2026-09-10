@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import {
@@ -15,7 +16,7 @@ import {
 import heroGold from "@/assets/hero-gold.jpg";
 import { intlLocale, tr, useT } from "@/lib/i18n";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
-import { buyPrice, productBySlug } from "@/lib/site";
+import { productsQuery } from "@/lib/catalog.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { PriceChart } from "@/components/LiveTicker";
 import { MarketCountdown } from "@/components/MarketCountdown";
@@ -45,12 +46,17 @@ export const Route = createFileRoute("/")({
       ],
     };
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: Home,
 });
 
-const featured = ["gold-bar-10g", "gold-sovereign-coin", "classic-gold-set", "silver-bar-100g"];
-const products = featured.flatMap((slug) => productBySlug(slug) ?? []);
+// ponytail: أول أربع قطع من الكتالوج (مرتّب بالمعدن ثم الوزن). لا يوجد علم "مميّز" في
+// الباك إند بعد؛ أضِف عمودًا واقرأه هنا حين يريد التاجر اختيار واجهة الصفحة بنفسه.
+const FEATURED_COUNT = 4;
 
 const services = [
   {
@@ -76,6 +82,8 @@ const services = [
 
 function Home() {
   const { data, isFetching, dataUpdatedAt, live, pushedAt, history } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
+  const products = (catalog ?? []).slice(0, FEATURED_COUNT);
   const t = useT();
 
   const gramRows = [
@@ -198,7 +206,7 @@ function Home() {
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {products.map((p) => (
-            <ProductCard key={p.slug} p={p} price={buyPrice(p, data?.gram)} />
+            <ProductCard key={p.slug} p={p} />
           ))}
         </div>
       </section>

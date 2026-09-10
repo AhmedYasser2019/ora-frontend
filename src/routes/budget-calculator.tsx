@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Calculator, Coins, Radio, Sparkles, TrendingDown } from "lucide-react";
@@ -7,7 +8,9 @@ import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
-import { allProducts, buyPrice, gramKeyOf, weightLabel, type Metal } from "@/lib/site";
+import { productsQuery } from "@/lib/catalog.queries";
+import type { Metal } from "@/lib/catalog.server";
+import { weightLabel } from "@/lib/site";
 
 import { tr } from "@/lib/i18n";
 
@@ -28,7 +31,11 @@ export const Route = createFileRoute("/budget-calculator")({
       },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: BudgetCalculatorPage,
 });
 
@@ -36,6 +43,7 @@ const GOLD_KARATS = [24, 21] as const;
 
 function BudgetCalculatorPage() {
   const { data, live } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const t = useT();
   const [metal, setMetal] = useState<Metal>("gold");
   const [karat, setKarat] = useState<(typeof GOLD_KARATS)[number]>(24);
@@ -49,22 +57,23 @@ function BudgetCalculatorPage() {
 
   /** أفضل الخيارات: المنتجات التي تدخل في الميزانية، مرتبة بالأقل مصنعية لكل جرام. */
   const options = useMemo(() => {
-    if (!submitted || !valid || !data) return [];
+    if (!submitted || !valid) return [];
     return (
-      allProducts
+      (catalog ?? [])
         .filter((p) => p.metal === metal && p.available)
-        .filter((p) => metal === "silver" || gramKeyOf(p) === gramKey)
+        // عيار المنتج لا بد أن يطابق العيار المختار — الفضة عيار واحد.
+        .filter((p) => metal === "silver" || `k${p.karat}` === gramKey)
         .map((p) => {
-          const unit = buyPrice(p, data.gram) ?? 0;
+          const unit = p.price ?? 0;
           const qty = unit > 0 ? Math.floor(amount / unit) : 0;
           return { p, unit, qty, totalG: qty * p.weightG, spent: qty * unit };
         })
         .filter((o) => o.qty > 0)
         // الأفضل = أكبر وزن معدن مقابل الميزانية، ثم الأقل مصنعية.
-        .sort((a, b) => b.totalG - a.totalG || a.p.fabrication - b.p.fabrication)
+        .sort((a, b) => b.totalG - a.totalG || (a.p.premium ?? 0) - (b.p.premium ?? 0))
         .slice(0, 8)
     );
-  }, [submitted, valid, data, metal, gramKey, amount]);
+  }, [submitted, valid, catalog, metal, gramKey, amount]);
 
   const grossGrams = valid && gramPrice > 0 ? amount / gramPrice : 0;
   const best = options[0];
@@ -299,7 +308,7 @@ function BudgetCalculatorPage() {
                     <h2 className="mb-4 font-display text-lg text-primary">{t("أفضل 4 خيارات")}</h2>
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                       {options.slice(0, 4).map((o) => (
-                        <ProductCard key={o.p.slug} p={o.p} price={o.unit} />
+                        <ProductCard key={o.p.slug} p={o.p} />
                       ))}
                     </div>
                   </div>
