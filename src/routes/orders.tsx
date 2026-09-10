@@ -164,7 +164,9 @@ function OrdersPage() {
                   <li className="flex justify-between gap-3 text-sm">
                     <span className="text-primary">
                       {t(o.product?.name ?? "")}{" "}
-                      <span className="text-muted-foreground">{o.grams} {t("جرام")}</span>
+                      <span className="text-muted-foreground">
+                        {o.grams} {t("جرام")}
+                      </span>
                     </span>
                     <span className="shrink-0 text-muted-foreground">
                       {egp(o.gross_piasters / 100)} {t("ج.م")}

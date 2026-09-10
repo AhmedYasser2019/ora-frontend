@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 
@@ -26,8 +27,14 @@ export const Route = createFileRoute("/favorites")({
 
 function FavoritesPage() {
   const { data: catalog } = useQuery(productsQuery);
-  const { slugs, ready, clear } = useFavorites();
+  const { slugs, ready, clear, prune } = useFavorites();
   const t = useT();
+
+  // قائمة الزائر على جهازه قد تحمل كودًا لم يعد في الكتالوج — وإلا عدَّ الشارةُ ما لا تعرضه
+  // الصفحة. قائمة الحساب يفلترها الخادم، فهذه لا تمسّها.
+  useEffect(() => {
+    if (catalog) prune(catalog.map((p) => p.slug));
+  }, [catalog, prune]);
 
   const products = slugs.map((slug) => bySlug(catalog, slug)).filter((p) => p !== undefined);
 

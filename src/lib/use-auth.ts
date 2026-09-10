@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useSyncExternalStore } from "react";
 
 import { api, getToken, setToken } from "./api";
 
@@ -10,43 +11,44 @@ export type User = {
   [key: string]: unknown;
 };
 
+/** `setToken` يبثّ `ora:auth`، و`storage` يغطي تبويبًا آخر — فتتفق كل الشاشات على جلسة واحدة. */
+const subscribe = (cb: () => void) => {
+  window.addEventListener("ora:auth", cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener("ora:auth", cb);
+    window.removeEventListener("storage", cb);
+  };
+};
+
+/** الرمز كحالة تفاعلية. على الخادم لا رمز: الرمز يعيش في المتصفح وحده. */
+export const useToken = () => useSyncExternalStore(subscribe, getToken, () => null);
+
 /**
  * الجلسة الحالية عبر Sanctum.
  *
- * وجود رمز لا يعني جلسة صالحة — قد يكون ملغى من لوحة التحكم — فنسأل `GET /me` مرة عند
- * الإقلاع، وهو أيضًا ما يملأ اسم المستخدم في الترويسة دون نداء ثانٍ.
+ * وجود رمز لا يعني جلسة صالحة — قد يكون ملغى من لوحة التحكم — فنسأل `GET /me`. الاستعلام
+ * مشترك في react-query، فالشاشات التي تسأل عن المستخدم لا تكرّر النداء.
  */
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const token = useToken();
+  const qc = useQueryClient();
 
-  const load = useCallback(() => {
-    if (!getToken()) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
+  const { data, isPending } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => api<User>("/me"),
+    enabled: !!token,
+    retry: false,
+    staleTime: 60_000,
+  });
 
-    api<User>("/me")
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    load();
-
-    // setToken يبثّ هذا الحدث، فتتفق كل الشاشات المفتوحة على نفس الجلسة.
-    window.addEventListener("ora:auth", load);
-    return () => window.removeEventListener("ora:auth", load);
-  }, [load]);
-
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     setToken(null);
-    setUser(null);
-  };
+    // ما في الذاكرة يخصّ حسابًا انتهت جلسته — السلة والمفضلة والممتلكات معه.
+    qc.clear();
+  }, [qc]);
 
-  return { user, loading, signOut };
+  return { user: token ? (data ?? null) : null, loading: !!token && isPending, signOut };
 }
 
 /** Keep only same-origin relative paths for post-auth redirects. */

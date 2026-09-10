@@ -75,10 +75,7 @@ function ProductPage() {
   const img = productImage(p);
 
   const addToCart = () => {
-    const ok = add(
-      { id: p.t, slug: p.slug, title: p.t, sub: p.s, img },
-      qty,
-    );
+    const ok = add(p.slug, qty);
     if (ok) toast.success(t("تمت الإضافة للسلة"), { description: `${t(p.t)} × ${qty}` });
     return ok;
   };

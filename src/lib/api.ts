@@ -6,7 +6,8 @@
  * شخصي لهذا الجهاز.
  */
 
-const BASE = import.meta.env["VITE_API_URL"] ?? "http://localhost:8000";
+// `?.` لأن الاختبارات تشغّل هذه الوحدة في node، حيث لا `import.meta.env`.
+const BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
 const TOKEN_KEY = "ora.token";
 
@@ -65,9 +66,12 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
   });
 
-  const body = (await res.json().catch(() => null)) as
-    | { msg?: string; data?: T; errors?: Record<string, string[]>; message?: string }
-    | null;
+  const body = (await res.json().catch(() => null)) as {
+    msg?: string;
+    data?: T;
+    errors?: Record<string, string[]>;
+    message?: string;
+  } | null;
 
   if (!res.ok) {
     // رمز منتهٍ أو ملغى: ننهي الجلسة محليًا بدل ترك المستخدم يضغط أزرارًا لا تعمل.
@@ -94,9 +98,12 @@ export async function upload<T>(path: string, form: FormData): Promise<T> {
 
   const res = await fetch(`${BASE}/api/v1${path}`, { method: "POST", headers, body: form });
 
-  const body = (await res.json().catch(() => null)) as
-    | { msg?: string; data?: T; errors?: Record<string, string[]>; message?: string }
-    | null;
+  const body = (await res.json().catch(() => null)) as {
+    msg?: string;
+    data?: T;
+    errors?: Record<string, string[]>;
+    message?: string;
+  } | null;
 
   if (!res.ok) {
     if (res.status === 401) setToken(null);

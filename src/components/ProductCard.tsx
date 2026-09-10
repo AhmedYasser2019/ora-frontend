@@ -20,13 +20,7 @@ export function ProductCard({ p }: { p: Product }) {
 
   const onAdd = () => {
     if (!p.available) return;
-    const ok = add({
-      id: p.t,
-      slug: p.slug,
-      title: p.t,
-      sub: p.s,
-      img,
-    });
+    const ok = add(p.slug);
     if (!ok) return;
     setAdded(true);
     toast.success(t("تمت الإضافة للسلة"), { description: t(p.t) });
