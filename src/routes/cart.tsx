@@ -1,9 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { buyPrice, productBySlug } from "@/lib/site";
+import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { DELIVERY_FEE, FREE_DELIVERY_OVER, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
@@ -22,20 +23,22 @@ export const Route = createFileRoute("/cart")({
       { property: "og:description", content: tr("مراجعة السلة بأسعار الذهب اللحظية قبل الشراء.") },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: CartPage,
 });
 
 function CartPage() {
-  const { data } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const { items, setQty, remove, clear, ready } = useCart();
   const t = useT();
 
-  const priceOf = (slug: string, fallback: number) => {
-    const p = productBySlug(slug);
-    return (p && buyPrice(p, data?.gram)) ?? fallback;
-  };
-  const subtotal = items.reduce((s, i) => s + priceOf(i.slug, i.lastPrice) * i.qty, 0);
+  // سعر الخادم فقط. القطعة التي لا سعر لها الآن (معدن موقوف) تُحتسب بصفر ولا تُخترع لها قيمة.
+  const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
+  const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
   const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_OVER ? 0 : DELIVERY_FEE;
 
   return (
@@ -63,7 +66,7 @@ function CartPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-4">
             {items.map((i) => {
-              const unit = priceOf(i.slug, i.lastPrice);
+              const unit = priceOf(i.slug);
               return (
                 <div key={i.id} className="flex gap-4 rounded-2xl border border-border bg-card p-4">
                   <img

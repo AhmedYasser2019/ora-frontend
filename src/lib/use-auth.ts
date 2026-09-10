@@ -1,31 +1,49 @@
-import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { useCallback, useEffect, useState } from "react";
 
-import { supabase } from "@/integrations/supabase/client";
+import { api, getToken, setToken } from "./api";
 
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  [key: string]: unknown;
+};
+
+/**
+ * الجلسة الحالية عبر Sanctum.
+ *
+ * وجود رمز لا يعني جلسة صالحة — قد يكون ملغى من لوحة التحكم — فنسأل `GET /me` مرة عند
+ * الإقلاع، وهو أيضًا ما يملأ اسم المستخدم في الترويسة دون نداء ثانٍ.
+ */
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setUser(data.session?.user ?? null);
+  const load = useCallback(() => {
+    if (!getToken()) {
+      setUser(null);
       setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-    return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
-    };
+      return;
+    }
+
+    api<User>("/me")
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    load();
+
+    // setToken يبثّ هذا الحدث، فتتفق كل الشاشات المفتوحة على نفس الجلسة.
+    window.addEventListener("ora:auth", load);
+    return () => window.removeEventListener("ora:auth", load);
+  }, [load]);
+
   const signOut = async () => {
-    await supabase.auth.signOut();
+    setToken(null);
+    setUser(null);
   };
 
   return { user, loading, signOut };

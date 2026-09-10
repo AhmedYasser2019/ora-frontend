@@ -23,11 +23,14 @@ export function PriceBoard({
   gram,
   sell,
   spreadPct,
+  halted,
 }: {
   metal: "gold" | "silver";
-  gram?: GramPrices | undefined;
-  sell?: GramPrices | undefined;
-  spreadPct?: number | undefined;
+  gram?: Partial<GramPrices> | undefined;
+  sell?: Partial<GramPrices> | undefined;
+  spreadPct?: number | null | undefined;
+  /** سبب إيقاف التداول من الخادم، إن وُجد. */
+  halted?: string | undefined;
 }) {
   const t = useT();
   const rows = metal === "gold" ? GOLD_ROWS : SILVER_ROWS;
@@ -36,6 +39,15 @@ export function PriceBoard({
   const buyValue = gram?.[active];
   const sellValue = sell?.[active];
   const diff = buyValue !== undefined && sellValue !== undefined ? buyValue - sellValue : undefined;
+
+  if (halted) {
+    return (
+      <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-6">
+        <p className="font-display text-lg text-primary">{t("التداول متوقف")}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{halted}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

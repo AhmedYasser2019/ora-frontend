@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { supabase } from "@/integrations/supabase/client";
+import { api, ApiError } from "@/lib/api";
 import { egp } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
 
@@ -23,44 +23,44 @@ export const Route = createFileRoute("/orders")({
   component: OrdersPage,
 });
 
-type Status = "pending" | "confirmed" | "shipped" | "completed" | "cancelled";
-
-type OrderItem = { id: string; title: string; qty: number; unit_price: number };
+/** دورة حياة الطلب في الباك إند — انظر OrderStatus. */
+type Status = "pending" | "approved" | "ready" | "delivered" | "completed" | "cancelled";
 
 type Order = {
-  id: string;
-  ref: string;
+  order_id: string;
   status: Status;
-  fulfilment: string;
-  governorate: string | null;
-  address: string | null;
-  branch: string | null;
-  payment_method: string;
-  subtotal: number;
-  delivery_fee: number;
-  total: number;
-  created_at: string;
-  order_items: OrderItem[];
+  /** النص مترجم من الخادم، فلا تُكرَّر أسماء الحالات هنا. */
+  status_label: string;
+  grams: string;
+  gross_piasters: number;
+  executed_at: string;
+  product?: { sku: string; name: string };
+  delivery?: {
+    fulfilment: string | null;
+    governorate: string | null;
+    address: string | null;
+    branch: string | null;
+    payment_method: string | null;
+  };
 };
 
-const STATUS: Record<Status, { label: string; className: string }> = {
-  pending: { label: "قيد التنفيذ", className: "bg-gold/15 text-gold-deep" },
-  confirmed: { label: "تم التأكيد", className: "bg-gold/25 text-gold-deep" },
-  shipped: { label: "تم الشحن", className: "bg-secondary text-primary" },
-  completed: { label: "مكتمل", className: "bg-primary text-primary-foreground" },
-  cancelled: { label: "ملغي", className: "bg-destructive/15 text-destructive" },
+const STATUS_CLASS: Record<Status, string> = {
+  pending: "bg-gold/15 text-gold-deep",
+  approved: "bg-gold/25 text-gold-deep",
+  ready: "bg-secondary text-primary",
+  delivered: "bg-primary text-primary-foreground",
+  completed: "bg-primary text-primary-foreground",
+  cancelled: "bg-destructive/15 text-destructive",
 };
+
+/** ما دام لم يُسلَّم بعد، يمكن للعميل التراجع. */
+const CANCELLABLE: Status[] = ["pending", "approved", "ready"];
 
 const PAYMENT: Record<string, string> = {
   instapay: "InstaPay",
   bank: "تحويل بنكي",
   wallet: "رصيد المحفظة",
   cash: "نقدًا في الفرع",
-};
-
-const CANCEL_ERRORS: Record<string, string> = {
-  ORD04: "لم يتم العثور على الطلب",
-  ORD05: "لا يمكن إلغاء الطلب بعد شحنه",
 };
 
 const when = (iso: string) =>
@@ -80,33 +80,34 @@ function OrdersPage() {
     if (!loading && !user) navigate({ to: "/auth", search: { next: "/orders" } });
   }, [loading, user, navigate]);
 
-  const refresh = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from("orders")
-      .select(
-        "id, ref, status, fulfilment, governorate, address, branch, payment_method, subtotal, delivery_fee, total, created_at, order_items(id, title, qty, unit_price)",
-      )
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-    setOrders((data as Order[] | null) ?? []);
-    setFetching(false);
+  const refresh = useCallback(async () => {
+    try {
+      // مُصفَّح من الخادم؛ الصفحة الأولى هي أحدث الطلبات.
+      const page = await api<{ data: Order[] }>("/orders");
+      setOrders(page.data);
+    } catch {
+      setOrders([]);
+    } finally {
+      setFetching(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (user) void refresh(user.id);
+    if (user) void refresh();
   }, [user, refresh]);
 
   const cancel = async (id: string) => {
     if (!user) return;
     setBusy(id);
-    const { error } = await supabase.rpc("cancel_order", { p_order_id: id });
-    setBusy("");
-    if (error) {
-      toast.error(t(CANCEL_ERRORS[error.code ?? ""] ?? "تعذر إلغاء الطلب"));
-      return;
+    try {
+      await api(`/orders/${id}/cancel`, { method: "POST" });
+      toast.success(t("تم إلغاء الطلب"));
+      void refresh();
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر إلغاء الطلب"));
+    } finally {
+      setBusy("");
     }
-    toast.success(t("تم إلغاء الطلب"));
-    void refresh(user.id);
   };
 
   if (loading || !user || fetching) {
@@ -141,74 +142,71 @@ function OrdersPage() {
       ) : (
         <div className="space-y-4">
           {orders.map((o) => {
-            const status = STATUS[o.status];
-            const cancellable = o.status === "pending" || o.status === "confirmed";
+            const cancellable = CANCELLABLE.includes(o.status);
+            const d = o.delivery;
             return (
-              <article key={o.id} className="rounded-2xl border border-border bg-card p-6">
+              <article key={o.order_id} className="rounded-2xl border border-border bg-card p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p dir="ltr" className="font-display text-lg text-primary">
-                      {o.ref}
+                    <p dir="ltr" className="font-display text-sm text-primary">
+                      {o.order_id}
                     </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{when(o.created_at)}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{when(o.executed_at)}</p>
                   </div>
                   <span
-                    className={`rounded-full px-3 py-1 text-[11px] font-semibold ${status.className}`}
+                    className={`rounded-full px-3 py-1 text-[11px] font-semibold ${STATUS_CLASS[o.status]}`}
                   >
-                    {t(status.label)}
+                    {o.status_label}
                   </span>
                 </div>
 
                 <ul className="mt-5 space-y-2 border-y border-border py-4">
-                  {o.order_items.map((i) => (
-                    <li key={i.id} className="flex justify-between gap-3 text-sm">
-                      <span className="text-primary">
-                        {t(i.title)} <span className="text-muted-foreground">× {i.qty}</span>
-                      </span>
-                      <span className="shrink-0 text-muted-foreground">
-                        {egp(Number(i.unit_price) * i.qty)} {t("ج.م")}
-                      </span>
-                    </li>
-                  ))}
+                  <li className="flex justify-between gap-3 text-sm">
+                    <span className="text-primary">
+                      {t(o.product?.name ?? "")}{" "}
+                      <span className="text-muted-foreground">{o.grams} {t("جرام")}</span>
+                    </span>
+                    <span className="shrink-0 text-muted-foreground">
+                      {egp(o.gross_piasters / 100)} {t("ج.م")}
+                    </span>
+                  </li>
                 </ul>
 
                 <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
                   <div className="space-y-1 text-xs text-muted-foreground">
-                    <p className="flex items-center gap-1.5">
-                      {o.fulfilment === "pickup" ? (
-                        <>
-                          <Store className="h-3.5 w-3.5 text-gold-deep" /> {t("استلام من")}{" "}
-                          {t(o.branch ?? "")}
-                        </>
-                      ) : (
-                        <>
-                          <MapPin className="h-3.5 w-3.5 text-gold-deep" /> {t(o.governorate ?? "")}{" "}
-                          — {o.address}
-                        </>
-                      )}
-                    </p>
-                    <p>
-                      {t("طريقة الدفع")}: {t(PAYMENT[o.payment_method] ?? o.payment_method)}
-                    </p>
-                    <p>
-                      {t("الإجمالي الفرعي")} {egp(Number(o.subtotal))} {t("ج.م")} · {t("التوصيل")}{" "}
-                      {Number(o.delivery_fee) === 0
-                        ? t("مجاني")
-                        : `${egp(Number(o.delivery_fee))} ${t("ج.م")}`}
-                    </p>
+                    {d && (
+                      <p className="flex items-center gap-1.5">
+                        {d.fulfilment === "pickup" ? (
+                          <>
+                            <Store className="h-3.5 w-3.5 text-gold-deep" /> {t("استلام من")}{" "}
+                            {t(d.branch ?? "")}
+                          </>
+                        ) : (
+                          <>
+                            <MapPin className="h-3.5 w-3.5 text-gold-deep" />{" "}
+                            {t(d.governorate ?? "")} — {d.address}
+                          </>
+                        )}
+                      </p>
+                    )}
+                    {d?.payment_method && (
+                      <p>
+                        {t("طريقة الدفع")}: {t(PAYMENT[d.payment_method] ?? d.payment_method)}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-4">
                     <p className="font-display text-2xl text-gold-deep">
-                      {egp(Number(o.total))} {t("ج.م")}
+                      {egp(o.gross_piasters / 100)} {t("ج.م")}
                     </p>
                     {cancellable && (
                       <button
-                        onClick={() => cancel(o.id)}
-                        disabled={busy === o.id}
+                        onClick={() => cancel(o.order_id)}
+                        disabled={busy === o.order_id}
                         className="flex items-center gap-1.5 rounded-full border border-destructive/40 px-4 py-2 text-xs font-semibold text-destructive hover:bg-destructive/5 disabled:opacity-50"
                       >
-                        {busy === o.id ? (
+                        {busy === o.order_id ? (
                           <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                         ) : (
                           <XCircle className="h-3.5 w-3.5" />

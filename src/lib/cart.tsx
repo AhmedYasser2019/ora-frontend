@@ -21,7 +21,6 @@ export type CartItem = {
   img: string;
   qty: number;
   /** آخر سعر معروف وقت الإضافة، يُستخدم كاحتياطي لو البث متوقف */
-  lastPrice: number;
 };
 
 type CartContextValue = {
@@ -80,7 +79,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (found) {
           return prev.map((p) =>
             p.id === item.id
-              ? { ...p, qty: p.qty + qty, lastPrice: item.lastPrice || p.lastPrice }
+              ? { ...p, qty: p.qty + qty }
               : p,
           );
         }

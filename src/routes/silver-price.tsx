@@ -51,7 +51,7 @@ function SilverPricePage() {
   return (
     <PageShell
       title="سعر الفضة اليوم"
-      subtitle="سعر الفضة النقية 999 بالجنيه المصري، مرتبط بسعر الأوقية العالمي وسعر الدولار، ومحدَّث تلقائيًا كل ثوانٍ."
+      subtitle="سعر جرام الفضة النقية 999 بالجنيه المصري كما ينشره مكتب التسعير، ويصلك لحظة تغيّره."
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-2 text-primary">
@@ -70,24 +70,18 @@ function SilverPricePage() {
           gram={data?.gram}
           sell={data?.sell}
           spreadPct={data?.spreadPct}
+          halted={data?.halted["silver"]}
         />
         <LiveTicker history={history} series="silver" label={t("الفضة")} />
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl bg-cream p-5 text-center">
           <p className="text-xs text-muted-foreground">{t("أوقية الفضة")}</p>
           <p className="mt-1 font-display text-2xl text-primary">
             {silver ? egp(silver * OZ) : "—"}
           </p>
           <p className="text-[11px] text-gold-deep">{t("جنيه / أونصة")}</p>
-        </div>
-        <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">{t("الدولار / الجنيه")}</p>
-          <p className="mt-1 font-display text-2xl text-primary">
-            {data ? data.usdEgp.toFixed(2) : "—"}
-          </p>
-          <p className="text-[11px] text-gold-deep">{t("سعر الصرف")}</p>
         </div>
         <div className="rounded-2xl bg-cream p-5 text-center">
           <p className="text-xs text-muted-foreground">{t("نسبة الذهب للفضة")}</p>

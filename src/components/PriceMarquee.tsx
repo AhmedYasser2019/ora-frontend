@@ -1,39 +1,42 @@
 import { WifiOff, Radio } from "lucide-react";
 
+import { useQuery } from "@tanstack/react-query";
+
+import { productsQuery } from "@/lib/catalog.queries";
 import { intlLocale, useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
-import { buyPrice, productBySlug } from "@/lib/site";
-
-const itemPrice = (slug: string, gram: Parameters<typeof buyPrice>[1]) => {
-  const p = productBySlug(slug);
-  return (p && buyPrice(p, gram)) ?? 0;
-};
 
 const time = (ts: number) =>
   ts ? new Intl.DateTimeFormat(intlLocale(), { timeStyle: "medium" }).format(new Date(ts)) : "—";
 
 export function PriceMarquee() {
   const { data, live, dataUpdatedAt } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const t = useT();
 
   const perGram = `${t("ج.م")} / ${t("جرام")}`;
 
-  const priceItems = data
-    ? [
-        { label: t("ذهب عيار 24"), value: `${egp(data.gram.k24)} ${perGram}` },
-        { label: t("ذهب عيار 21"), value: `${egp(data.gram.k21)} ${perGram}` },
-        { label: t("الفضة"), value: `${egp(data.gram.silver)} ${perGram}` },
-        { label: t("الدولار"), value: `${data.usdEgp.toFixed(2)} ${t("ج.م")}` },
-        {
-          label: t("سبيكة 10 جرام"),
-          value: `${egp(itemPrice("gold-bar-10g", data.gram))} ${t("ج.م")}`,
-        },
-        {
-          label: t("جنيه ذهب 8 جرام"),
-          value: `${egp(itemPrice("gold-sovereign-coin", data.gram))} ${t("ج.م")}`,
-        },
-      ]
+  // المعدن الموقوف تداوله لا يصل بسعر، فيسقط من الشريط بدل أن يُعرض بسعر قديم.
+  const gramRows = data
+    ? (
+        [
+          [t("ذهب عيار 24"), data.gram.k24],
+          [t("ذهب عيار 21"), data.gram.k21],
+          [t("الفضة"), data.gram.silver],
+        ] as const
+      )
+        .filter(([, v]) => v !== undefined)
+        .map(([label, v]) => ({ label, value: `${egp(v as number)} ${perGram}` }))
+    : [];
+
+  const productRows = (catalog ?? [])
+    .filter((p) => p.price !== undefined)
+    .slice(0, 2)
+    .map((p) => ({ label: t(p.t), value: `${egp(p.price as number)} ${t("ج.م")}` }));
+
+  const priceItems = gramRows.length
+    ? [...gramRows, ...productRows]
     : [{ label: t("جارٍ تحميل الأسعار"), value: "..." }];
 
   const statusItem = {
