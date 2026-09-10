@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -5,18 +6,10 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
-import { livePricesQuery } from "@/lib/prices.queries";
-import { useLivePrices } from "@/lib/use-live-prices";
-import {
-  CATEGORIES,
-  PROVIDERS,
-  allProducts,
-  buyPrice,
-  type Category,
-  type Metal,
-  type Provider,
-  weightLabel,
-} from "@/lib/site";
+import { egp, livePricesQuery } from "@/lib/prices.queries";
+import { productsQuery } from "@/lib/catalog.queries";
+import { CATEGORIES, providersOf, type Category, type Metal } from "@/lib/catalog.server";
+import { weightLabel } from "@/lib/site";
 
 import { tr } from "@/lib/i18n";
 
@@ -37,7 +30,11 @@ export const Route = createFileRoute("/collection")({
       },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: CollectionPage,
 });
 
@@ -47,30 +44,40 @@ const SORTS = [
   { key: "price-desc", label: "السعر: من الأعلى" },
   { key: "weight-asc", label: "الوزن: من الأقل" },
   { key: "weight-desc", label: "الوزن: من الأعلى" },
-  { key: "fab-asc", label: "المصنعية: من الأقل" },
+  { key: "premium-asc", label: "المصنعية: من الأقل" },
 ] as const;
 
 type Sort = (typeof SORTS)[number]["key"];
 
-const WEIGHTS = allProducts.map((p) => p.weightG);
-const MIN_W = Math.min(...WEIGHTS);
-const MAX_W = Math.max(...WEIGHTS);
-
-// المصنعية كنسبة مئوية مقرّبة لتفادي كسور الفاصلة العائمة في الشريط.
-const fabPct = (p: (typeof allProducts)[number]) => Math.round(p.fabrication * 1000) / 10;
-const FABS = allProducts.map(fabPct);
-const MIN_F = Math.floor(Math.min(...FABS));
-const MAX_F = Math.ceil(Math.max(...FABS));
-
+// المصنعية مبلغ ثابت للقطعة في الباك إند، لا نسبة — فالفلتر بالجنيه.
 function CollectionPage() {
-  const { data } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const t = useT();
+
+  const all = catalog ?? [];
+  const PROVIDERS = useMemo(() => providersOf(all), [catalog]);
+
+  const { MIN_W, MAX_W, MIN_F, MAX_F } = useMemo(() => {
+    const weights = all.map((p) => p.weightG);
+    const premiums = all.map((p) => p.premium ?? 0);
+    return {
+      MIN_W: weights.length ? Math.min(...weights) : 0,
+      MAX_W: weights.length ? Math.max(...weights) : 0,
+      MIN_F: premiums.length ? Math.floor(Math.min(...premiums)) : 0,
+      MAX_F: premiums.length ? Math.ceil(Math.max(...premiums)) : 0,
+    };
+  }, [catalog]);
   const [open, setOpen] = useState(false);
   const [metal, setMetal] = useState<Metal | "all">("all");
   const [cats, setCats] = useState<Category[]>([]);
-  const [provs, setProvs] = useState<Provider[]>([]);
-  const [maxW, setMaxW] = useState(MAX_W);
-  const [maxF, setMaxF] = useState(MAX_F);
+  const [provs, setProvs] = useState<string[]>([]);
+  // undefined = لم يلمس المستخدم الشريط بعد، فالحدّ هو أقصى ما في الكتالوج مهما تغيّر.
+  const [maxW, setMaxWState] = useState<number | undefined>(undefined);
+  const [maxF, setMaxFState] = useState<number | undefined>(undefined);
+  const setMaxW = (v: number) => setMaxWState(v);
+  const setMaxF = (v: number) => setMaxFState(v);
+  const wCap = maxW ?? MAX_W;
+  const fCap = maxF ?? MAX_F;
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState<Sort>("featured");
 
@@ -81,8 +88,8 @@ function CollectionPage() {
     setMetal("all");
     setCats([]);
     setProvs([]);
-    setMaxW(MAX_W);
-    setMaxF(MAX_F);
+    setMaxWState(undefined);
+    setMaxFState(undefined);
     setInStock(false);
     setSort("featured");
   };
@@ -93,38 +100,39 @@ function CollectionPage() {
   );
 
   const list = useMemo(() => {
-    const out = allProducts
+    const out = all
       .filter((p) => metal === "all" || p.metal === metal)
       .filter((p) => cats.length === 0 || cats.includes(p.cat))
       .filter((p) => provs.length === 0 || provs.includes(p.provider))
-      .filter((p) => p.weightG <= maxW)
-      .filter((p) => fabPct(p) <= maxF)
+      .filter((p) => p.weightG <= wCap)
+      .filter((p) => (p.premium ?? 0) <= fCap)
       .filter((p) => !inStock || p.available);
 
-    const priceOf = (p: (typeof allProducts)[number]) => buyPrice(p, data?.gram) ?? 0;
+    // السعر من الخادم. القطعة بلا سعر (معدن موقوف) تُرتَّب أخيرًا بدل أن تبدو الأرخص.
+    const priceOf = (p: (typeof all)[number]) => p.price ?? Infinity;
 
     switch (sort) {
       case "price-asc":
         return [...out].sort((a, b) => priceOf(a) - priceOf(b));
       case "price-desc":
-        return [...out].sort((a, b) => priceOf(b) - priceOf(a));
+        return [...out].sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
       case "weight-asc":
         return [...out].sort((a, b) => a.weightG - b.weightG);
       case "weight-desc":
         return [...out].sort((a, b) => b.weightG - a.weightG);
-      case "fab-asc":
-        return [...out].sort((a, b) => fabPct(a) - fabPct(b));
+      case "premium-asc":
+        return [...out].sort((a, b) => (a.premium ?? 0) - (b.premium ?? 0));
       default:
         return out;
     }
-  }, [metal, cats, provs, maxW, maxF, inStock, sort, data]);
+  }, [catalog, metal, cats, provs, wCap, fCap, inStock, sort]);
 
   const active =
     (metal !== "all" ? 1 : 0) +
     cats.length +
     provs.length +
-    (maxW !== MAX_W ? 1 : 0) +
-    (maxF !== MAX_F ? 1 : 0) +
+    (maxW !== undefined ? 1 : 0) +
+    (maxF !== undefined ? 1 : 0) +
     (inStock ? 1 : 0);
 
   const chip = (on: boolean) =>
@@ -190,14 +198,14 @@ function CollectionPage() {
             </div>
 
             <p className="mb-2 text-xs font-semibold text-primary">
-              {t("نطاق الوزن — حتى")} {weightLabel(maxW)}
+              {t("نطاق الوزن — حتى")} {weightLabel(wCap)}
             </p>
             <input
               type="range"
               min={MIN_W}
               max={MAX_W}
               step="0.25"
-              value={maxW}
+              value={wCap}
               onChange={(e) => setMaxW(Number(e.target.value))}
               aria-label={t("الحد الأقصى للوزن بالجرام")}
               className="mb-1 w-full accent-[var(--color-gold-deep,#b8860b)]"
@@ -212,21 +220,21 @@ function CollectionPage() {
             </div>
 
             <p className="mb-2 text-xs font-semibold text-primary">
-              {t("المصنعية — حتى")} {maxF}%
+              {t("المصنعية — حتى")} {egp(fCap)} {t("ج.م")}
             </p>
             <input
               type="range"
               min={MIN_F}
               max={MAX_F}
-              step="0.5"
-              value={maxF}
+              step="1"
+              value={fCap}
               onChange={(e) => setMaxF(Number(e.target.value))}
-              aria-label={t("الحد الأقصى لنسبة المصنعية")}
+              aria-label={t("الحد الأقصى للمصنعية")}
               className="mb-1 w-full accent-[var(--color-gold-deep,#b8860b)]"
             />
             <div dir="ltr" className="mb-5 flex justify-between text-[11px] text-muted-foreground">
-              <span>{MIN_F}%</span>
-              <span>{MAX_F}%</span>
+              <span>{egp(MIN_F)}</span>
+              <span>{egp(MAX_F)}</span>
             </div>
 
             <p className="mb-2 text-xs font-semibold text-primary">{t("المورّد")}</p>
@@ -265,7 +273,7 @@ function CollectionPage() {
             </button>
 
             <p className="text-xs text-muted-foreground">
-              {list.length} {t("من")} {allProducts.length} {t("منتج")}
+              {list.length} {t("من")} {all.length} {t("منتج")}
             </p>
 
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -298,7 +306,7 @@ function CollectionPage() {
           ) : (
             <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
               {list.map((p) => (
-                <ProductCard key={p.slug} p={p} price={buyPrice(p, data?.gram)} />
+                <ProductCard key={p.slug} p={p} />
               ))}
             </div>
           )}

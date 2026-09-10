@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { holdingValue, totals, type Holding } from "./holdings";
 
-const sell = { k24: 5000, k22: 4583, k21: 4375, silver: 60 };
+const sell = { k24: 5000, k21: 4375, silver: 60 };
 const h = (over: Partial<Holding>): Holding => ({
   id: "1",
   name: "س",

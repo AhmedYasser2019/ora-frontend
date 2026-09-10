@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 
@@ -5,9 +6,7 @@ import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { useFavorites } from "@/lib/favorites";
 import { tr, useT } from "@/lib/i18n";
-import { livePricesQuery } from "@/lib/prices.queries";
-import { buyPrice, productBySlug } from "@/lib/site";
-import { useLivePrices } from "@/lib/use-live-prices";
+import { bySlug, productsQuery } from "@/lib/catalog.queries";
 
 export const Route = createFileRoute("/favorites")({
   head: () => ({
@@ -21,16 +20,16 @@ export const Route = createFileRoute("/favorites")({
       { property: "og:description", content: tr("منتجاتك المحفوظة بأسعار لحظية.") },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQuery),
   component: FavoritesPage,
 });
 
 function FavoritesPage() {
-  const { data } = useLivePrices();
+  const { data: catalog } = useQuery(productsQuery);
   const { slugs, ready, clear } = useFavorites();
   const t = useT();
 
-  const products = slugs.map(productBySlug).filter((p) => p !== undefined);
+  const products = slugs.map((slug) => bySlug(catalog, slug)).filter((p) => p !== undefined);
 
   return (
     <PageShell
@@ -57,7 +56,7 @@ function FavoritesPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
             {products.map((p) => (
-              <ProductCard key={p.slug} p={p} price={buyPrice(p, data?.gram)} />
+              <ProductCard key={p.slug} p={p} />
             ))}
           </div>
           <button

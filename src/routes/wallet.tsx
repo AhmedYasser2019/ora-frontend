@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { supabase } from "@/integrations/supabase/client";
+import { api, ApiError } from "@/lib/api";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
 import { useLivePrices } from "@/lib/use-live-prices";
@@ -38,38 +38,45 @@ export const Route = createFileRoute("/wallet")({
   component: WalletPage,
 });
 
-type Wallet = { cash_balance: number; gold_grams: number };
+/** رصيد واحد لكل أصل، كما يعيده GET /wallet. */
+type Balance = {
+  asset: "EGP" | "GOLD" | "SILVER";
+  piasters?: number;
+  micrograms?: number;
+  grams?: string;
+};
 
+/** سطر من الدفتر — الحركة كما سُجّلت، لا كما وصفتها الشاشة. */
 type Txn = {
-  id: string;
-  kind: string;
-  cash_delta: number;
-  grams_delta: number;
-  gram_price: number | null;
-  created_at: string;
+  id: number;
+  type: string;
+  asset: "EGP" | "GOLD" | "SILVER";
+  amount: number;
+  grams: string | null;
+  recorded_at: string;
 };
 
 type Action = "deposit" | "buy_gold";
 
-// السحب والبيع موقوفان حاليًا بطلب الإدارة — سجل الحركات القديم ما زال يعرضهما.
+// الشحن يتم بتحويل يعتمده مكتب الحسابات — لا توجد بوابة دفع بعد، فلا endpoint له.
+// البيع والسحب موقوفان بطلب الإدارة.
 const ACTIONS: { key: Action; label: string; unit: string; cta: string }[] = [
   { key: "deposit", label: "شحن رصيد", unit: "جنيه", cta: "اشحن الرصيد" },
   { key: "buy_gold", label: "شراء ذهب", unit: "جرام", cta: "اشترِ الذهب" },
 ];
 
+/** أنواع القيود في الدفتر — انظر JournalEntryType. */
 const TXN_LABEL: Record<string, string> = {
-  deposit: "شحن رصيد",
-  withdraw: "سحب رصيد",
-  buy_gold: "شراء ذهب",
-  sell_gold: "بيع ذهب",
+  buy: "شراء",
+  sell: "بيع",
+  adjustment: "تسوية",
+  reversal: "قيد عكسي",
 };
 
-/** رسائل الأخطاء التي ترفعها دالة wallet_transact في قاعدة البيانات. */
-const RPC_ERRORS: Record<string, string> = {
-  WLT01: "رصيدك النقدي لا يكفي",
-  WLT02: "رصيد الذهب لا يكفي",
-  WLT03: "الحد الأدنى للشحن 100 جنيه",
-  WLT06: "السحب والبيع متوقفان حاليًا",
+const ASSET_LABEL: Record<string, string> = {
+  EGP: "ج.م",
+  GOLD: "ذهب",
+  SILVER: "فضة",
 };
 
 const grams = (n: number) =>
@@ -86,7 +93,7 @@ function WalletPage() {
   const { data: prices } = useLivePrices();
   const t = useT();
 
-  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [wallet, setWallet] = useState<Balance[] | null>(null);
   const [txns, setTxns] = useState<Txn[]>([]);
   const [fetching, setFetching] = useState(true);
   const [action, setAction] = useState<Action>("deposit");
@@ -108,27 +115,24 @@ function WalletPage() {
     }
   }, [loading, user, navigate]);
 
-  const refresh = useCallback(async (userId: string) => {
-    const [walletRes, txnRes] = await Promise.all([
-      supabase
-        .from("wallets")
-        .select("cash_balance, gold_grams")
-        .eq("user_id", userId)
-        .maybeSingle(),
-      supabase
-        .from("wallet_transactions")
-        .select("id, kind, cash_delta, grams_delta, gram_price, created_at")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(20),
-    ]);
-    setWallet(walletRes.data ?? { cash_balance: 0, gold_grams: 0 });
-    setTxns(txnRes.data ?? []);
-    setFetching(false);
+  const refresh = useCallback(async () => {
+    try {
+      const [balances, lines] = await Promise.all([
+        api<Balance[]>("/wallet"),
+        api<{ data: Txn[] }>("/wallet/transactions"),
+      ]);
+      setWallet(balances);
+      setTxns(lines.data);
+    } catch {
+      setWallet([]);
+      setTxns([]);
+    } finally {
+      setFetching(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (user) void refresh(user.id);
+    if (user) void refresh();
   }, [user, refresh]);
 
   const submit = async (e: React.FormEvent) => {
@@ -140,20 +144,27 @@ function WalletPage() {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.rpc("wallet_transact", {
-      p_kind: action,
-      p_amount: parsed,
-      p_gram_price: isGold ? Number(gramPrice.toFixed(2)) : null,
-    });
-    setSubmitting(false);
+    try {
+      // عرض سعر مثبَّت ثم أمر يحمل رقمه. لا سعر يغادر المتصفح: الخادم يسعّر ويكتب الصفّ.
+      const quote = await api<{ quote_id: string }>("/quotes", {
+        method: "POST",
+        body: { metal: "gold", karat: 21, side: "buy", grams: parsed.toFixed(6) },
+      });
 
-    if (error) {
-      toast.error(t(RPC_ERRORS[error.code ?? ""] ?? "تعذر تنفيذ العملية"));
-      return;
+      await api("/orders", {
+        method: "POST",
+        body: { quote_id: quote.quote_id },
+        idempotencyKey: crypto.randomUUID(),
+      });
+
+      setAmount("");
+      toast.success(t("تمت العملية بنجاح"));
+      void refresh();
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر تنفيذ العملية"));
+    } finally {
+      setSubmitting(false);
     }
-    setAmount("");
-    toast.success(t("تمت العملية بنجاح"));
-    void refresh(user.id);
   };
 
   if (loading || !user) {
@@ -166,8 +177,8 @@ function WalletPage() {
     );
   }
 
-  const cash = wallet?.cash_balance ?? 0;
-  const gold = wallet?.gold_grams ?? 0;
+  const cash = (wallet?.find((b) => b.asset === "EGP")?.piasters ?? 0) / 100;
+  const gold = Number(wallet?.find((b) => b.asset === "GOLD")?.grams ?? 0);
   // تُقيَّم الحيازة بسعر البيع: هو ما ستقبضه فعليًا لو بعت الآن.
   const goldValue = gold * sellGram;
   const cost = isGold && valid ? parsed * gramPrice : 0;
@@ -229,7 +240,9 @@ function WalletPage() {
               ) : (
                 <ul className="divide-y divide-border">
                   {txns.map((txn) => {
-                    const incoming = txn.kind === "deposit" || txn.kind === "sell_gold";
+                    // إشارة السطر هي الاتجاه: موجب دخل للحساب، سالب خرج منه.
+                    const incoming = txn.amount > 0;
+                    const isMetal = txn.asset !== "EGP";
                     return (
                       <li key={txn.id} className="flex items-center gap-4 px-5 py-4">
                         <span
@@ -245,21 +258,22 @@ function WalletPage() {
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-primary">
-                            {t(TXN_LABEL[txn.kind] ?? txn.kind)}
+                            {t(TXN_LABEL[txn.type] ?? txn.type)}{" "}
+                            <span className="text-muted-foreground">
+                              {t(ASSET_LABEL[txn.asset] ?? txn.asset)}
+                            </span>
                           </p>
-                          <p className="text-xs text-muted-foreground">{txnDate(txn.created_at)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {txnDate(txn.recorded_at)}
+                          </p>
                         </div>
                         <div className="text-end">
                           <p className="text-sm font-semibold text-primary">
-                            {txn.cash_delta > 0 ? "+" : ""}
-                            {egp(txn.cash_delta)} {t("ج.م")}
+                            {incoming ? "+" : ""}
+                            {isMetal
+                              ? `${grams(Number(txn.grams ?? 0))} ${t("جرام")}`
+                              : `${egp(txn.amount / 100)} ${t("ج.م")}`}
                           </p>
-                          {txn.grams_delta !== 0 && (
-                            <p className="text-xs text-muted-foreground">
-                              {txn.grams_delta > 0 ? "+" : ""}
-                              {grams(txn.grams_delta)} {t("جرام")}
-                            </p>
-                          )}
                         </div>
                       </li>
                     );

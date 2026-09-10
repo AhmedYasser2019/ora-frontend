@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useT } from "@/lib/i18n";
@@ -5,7 +6,7 @@ import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
-import { allProducts, buyPrice } from "@/lib/site";
+import { productsQuery } from "@/lib/catalog.queries";
 
 import { tr } from "@/lib/i18n";
 
@@ -23,25 +24,30 @@ export const Route = createFileRoute("/silver")({
       { property: "og:description", content: tr("سعر الفضة اللحظي وسبائك فضة 999 معتمدة.") },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(livePricesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(livePricesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
   component: SilverPage,
 });
 
 function SilverPage() {
   const { data } = useLivePrices();
+  const { data: products } = useQuery(productsQuery);
   const t = useT();
-  const items = allProducts.filter((p) => p.cat === "سبائك فضة");
+  const items = (products ?? []).filter((p) => p.cat === "سبائك فضة");
 
   return (
     <PageShell
       title="الفضة"
-      subtitle="سبائك فضة نقية 999 بأوزان متعددة، بسعر مرتبط بسعر الفضة العالمي لحظة بلحظة."
+      subtitle="سبائك فضة نقية 999 بأوزان متعددة، بسعر الجرام المنشور لحظة بلحظة."
     >
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl bg-cream p-6 text-center">
           <p className="text-xs text-muted-foreground">{t("سعر جرام الفضة")}</p>
           <p className="mt-1 font-display text-3xl text-primary">
-            {data ? egp(data.gram.silver) : "—"}
+            {data?.gram.silver ? egp(data.gram.silver) : "—"}
           </p>
           <p className="text-[11px] text-gold-deep">{t("جنيه / جرام")}</p>
         </div>
@@ -58,8 +64,8 @@ function SilverPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {items.map((p, i) => (
-          <ProductCard key={`${p.t}-${i}`} p={p} price={buyPrice(p, data?.gram)} />
+        {items.map((p) => (
+          <ProductCard key={p.slug} p={p} />
         ))}
       </div>
     </PageShell>

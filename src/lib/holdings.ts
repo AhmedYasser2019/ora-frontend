@@ -15,15 +15,16 @@ export type Holding = {
 
 export const KARATS: { key: Karat; label: string }[] = [
   { key: "k24", label: "عيار 24" },
-  { key: "k22", label: "عيار 22" },
   { key: "k21", label: "عيار 21" },
   { key: "silver", label: "فضة 999" },
 ];
 
 /** القيمة الحالية بسعر إعادة البيع: هو ما ستقبضه فعليًا لو بعت الآن. */
-export const holdingValue = (h: Holding, sell: GramPrices) => sell[h.karat] * h.grams * h.qty;
+// المعدن الموقوف تداوله لا يصل بسعر، فقيمته صفر حتى يعود — لا سعر قديم.
+export const holdingValue = (h: Holding, sell: Partial<GramPrices>) =>
+  (sell[h.karat] ?? 0) * h.grams * h.qty;
 
-export function totals(items: Holding[], sell: GramPrices) {
+export function totals(items: Holding[], sell: Partial<GramPrices>) {
   let gold = 0;
   let silver = 0;
   let cost = 0;

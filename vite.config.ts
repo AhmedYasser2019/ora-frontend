@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+
+  // A long-lived Node process, not a worker or a Lambda: the storefront holds a Reverb
+  // websocket per open tab, and SSR sits behind the same ALB as the API. Deploys as an
+  // ECS Fargate service — `node .output/server/index.mjs`.
+  nitro: { preset: "node-server" },
 });

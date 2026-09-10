@@ -77,7 +77,7 @@ function HoldingsPage() {
   }, [items, ready]);
 
   // التقييم بسعر إعادة البيع، مثل رصيد الذهب في المحفظة.
-  const sell = prices?.sell ?? { k24: 0, k22: 0, k21: 0, silver: 0 };
+  const sell = prices?.sell ?? {};
   const sum = totals(items, sell);
   const goldCount = items.filter((h) => h.karat !== "silver").length;
   const shown = items.filter((h) =>
