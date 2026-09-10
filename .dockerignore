@@ -1,0 +1,10 @@
+.git
+node_modules
+.output
+.tanstack
+.wrangler
+dist
+.env
+.env.*
+!.env.example
+Dockerfile
