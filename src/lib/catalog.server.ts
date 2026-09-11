@@ -61,6 +61,8 @@ export type Product = {
   resale: number | undefined;
   /** المصنعية بالجنيه. */
   premium: number | undefined;
+  /** سعر جرام المعدن بعيار القطعة، كما سعّره الخادم. */
+  gramPrice: number | undefined;
   /** نسبة المصنعية المستردّة عند إعادة البيع، بنقاط الأساس. صفر = المصنعية غير مستردّة. */
   cashbackBps: number;
 };
@@ -90,6 +92,7 @@ function toProduct(p: ApiProduct): Product {
     price: egpOf(p.price_piasters),
     resale: egpOf(p.sell_price_piasters),
     premium: egpOf(p.premium_piasters),
+    gramPrice: egpOf(p.unit_price_piasters_per_gram),
     cashbackBps: p.cashback_bps ?? 0,
   };
 }
