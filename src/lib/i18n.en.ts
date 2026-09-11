@@ -1192,6 +1192,10 @@ export const en: Record<string, string> = {
   "لا عناصر في هذا التصنيف.": "No items in this category.",
   "القيمة الحالية": "Current value",
   "السعر الحالي": "Current price",
+  "القطع التي اشتريتها من أورا ولم تُلغَ أوامرها، بسعر شرائها وسعرها الحالي بسعر إعادة البيع اللحظي.":
+    "The pieces you bought from ORA whose orders were not cancelled, with what you paid and what they are worth now at the live resale price.",
+  "لا تملك قطعًا بعد — كل قطعة تشتريها من أورا تظهر هنا فور تأكيد طلبها.":
+    "You don't own any pieces yet — every piece you buy from ORA shows up here as soon as its order is confirmed.",
   "إضافة قطعة": "Add a piece",
   الاسم: "Name",
   "النوع والعيار": "Type and karat",
