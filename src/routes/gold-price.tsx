@@ -59,13 +59,7 @@ function GoldPricePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <PriceBoard
-          metal="gold"
-          gram={data?.gram}
-          sell={data?.sell}
-          spreadPct={data?.spreadPct}
-          halted={data?.halted["gold"]}
-        />
+        <PriceBoard metal="gold" gram={data?.gram} halted={data?.halted["gold"]} />
         <LiveTicker history={history} series="k24" label={t("عيار 24")} />
       </div>
 

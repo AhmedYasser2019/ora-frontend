@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeftRight, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 import { useT } from "@/lib/i18n";
 import { egp } from "@/lib/prices.queries";
@@ -15,20 +15,16 @@ const SILVER_ROWS: { key: keyof GramPrices; label: string }[] = [
 ];
 
 /**
- * لوحة الأسعار: سعر الشراء وسعر البيع والفرق بينهما لكل عيار.
- * سعر الشراء هو ما يدفعه العميل، وسعر البيع هو ما ندفعه له عند إعادة الشراء.
+ * لوحة الأسعار: سعر واحد لكل عيار — سعر الشراء، وهو ما يدفعه العميل.
+ * العملاء على الموقع يشترون فقط، فلا نعرض سعر بيع لا يستطيعون التنفيذ عليه.
  */
 export function PriceBoard({
   metal,
   gram,
-  sell,
-  spreadPct,
   halted,
 }: {
   metal: "gold" | "silver";
   gram?: Partial<GramPrices> | undefined;
-  sell?: Partial<GramPrices> | undefined;
-  spreadPct?: number | null | undefined;
   /** سبب إيقاف التداول من الخادم، إن وُجد. */
   halted?: string | undefined;
 }) {
@@ -37,8 +33,6 @@ export function PriceBoard({
   const [active, setActive] = useState<keyof GramPrices>(rows[0]!.key);
 
   const buyValue = gram?.[active];
-  const sellValue = sell?.[active];
-  const diff = buyValue !== undefined && sellValue !== undefined ? buyValue - sellValue : undefined;
 
   if (halted) {
     return (
@@ -79,54 +73,27 @@ export function PriceBoard({
           </span>
         </div>
 
-        <dl className="mt-5 grid gap-4 sm:grid-cols-3">
-          <div>
-            <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
-              <TrendingUp className="h-3.5 w-3.5 text-gold" /> {t("سعر الشراء")}
-            </dt>
-            <dd className="mt-1 font-display text-2xl text-gold">
-              {buyValue ? egp(buyValue) : "—"} <span className="text-sm">{t("ج.م")}</span>
-            </dd>
-          </div>
-          <div>
-            <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
-              <TrendingDown className="h-3.5 w-3.5 text-gold" /> {t("سعر البيع")}
-            </dt>
-            <dd className="mt-1 font-display text-2xl text-gold">
-              {sellValue ? egp(sellValue) : "—"} <span className="text-sm">{t("ج.م")}</span>
-            </dd>
-          </div>
-          <div>
-            <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
-              <ArrowLeftRight className="h-3.5 w-3.5 text-gold" /> {t("فرق السعر")}
-            </dt>
-            <dd className="mt-1 font-display text-2xl text-gold">
-              {diff !== undefined ? egp(diff) : "—"} <span className="text-sm">{t("ج.م")}</span>
-            </dd>
-          </div>
+        <dl className="mt-5">
+          <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/70">
+            <TrendingUp className="h-3.5 w-3.5 text-gold" /> {t("سعر الجرام")}
+          </dt>
+          <dd className="mt-1 font-display text-3xl text-gold">
+            {buyValue ? egp(buyValue) : "—"} <span className="text-sm">{t("ج.م")}</span>
+          </dd>
         </dl>
-
-        <p className="mt-4 text-[11px] leading-relaxed text-primary-foreground/70">
-          {t("سعر الشراء هو ما تدفعه عند الشراء، وسعر البيع هو ما ندفعه لك عند إعادة الشراء منك.")}{" "}
-          {t("الفرق بينهما")} {spreadPct ? (spreadPct * 100).toFixed(1) : "—"}%{" "}
-          {t("ويمثل هامش التشغيل، وهو ثابت ومعلن.")}
-        </p>
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-border bg-card">
-        <table className="w-full min-w-[420px] text-sm">
+        <table className="w-full text-sm">
           <thead className="bg-cream text-primary">
             <tr>
               <th className="px-4 py-3 text-start font-semibold">{t("العيار")}</th>
-              <th className="px-4 py-3 text-start font-semibold">{t("سعر الشراء")}</th>
-              <th className="px-4 py-3 text-start font-semibold">{t("سعر البيع")}</th>
-              <th className="px-4 py-3 text-start font-semibold">{t("الفرق")}</th>
+              <th className="px-4 py-3 text-start font-semibold">{t("سعر الجرام")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {rows.map((r) => {
               const b = gram?.[r.key];
-              const s = sell?.[r.key];
               return (
                 <tr
                   key={r.key}
@@ -138,12 +105,6 @@ export function PriceBoard({
                   <td className="px-4 py-3 text-primary">{t(r.label)}</td>
                   <td className="px-4 py-3 font-display text-base text-gold-deep">
                     {b ? egp(b) : "—"}
-                  </td>
-                  <td className="px-4 py-3 font-display text-base text-primary">
-                    {s ? egp(s) : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {b && s ? egp(b - s) : "—"}
                   </td>
                 </tr>
               );

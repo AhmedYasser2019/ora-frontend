@@ -65,13 +65,7 @@ function SilverPricePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <PriceBoard
-          metal="silver"
-          gram={data?.gram}
-          sell={data?.sell}
-          spreadPct={data?.spreadPct}
-          halted={data?.halted["silver"]}
-        />
+        <PriceBoard metal="silver" gram={data?.gram} halted={data?.halted["silver"]} />
         <LiveTicker history={history} series="silver" label={t("الفضة")} />
       </div>
 
