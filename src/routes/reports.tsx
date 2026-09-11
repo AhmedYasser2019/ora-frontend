@@ -1,9 +1,11 @@
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+import { newsDate } from "@/lib/news.queries";
+import { getReports } from "@/lib/reports.functions";
 import newsGlobal from "@/assets/news-global.jpg";
-import newsLocal from "@/assets/news-local.jpg";
 
 import { tr } from "@/lib/i18n";
 
@@ -24,87 +26,65 @@ export const Route = createFileRoute("/reports")({
       },
     ],
   }),
+  // تُقرأ على الخادم مثل الأخبار، لمحرّكات البحث.
+  loader: ({ context }) => context.queryClient.ensureQueryData(reportsQuery),
   component: ReportsPage,
 });
 
-const reports = [
-  {
-    img: newsGlobal,
-    kind: "شهري",
-    t: "تقرير أداء الذهب العالمي | أغسطس 2026",
-    d: "ملخّص شهري لحركة أونصة الذهب عالميًا، ومشتريات البنوك المركزية، وتدفقات صناديق المؤشرات المدعومة بالذهب.",
-    date: "31 أغسطس 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "شهري",
-    t: "تقرير سوق الذهب المصري | أغسطس 2026",
-    d: "متوسط أسعار عيار 21 و24 خلال الشهر، وحجم الطلب على السبائك والعملات، وأثر سعر الصرف على أسعار المحلات.",
-    date: "31 أغسطس 2026",
-  },
-  {
-    img: newsGlobal,
-    kind: "أسبوعي",
-    t: "التقرير الأسبوعي للمعادن الثمينة",
-    d: "أهم تحركات الذهب والفضة خلال الأسبوع، ومستويات الدعم والمقاومة، وأبرز البيانات الاقتصادية المؤثرة.",
-    date: "24 أغسطس 2026",
-  },
-  {
-    img: newsGlobal,
-    kind: "ربع سنوي",
-    t: "تقرير الطلب على الذهب | الربع الثاني 2026",
-    d: "توزيع الطلب العالمي بين المشغولات والسبائك والعملات والاستخدامات الصناعية، ومقارنة بالربع المماثل من العام السابق.",
-    date: "15 يوليو 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "ربع سنوي",
-    t: "تقرير الفضة في مصر | الربع الثاني 2026",
-    d: "أداء سعر جرام الفضة محليًا، ونمو الطلب على سبائك الفضة، ونسبة الذهب إلى الفضة خلال الربع.",
-    date: "12 يوليو 2026",
-  },
-  {
-    img: newsGlobal,
-    kind: "سنوي",
-    t: "التقرير السنوي لسوق الذهب | 2025",
-    d: "مراجعة كاملة لعام 2025: أعلى وأدنى سعر، عوائد الاستثمار في السبائك والعملات، وتوقعات 2026.",
-    date: "10 يناير 2026",
-  },
-];
+const reportsQuery = queryOptions({
+  queryKey: ["reports"],
+  queryFn: () => getReports(),
+  staleTime: 300_000,
+});
+
+const kindLabel = {
+  weekly: "أسبوعي",
+  monthly: "شهري",
+  quarterly: "ربع سنوي",
+  annual: "سنوي",
+} as const;
 
 function ReportsPage() {
   const t = useT();
+  const { data: reports } = useQuery(reportsQuery);
 
   return (
     <PageShell
       title="التقارير"
       subtitle="تقارير دورية عن أداء سوق الذهب والفضة محليًا وعالميًا، بأرقام ومؤشرات تساعدك على قراءة السوق قبل قرار الشراء أو البيع."
     >
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {reports.map((r) => (
-          <article
-            key={r.t}
-            className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
-          >
-            <img
-              src={r.img}
-              alt={t(r.t)}
-              loading="lazy"
-              width={800}
-              height={500}
-              className="aspect-[16/10] w-full object-cover"
-            />
-            <div className="p-5">
-              <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold text-primary">
-                {t(r.kind)}
-              </span>
-              <h2 className="mt-3 text-base leading-snug text-primary">{t(r.t)}</h2>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t(r.d)}</p>
-              <p className="mt-4 text-[11px] text-gold-deep">{t(r.date)}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {reports?.length ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {reports.map((r) => (
+            <article
+              key={r.id}
+              className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
+            >
+              <img
+                src={r.img ?? newsGlobal}
+                alt={r.title}
+                loading="lazy"
+                width={800}
+                height={500}
+                className="aspect-[16/10] w-full object-cover"
+              />
+              <div className="p-5">
+                <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-semibold text-primary">
+                  {t(kindLabel[r.kind])}
+                </span>
+                {/* العنوان والمقتطف يصلان مترجمين من الخادم، فلا يمرّان على t(). */}
+                <h2 className="mt-3 text-base leading-snug text-primary">{r.title}</h2>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{r.excerpt}</p>
+                <p className="mt-4 text-[11px] text-gold-deep">{newsDate(r.publishedAt)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
+          {t("لا توجد تقارير منشورة حاليًا. تابعنا قريبًا.")}
+        </p>
+      )}
     </PageShell>
   );
 }
