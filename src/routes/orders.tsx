@@ -1,5 +1,6 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LoaderCircle, MapPin, Package, Store, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -7,6 +8,7 @@ import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { api, ApiError } from "@/lib/api";
 import { egp } from "@/lib/prices.queries";
+import { pct } from "@/lib/holdings";
 import { useAuth } from "@/lib/use-auth";
 
 import { tr } from "@/lib/i18n";
@@ -34,6 +36,10 @@ type Order = {
   grams: string;
   gross_piasters: number;
   executed_at: string;
+  /** قيمة القطعة اليوم بسعر إعادة البيع — للطلب القائم فقط، ولا قيمة حين يتعذّر التسعير. */
+  current_value_piasters?: number | null;
+  gain_piasters?: number | null;
+  gain_pct?: number | null;
   product?: { sku: string; name: string };
   delivery?: {
     fulfilment: string | null;
@@ -72,29 +78,21 @@ function OrdersPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const t = useT();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [fetching, setFetching] = useState(true);
+  const qc = useQueryClient();
   const [busy, setBusy] = useState("");
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { next: "/orders" } });
   }, [loading, user, navigate]);
 
-  const refresh = useCallback(async () => {
-    try {
-      // مُصفَّح من الخادم؛ الصفحة الأولى هي أحدث الطلبات.
-      const page = await api<{ data: Order[] }>("/orders");
-      setOrders(page.data);
-    } catch {
-      setOrders([]);
-    } finally {
-      setFetching(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user) void refresh();
-  }, [user, refresh]);
+  // مُصفَّح من الخادم؛ الصفحة الأولى هي أحدث الطلبات. البثّ الحيّ يُبطله مع كل سعر جديد
+  // فتتحدّث قيمة القطع المشتراة — انظر use-live-prices.
+  const { data: orders = [], isPending: fetching } = useQuery({
+    queryKey: ["orders"],
+    queryFn: () => api<{ data: Order[] }>("/orders").then((page) => page.data),
+    enabled: !!user,
+  });
+  const refresh = () => qc.invalidateQueries({ queryKey: ["orders"] });
 
   const cancel = async (id: string) => {
     if (!user) return;
@@ -169,9 +167,25 @@ function OrdersPage() {
                       </span>
                     </span>
                     <span className="shrink-0 text-muted-foreground">
-                      {egp(o.gross_piasters / 100)} {t("ج.م")}
+                      {t("سعر الشراء")}: {egp(o.gross_piasters / 100)} {t("ج.م")}
                     </span>
                   </li>
+                  {o.current_value_piasters != null && o.gain_pct != null && (
+                    <li className="flex items-center justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">
+                        {t("السعر الحالي")}: {egp(o.current_value_piasters / 100)} {t("ج.م")}
+                      </span>
+                      <span
+                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${
+                          (o.gain_piasters ?? 0) < 0
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-gold/15 text-gold-deep"
+                        }`}
+                      >
+                        {pct(o.gain_pct)} · {egp((o.gain_piasters ?? 0) / 100)} {t("ج.م")}
+                      </span>
+                    </li>
+                  )}
                 </ul>
 
                 <div className="mt-4 flex flex-wrap items-end justify-between gap-4">

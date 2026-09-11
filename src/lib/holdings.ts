@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { api } from "./api";
+import { intlLocale } from "./i18n";
 
 /**
  * ممتلكاتي من الخادم: القطع التي اشتُريت فعلًا وسُوِّيت أوامرها، بتكلفتها وقيمتها اليوم.
@@ -65,3 +66,11 @@ export const holdingsQuery = queryOptions({
 
 export const egpOf = (piasters: number | null | undefined) =>
   piasters == null ? null : piasters / 100;
+
+/** نسبة الربح أو الخسارة كما يرسلها الخادم (5.01 = ‎+5.01%). */
+export const pct = (n: number) =>
+  new Intl.NumberFormat(intlLocale(), {
+    style: "percent",
+    maximumFractionDigits: 2,
+    signDisplay: "always",
+  }).format(n / 100);

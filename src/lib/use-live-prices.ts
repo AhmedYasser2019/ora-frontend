@@ -10,6 +10,7 @@ export type PriceTick = { at: number; k24: number; k21: number; silver: number }
 export type TickKey = "k24" | "k21" | "silver";
 
 const WINDOW_MS = 60_000;
+const SAMPLE_MS = 5_000;
 
 /**
  * الأسعار الحيّة عبر Reverb.
@@ -59,7 +60,10 @@ export function useLivePrices() {
 
       // أسعار المنتجات محسوبة على الخادم من نفس السعر، فهي تتغيّر مع كل بثّ. نطلبها
       // من جديد بدل حسابها هنا — الحساب في الواجهة نسخة ثانية من قواعد التسعير.
-      void queryClient.invalidateQueries({ queryKey: ["products"] });
+      // وكذلك قيمة ما اشتراه العميل اليوم — ممتلكاته وطلباته.
+      for (const key of ["products", "holdings", "orders"]) {
+        void queryClient.invalidateQueries({ queryKey: [key] });
+      }
 
       const at = Date.now();
       setPushedAt(at);
@@ -81,17 +85,27 @@ export function useLivePrices() {
     };
   }, [queryClient]);
 
-  // نُسقط النقاط الخارجة عن نافذة الستين ثانية حتى لو لم يصل بثّ جديد.
+  const hasData = query.data !== undefined;
+
+  // السعر ينشره المكتب يدويًا والبثّ لا يخرج إلا عند التغيير، فبدون عيّنة دورية لا تمتلئ
+  // النافذة أبدًا ويظل الرسم فارغًا. نأخذ السعر الحالي من الكاش كل بضع ثوانٍ: خط ثابت
+  // يقفز لحظة ينشر المكتب سعرًا جديدًا — وهذا ما حدث فعلًا للسعر.
   useEffect(() => {
-    const interval = setInterval(() => {
+    const sample = () => {
+      const data = queryClient.getQueryData<LivePrices>(livePricesQuery.queryKey);
       const now = Date.now();
       setHistory((prev) => {
-        const next = prev.filter((tick) => now - tick.at <= WINDOW_MS);
-        return next.length === prev.length ? prev : next;
+        const kept = prev.filter((tick) => now - tick.at <= WINDOW_MS);
+        if (!data) return kept;
+        const { k24, k21, silver } = data.gram;
+        if (k24 === undefined && k21 === undefined && silver === undefined) return kept;
+        return [...kept, { at: now, k24: k24 ?? 0, k21: k21 ?? 0, silver: silver ?? 0 }];
       });
-    }, 5_000);
+    };
+    sample();
+    const interval = setInterval(sample, SAMPLE_MS);
     return () => clearInterval(interval);
-  }, []);
+  }, [queryClient, hasData]);
 
   return {
     data: query.data,

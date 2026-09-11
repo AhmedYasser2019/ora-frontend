@@ -140,6 +140,11 @@ function ProductPage() {
             <p className="mt-1 font-display text-3xl text-gold-deep">
               {price ? `${egp(price)} ${t("ج.م")}` : t("جاري التحديث…")}
             </p>
+            {p.gramPrice !== undefined && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("سعر الجرام")}: {egp(p.gramPrice)} {t("ج.م")}
+              </p>
+            )}
             {price && qty > 1 && (
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("الإجمالي لـ")} {qty} {t("قطعة")}: {egp(price * qty)} {t("ج.م")}

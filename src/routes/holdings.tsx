@@ -3,10 +3,10 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Coins, Eye, EyeOff, Gem, LoaderCircle, TrendingDown, TrendingUp } from "lucide-react";
 
-import { intlLocale, tr, useT } from "@/lib/i18n";
+import { tr, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { egp } from "@/lib/prices.queries";
-import { holdingsQuery, egpOf, type HoldingLine } from "@/lib/holdings";
+import { holdingsQuery, egpOf, pct, type HoldingLine } from "@/lib/holdings";
 import { useAuth } from "@/lib/use-auth";
 
 export const Route = createFileRoute("/holdings")({
@@ -31,13 +31,6 @@ const FILTERS = [
   { key: "gold", label: "ذهب" },
   { key: "silver", label: "فضة" },
 ] as const;
-
-const pct = (n: number) =>
-  new Intl.NumberFormat(intlLocale(), {
-    style: "percent",
-    maximumFractionDigits: 2,
-    signDisplay: "always",
-  }).format(n / 100);
 
 function HoldingsPage() {
   const t = useT();
@@ -230,14 +223,14 @@ function HoldingRow({
           {h.quantity > 1 && (
             <span className="rounded-md bg-secondary px-2 py-0.5">×{h.quantity}</span>
           )}
-          <span className="rounded-md bg-secondary px-2 py-0.5">
-            {t("التكلفة")} {money(egpOf(h.cost_piasters))}
-          </span>
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {t("سعر الشراء")}: {money(egpOf(h.cost_piasters))}
+        </p>
         {h.reason && <p className="mt-2 text-[11px] text-destructive">{h.reason}</p>}
       </div>
       <div className="text-end">
-        <p className="text-xs text-muted-foreground">{t("القيمة الحالية")}</p>
+        <p className="text-xs text-muted-foreground">{t("السعر الحالي")}</p>
         <p className="mt-1 font-display text-lg text-primary">{money(egpOf(h.value_piasters))}</p>
         {gain !== null && h.gain_pct !== null && (
           <span

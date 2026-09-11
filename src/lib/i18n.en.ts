@@ -1191,6 +1191,7 @@ export const en: Record<string, string> = {
     "No holdings yet — add your first piece using the form.",
   "لا عناصر في هذا التصنيف.": "No items in this category.",
   "القيمة الحالية": "Current value",
+  "السعر الحالي": "Current price",
   "إضافة قطعة": "Add a piece",
   الاسم: "Name",
   "النوع والعيار": "Type and karat",
