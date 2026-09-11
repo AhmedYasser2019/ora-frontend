@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  FlaskConical,
   LoaderCircle,
   LogOut,
   Save,
@@ -48,12 +49,13 @@ const KYC_LOOK = {
 } as const;
 
 function AccountPage() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, switchDemo } = useAuth();
   const navigate = useNavigate();
   const t = useT();
   const [profile, setProfile] = useState({ full_name: "", phone: "" });
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [switching, setSwitching] = useState(false);
 
   const { data: kyc } = useQuery({
     queryKey: ["kyc"],
@@ -92,6 +94,27 @@ function AccountPage() {
     }
   };
 
+  const toggleDemo = async () => {
+    setSwitching(true);
+    try {
+      await switchDemo();
+      toast.success(t(user?.is_demo ? "رجعت لحسابك الحقيقي" : "أنت الآن في وضع الديمو"));
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر التبديل"));
+    } finally {
+      setSwitching(false);
+    }
+  };
+
+  const topUp = async () => {
+    try {
+      const r = await api<{ granted_egp: string }>("/demo/topup", { method: "POST" });
+      toast.success(`${t("تمت إضافة رصيد تجريبي")}: ${r.granted_egp}`);
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر الشحن"));
+    }
+  };
+
   const logout = async () => {
     await signOut();
     toast.success(t("تم تسجيل الخروج"));
@@ -120,9 +143,15 @@ function AccountPage() {
               <p className="font-display text-lg text-primary">
                 {profile.full_name || t("عميل أورا")}
               </p>
-              <p dir="ltr" className="text-xs text-muted-foreground">
-                {user.email}
-              </p>
+              {user.is_demo ? (
+                <p className="text-xs font-semibold text-gold-deep">
+                  {t("وضع الديمو — فلوس تجريبية")}
+                </p>
+              ) : (
+                <p dir="ltr" className="text-xs text-muted-foreground">
+                  {user.email}
+                </p>
+              )}
             </div>
           </div>
 
@@ -175,7 +204,26 @@ function AccountPage() {
             </form>
           )}
 
-          <div className="mt-6 flex items-center justify-between border-t border-border pt-5">
+          <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
+            <button
+              onClick={toggleDemo}
+              disabled={switching}
+              className="flex items-center gap-1.5 rounded-full border border-gold px-4 py-2 text-xs font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60"
+            >
+              <FlaskConical className="h-3.5 w-3.5" />
+              {t(user.is_demo ? "رجوع لحسابي الحقيقي" : "جرّب وضع الديمو")}
+            </button>
+            {user.is_demo && (
+              <button
+                onClick={topUp}
+                className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-primary hover:bg-muted"
+              >
+                {t("اشحن رصيد تجريبي")}
+              </button>
+            )}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between border-t border-border pt-5">
             <KycBadge kyc={kyc} />
             <button
               onClick={logout}

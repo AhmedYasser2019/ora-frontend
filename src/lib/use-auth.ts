@@ -1,13 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useSyncExternalStore } from "react";
 
-import { api, getToken, setToken } from "./api";
+import { api, enterDemo, getToken, leaveDemo, setToken } from "./api";
 
 export type User = {
   id: number;
   name: string;
   email: string;
   phone: string;
+  is_demo?: boolean;
   [key: string]: unknown;
 };
 
@@ -48,7 +49,19 @@ export function useAuth() {
     qc.clear();
   }, [qc]);
 
-  return { user: token ? (data ?? null) : null, loading: !!token && isPending, signOut };
+  /** بين الحساب الحقيقي وحساب الديمو المربوط به. كل ما في الذاكرة يخصّ الحساب السابق. */
+  const switchDemo = useCallback(async () => {
+    if (data?.is_demo) leaveDemo();
+    else enterDemo((await api<{ token: string }>("/demo/enter", { method: "POST" })).token);
+    await qc.resetQueries();
+  }, [data, qc]);
+
+  return {
+    user: token ? (data ?? null) : null,
+    loading: !!token && isPending,
+    signOut,
+    switchDemo,
+  };
 }
 
 /** Keep only same-origin relative paths for post-auth redirects. */
