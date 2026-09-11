@@ -68,7 +68,7 @@ function HoldingsPage() {
   return (
     <PageShell
       title="ممتلكاتي"
-      subtitle="القطع التي اشتريتها من أورا وسُلّمت أوامرها، بتكلفتها وقيمتها الحالية بسعر إعادة البيع اللحظي."
+      subtitle="القطع التي اشتريتها من أورا ولم تُلغَ أوامرها، بسعر شرائها وسعرها الحالي بسعر إعادة البيع اللحظي."
     >
       <div className="space-y-6">
         <div className="rounded-2xl border border-gold/40 bg-gradient-green p-6 text-primary-foreground">
@@ -163,7 +163,7 @@ function HoldingsPage() {
             <p className="mt-4 text-sm text-muted-foreground">
               {t(
                 items.length === 0
-                  ? "لا تملك قطعًا بعد — كل قطعة تشتريها من أورا تظهر هنا بعد تسليم أمرها."
+                  ? "لا تملك قطعًا بعد — كل قطعة تشتريها من أورا تظهر هنا فور تأكيد طلبها."
                   : "لا عناصر في هذا التصنيف.",
               )}
             </p>
