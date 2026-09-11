@@ -13,6 +13,9 @@ const BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
 const TOKEN_KEY = "ora.token";
 
+/** رمز الحساب الحقيقي، محفوظ جانبًا ما دام المستخدم في حساب الديمو المربوط به. */
+const REAL_TOKEN_KEY = "ora.token.real";
+
 export const getToken = () => {
   try {
     return localStorage.getItem(TOKEN_KEY);
@@ -24,11 +27,40 @@ export const getToken = () => {
 export const setToken = (token: string | null) => {
   try {
     if (token) localStorage.setItem(TOKEN_KEY, token);
-    else localStorage.removeItem(TOKEN_KEY);
+    else {
+      // خروج أو رمز ملغى: لا يبقى رمز حقيقي مخبّأ خلف جلسة انتهت.
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REAL_TOKEN_KEY);
+    }
   } catch {
     /* متصفح يمنع التخزين — الجلسة تعيش حتى إغلاق الصفحة فقط */
   }
   window.dispatchEvent(new Event("ora:auth"));
+};
+
+/**
+ * الانتقال لحساب الديمو والعودة منه. العودة تستعمل الرمز الحقيقي المحفوظ ولا تسأل الخادم —
+ * رمز الديمو لا يُستبدل برمز حقيقي أبدًا.
+ */
+export const enterDemo = (demoToken: string) => {
+  try {
+    const real = localStorage.getItem(TOKEN_KEY);
+    if (real) localStorage.setItem(REAL_TOKEN_KEY, real);
+  } catch {
+    /* بلا تخزين لا عودة — الخروج والدخول من جديد يكفيان */
+  }
+  setToken(demoToken);
+};
+
+export const leaveDemo = () => {
+  let real: string | null = null;
+  try {
+    real = localStorage.getItem(REAL_TOKEN_KEY);
+    localStorage.removeItem(REAL_TOKEN_KEY);
+  } catch {
+    /* كما فوق */
+  }
+  setToken(real);
 };
 
 export class ApiError extends Error {
