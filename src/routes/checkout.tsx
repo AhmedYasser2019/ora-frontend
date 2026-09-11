@@ -89,7 +89,9 @@ function CheckoutPage() {
       return;
     }
     if (form.fulfilment === "delivery" && form.address.trim().length < 10) {
-      toast.error(t("أدخل عنوان التوصيل بالتفصيل"));
+      toast.error(t("أدخل عنوان التوصيل بالتفصيل"), {
+        description: t("الشارع ورقم العقار والدور — 10 أحرف على الأقل."),
+      });
       return;
     }
     if (items.length === 0) return;
