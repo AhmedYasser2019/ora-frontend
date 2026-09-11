@@ -844,6 +844,7 @@ export const en: Record<string, string> = {
   "الرصيد النقدي": "Cash balance",
   "رصيد الذهب": "Gold balance",
   "بسعر البيع": "at the sell price",
+  "بسعر اليوم": "at today's price",
   "إجمالي المحفظة": "Wallet total",
   "آخر الحركات": "Recent activity",
   "آخر 20 عملية": "Last 20 transactions",
@@ -852,6 +853,7 @@ export const en: Record<string, string> = {
   "الحد الأدنى للشحن 100 ج.م · التنفيذ فوري": "Minimum top-up EGP 100 · executed instantly",
   "سعر الشراء / جرام 24": "Buy price / 24K gram",
   "سعر البيع / جرام 24": "Sell price / 24K gram",
+  "سعر الجرام / عيار 21": "Price / 21K gram",
   "سيُخصم من رصيدك": "Will be deducted from your balance",
   "الذهب المشترى من المحفظة محفوظ باسمك في خزائن مؤمّنة، ويمكنك استلامه سبائك من":
     "Gold bought through the wallet is held in your name in secure vaults, and you can take delivery of it as bars at",

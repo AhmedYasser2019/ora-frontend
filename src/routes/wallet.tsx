@@ -100,9 +100,8 @@ function WalletPage() {
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // الشراء بسعر الشراء، وإعادة البيع بسعر البيع الأقل (هامش التاجر).
-  const buyGram = prices?.gram.k24 ?? 0;
-  const sellGram = prices?.sell.k24 ?? 0;
+  // سعر واحد: سعر الشراء لعيار 21، وهو العيار الذي تُطلب به المحفظة أدناه.
+  const buyGram = prices?.gram.k21 ?? 0;
   const active = ACTIONS.find((a) => a.key === action)!;
   const isGold = action === "buy_gold";
   const gramPrice = buyGram;
@@ -179,8 +178,7 @@ function WalletPage() {
 
   const cash = (wallet?.find((b) => b.asset === "EGP")?.piasters ?? 0) / 100;
   const gold = Number(wallet?.find((b) => b.asset === "GOLD")?.grams ?? 0);
-  // تُقيَّم الحيازة بسعر البيع: هو ما ستقبضه فعليًا لو بعت الآن.
-  const goldValue = gold * sellGram;
+  const goldValue = gold * buyGram;
   const cost = isGold && valid ? parsed * gramPrice : 0;
 
   const input =
@@ -215,7 +213,7 @@ function WalletPage() {
                   {grams(gold)} {t("جرام")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  ≈ {egp(goldValue)} {t("ج.م")} {t("بسعر البيع")}
+                  ≈ {egp(goldValue)} {t("ج.م")} {t("بسعر اليوم")}
                 </p>
               </div>
               <div className="rounded-2xl border border-gold/40 bg-gradient-green p-5 text-primary-foreground">
@@ -334,15 +332,9 @@ function WalletPage() {
                 {isGold && (
                   <dl className="space-y-2 rounded-xl bg-secondary/60 p-3 text-xs">
                     <div className="flex justify-between">
-                      <dt className="text-muted-foreground">{t("سعر الشراء / جرام 24")}</dt>
+                      <dt className="text-muted-foreground">{t("سعر الجرام / عيار 21")}</dt>
                       <dd className="font-semibold text-primary">
                         {egp(buyGram)} {t("ج.م")}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-muted-foreground">{t("سعر البيع / جرام 24")}</dt>
-                      <dd className="font-semibold text-primary">
-                        {egp(sellGram)} {t("ج.م")}
                       </dd>
                     </div>
                     <div className="flex justify-between">
