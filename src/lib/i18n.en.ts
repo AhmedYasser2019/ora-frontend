@@ -686,8 +686,8 @@ export const en: Record<string, string> = {
   "لدي مشكلة في طلب معين، ماذا أفعل؟": "I have a problem with a specific order — what do I do?",
   "افتح صفحة طلباتي، وانسخ رقم الطلب، ثم تواصل معنا عبر أي قناة أعلاه ونعطيه الأولوية.":
     "Open the My orders page, copy the order number, then contact us through any channel above and we'll prioritise it.",
-  "مركز المساعدة — إجابات مباشرة عن الأسعار والشراء والبيع والمحفظة والطلبات وأمان الحساب.":
-    "Help centre — straight answers on prices, buying, selling, the wallet, orders and account security.",
+  "مركز المساعدة — إجابات مباشرة عن الأسعار والشراء والمحفظة والطلبات وأمان الحساب.":
+    "Help centre — straight answers on prices, buying, the wallet, orders and account security.",
   "ابحث في الأسئلة…": "Search the questions…",
   "ابحث في الأسئلة الشائعة": "Search the FAQ",
   "لا توجد نتائج لبحثك. جرّب كلمة أخرى أو تواصل معنا مباشرة.":
