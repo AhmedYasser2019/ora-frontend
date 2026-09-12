@@ -1206,4 +1206,9 @@ export const en: Record<string, string> = {
   "أضف إلى ممتلكاتي": "Add to my holdings",
   "التقييم بسعر إعادة البيع اللحظي — أي ما ستقبضه لو بعت الآن، دون خصم المصنعية. بياناتك محفوظة على هذا المتصفح ولا تُرسل لأي خادم.":
     "Valued at the live buy-back price — what you would receive if you sold now, before any fabrication deduction. Your data stays in this browser and is never sent to a server.",
+  // بيانات المتجر القادمة من الداشبورد
+  واتساب: "WhatsApp",
+  فيسبوك: "Facebook",
+  "قائمة الفروع قيد التحديث. تواصل معنا على الرقم الموحد لمعرفة أقرب فرع لك.":
+    "Our branch list is being updated. Call the hotline and we'll point you to the nearest one.",
 };
