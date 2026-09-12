@@ -10,29 +10,31 @@ import {
 import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { LangProvider, readLang, useT, tr } from "@/lib/i18n";
+import { LangProvider, readLang, tr } from "@/lib/i18n";
 import { settingsQuery } from "@/lib/settings.queries";
 import { CartProvider } from "../lib/cart";
 import { FavoritesProvider } from "@/lib/favorites";
 import { Toaster } from "@/components/ui/sonner";
 
+/**
+ * تُرسم أحيانًا خارج <LangProvider> (لو فشل RootComponent قبل تركيب الـ provider)،
+ * لذا تستخدم `tr` المستقلة عن السياق بدل `useT`.
+ */
 function NotFoundComponent() {
-  const t = useT();
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("الصفحة غير موجودة")}</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{tr("الصفحة غير موجودة")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          {t("الصفحة التي تبحث عنها غير موجودة أو تم نقلها.")}
+          {tr("الصفحة التي تبحث عنها غير موجودة أو تم نقلها.")}
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            {t("العودة للرئيسية")}
+            {tr("العودة للرئيسية")}
           </Link>
         </div>
       </div>
@@ -40,19 +42,19 @@ function NotFoundComponent() {
   );
 }
 
+// نفس السبب: قد تُرسم قبل تركيب <LangProvider>، فتستخدم `tr` لا `useT`.
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  const t = useT();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          {t("تعذّر تحميل الصفحة")}
+          {tr("تعذّر تحميل الصفحة")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {t("حدث خطأ من جانبنا. جرّب تحديث الصفحة أو العودة للرئيسية.")}
+          {tr("حدث خطأ من جانبنا. جرّب تحديث الصفحة أو العودة للرئيسية.")}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -62,13 +64,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            {t("حاول مرة أخرى")}
+            {tr("حاول مرة أخرى")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            {t("العودة للرئيسية")}
+            {tr("العودة للرئيسية")}
           </a>
         </div>
       </div>
