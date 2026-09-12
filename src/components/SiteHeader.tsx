@@ -6,6 +6,7 @@ import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
 import { useLang } from "@/lib/i18n";
 import { navLinks } from "@/lib/site";
+import { useSiteSettings } from "@/lib/settings.queries";
 
 import { PriceMarquee } from "./PriceMarquee";
 
@@ -14,6 +15,7 @@ export function SiteHeader() {
   const { count, ready } = useCart();
   const favorites = useFavorites();
   const { lang, setLang, t } = useLang();
+  const settings = useSiteSettings();
 
   return (
     <>
@@ -21,7 +23,8 @@ export function SiteHeader() {
       <div className="bg-gradient-green text-primary-foreground">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-xs">
           <span className="flex items-center gap-2">
-            <Phone className="h-3.5 w-3.5 text-gold" /> 17608
+            <Phone className="h-3.5 w-3.5 text-gold" />
+            <span dir="ltr">{settings?.contact.hotline}</span>
           </span>
           <span className="hidden text-gold sm:inline">
             {t("توصيل آمن ومؤمّن لكل محافظات مصر")}

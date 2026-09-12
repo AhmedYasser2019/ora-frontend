@@ -19,7 +19,8 @@ import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { orderErrorMessage, placeOrder } from "@/lib/orders";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
-import { GOVERNORATES, branches } from "@/lib/site";
+import { GOVERNORATES } from "@/lib/site";
+import { useSiteSettings } from "@/lib/settings.queries";
 
 import { tr } from "@/lib/i18n";
 
@@ -53,6 +54,7 @@ function CheckoutPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const t = useT();
+  const branches = useSiteSettings()?.branches ?? [];
 
   const [form, setForm] = useState({
     name: "",
@@ -60,7 +62,7 @@ function CheckoutPage() {
     fulfilment: "delivery" as "delivery" | "pickup",
     governorate: GOVERNORATES[0] as string,
     address: "",
-    branch: branches[0]!.name,
+    branch: "",
     payment: "instapay" as (typeof PAYMENTS)[number]["key"],
   });
   // الأمر الواحد قطعة واحدة، فسلة بكمية 3 تنتج ثلاثة أرقام لا رقمًا واحدًا.
@@ -70,6 +72,12 @@ function CheckoutPage() {
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { next: "/checkout" } });
   }, [loading, user, navigate]);
+
+  /**
+   * الفرع المختار. الفروع تأتي من الداشبورد بعد أوّل رسم، فالقائمة فارغة لحظةً — وحتى يختار
+   * الزائر بنفسه يكون الفرع الأول هو المعروض، وهو نفسه ما يُرسَل.
+   */
+  const branch = form.branch || branches[0]?.name || "";
 
   // سعر الخادم فقط، وهو تقديري للعرض: السعر المُلزِم هو الذي يثبّته العرض عند التأكيد.
   const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
@@ -94,6 +102,12 @@ function CheckoutPage() {
       });
       return;
     }
+    if (form.fulfilment === "pickup" && !branch) {
+      toast.error(t("اختر فرع الاستلام"), {
+        description: t("قائمة الفروع لم تُحمّل بعد. حدّث الصفحة أو اختر التوصيل."),
+      });
+      return;
+    }
     if (items.length === 0) return;
 
     setSubmitting(true);
@@ -106,7 +120,7 @@ function CheckoutPage() {
         // المفاتيح غير المعنيّة تُحذف ولا تُرسل فارغة — الخادم يتحقق من وجودها لا من قيمتها.
         ...(form.fulfilment === "delivery"
           ? { governorate: form.governorate, address: form.address.trim() }
-          : { branch: form.branch }),
+          : { branch }),
       });
 
       // المجموع من الخادم: ما خُصم فعلًا، لا ما عرضته الشاشة قبل تثبيت السعر.
@@ -301,7 +315,7 @@ function CheckoutPage() {
                 <select
                   id="branch"
                   className={input}
-                  value={form.branch}
+                  value={branch}
                   onChange={(e) => setForm({ ...form, branch: e.target.value })}
                 >
                   {branches.map((b) => (

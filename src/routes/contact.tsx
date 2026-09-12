@@ -1,12 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { CheckCircle2, Clock, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock,
+  Facebook,
+  Instagram,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Send,
+  type LucideIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { branches } from "@/lib/site";
+import { useSiteSettings } from "@/lib/settings.queries";
 import { api, ApiError } from "@/lib/api";
 
 import { tr } from "@/lib/i18n";
@@ -42,8 +53,39 @@ const TOPICS = {
 
 type Topic = keyof typeof TOPICS;
 
+/**
+ * قناة تواصل واحدة في الشريط الجانبي. القيم تأتي من الداشبورد، والقناة التي لم تُكتب
+ * لا تظهر أصلًا — لا أيقونة بلا رقم خلفها.
+ */
+function Channel({
+  icon: Icon,
+  label,
+  value,
+  ltr = false,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string | null | undefined;
+  ltr?: boolean;
+}) {
+  if (!value) return null;
+
+  return (
+    <li className="flex items-start gap-3">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
+      <div>
+        <p className="font-semibold text-primary">{label}</p>
+        <p {...(ltr ? { dir: "ltr" } : {})} className="text-xs text-muted-foreground">
+          {value}
+        </p>
+      </div>
+    </li>
+  );
+}
+
 function ContactPage() {
   const t = useT();
+  const settings = useSiteSettings();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -230,57 +272,51 @@ function ContactPage() {
           <div className="rounded-2xl border border-border bg-card p-5">
             <h2 className="font-display text-lg text-primary">{t("قنوات التواصل")}</h2>
             <ul className="mt-4 space-y-4 text-sm">
-              <li className="flex items-start gap-3">
-                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
-                <div>
-                  <p className="font-semibold text-primary">{t("الرقم الموحد")}</p>
-                  <p dir="ltr" className="text-xs text-muted-foreground">
-                    17608
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
-                <div>
-                  <p className="font-semibold text-primary">{t("البريد الإلكتروني")}</p>
-                  <p dir="ltr" className="text-xs text-muted-foreground">
-                    support@ora-gold.com
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
-                <div>
-                  <p className="font-semibold text-primary">{t("ساعات العمل")}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t("يوميًا من 10 صباحًا حتى 10 مساءً")}
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Instagram className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
-                <div>
-                  <p className="font-semibold text-primary">{t("وسائل التواصل")}</p>
-                  <p className="text-xs text-muted-foreground">@oragold.eg</p>
-                </div>
-              </li>
+              <Channel
+                icon={Phone}
+                label={t("الرقم الموحد")}
+                value={settings?.contact.hotline}
+                ltr
+              />
+              <Channel
+                icon={MessageCircle}
+                label={t("واتساب")}
+                value={settings?.contact.whatsapp}
+                ltr
+              />
+              <Channel
+                icon={Mail}
+                label={t("البريد الإلكتروني")}
+                value={settings?.contact.email}
+                ltr
+              />
+              <Channel icon={Clock} label={t("ساعات العمل")} value={settings?.general.hours} />
+              <Channel
+                icon={Instagram}
+                label={t("وسائل التواصل")}
+                value={settings?.contact.instagram}
+                ltr
+              />
+              <Channel icon={Facebook} label={t("فيسبوك")} value={settings?.contact.facebook} ltr />
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <h2 className="flex items-center gap-2 font-display text-lg text-primary">
-              <MapPin className="h-4 w-4 text-gold-deep" /> {t("المقر الرئيسي")}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              {t(branches[0]?.address ?? "")}
-            </p>
-            <Link
-              to="/branches"
-              className="mt-3 inline-block text-xs font-semibold text-gold-deep hover:underline"
-            >
-              {t("شاهد كل الفروع")} ({branches.length})
-            </Link>
-          </div>
+          {settings?.contact.address && (
+            <div className="rounded-2xl border border-border bg-card p-5">
+              <h2 className="flex items-center gap-2 font-display text-lg text-primary">
+                <MapPin className="h-4 w-4 text-gold-deep" /> {t("المقر الرئيسي")}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {settings.contact.address}
+              </p>
+              <Link
+                to="/branches"
+                className="mt-3 inline-block text-xs font-semibold text-gold-deep hover:underline"
+              >
+                {t("شاهد كل الفروع")} ({settings.branches.length})
+              </Link>
+            </div>
+          )}
         </aside>
       </div>
     </PageShell>

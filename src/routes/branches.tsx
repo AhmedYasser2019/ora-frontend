@@ -3,7 +3,7 @@ import { Clock, MapPin, Phone } from "lucide-react";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { branches } from "@/lib/site";
+import { useSiteSettings } from "@/lib/settings.queries";
 
 import { tr } from "@/lib/i18n";
 
@@ -29,12 +29,19 @@ export const Route = createFileRoute("/branches")({
 
 function BranchesPage() {
   const t = useT();
+  const branches = useSiteSettings()?.branches ?? [];
 
   return (
     <PageShell
       title="فروعنا"
       subtitle="زور أقرب فرع لك لشراء أو بيع الذهب والفضة، مع فحص فوري وشهادة أصل لكل قطعة."
     >
+      {/* الفروع تأتي من الداشبورد، ولا فرع واحد ممكن: الرقم الموحد في الفوتر هو البديل. */}
+      {branches.length === 0 && (
+        <p className="text-sm text-muted-foreground">
+          {t("قائمة الفروع قيد التحديث. تواصل معنا على الرقم الموحد لمعرفة أقرب فرع لك.")}
+        </p>
+      )}
       <div className="grid gap-5 md:grid-cols-2">
         {branches.map((b) => (
           <div key={b.name} className="rounded-2xl border border-border bg-card p-6">
@@ -44,12 +51,17 @@ function BranchesPage() {
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 text-gold-deep" /> {t(b.address)}
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gold-deep" /> {b.phone}
-              </li>
-              <li className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-gold-deep" /> {t(b.hours)}
-              </li>
+              {b.phone && (
+                <li className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-gold-deep" />
+                  <span dir="ltr">{b.phone}</span>
+                </li>
+              )}
+              {b.hours && (
+                <li className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-gold-deep" /> {t(b.hours)}
+                </li>
+              )}
             </ul>
             <a
               href={`https://www.google.com/maps/search/${encodeURIComponent(b.address)}`}

@@ -3,9 +3,11 @@ import { Mail, MapPin, Phone } from "lucide-react";
 
 import { useT } from "@/lib/i18n";
 import { helpLinks, navLinks } from "@/lib/site";
+import { useSiteSettings } from "@/lib/settings.queries";
 
 export function SiteFooter() {
   const t = useT();
+  const settings = useSiteSettings();
 
   return (
     <footer className="bg-gradient-green text-primary-foreground">
@@ -13,9 +15,9 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-3xl tracking-[0.25em] text-gold">ORA</p>
           <p className="mt-1 text-[10px] tracking-[0.35em] text-gold/70">GOLD JEWELRY</p>
-          <p className="mt-4 text-sm text-primary-foreground/75">
-            {t("أورا للذهب والسبائك — استثمار واضح وآمن في المعادن النفيسة.")}
-          </p>
+          {settings?.general.tagline && (
+            <p className="mt-4 text-sm text-primary-foreground/75">{settings.general.tagline}</p>
+          )}
         </div>
         <div>
           <h3 className="text-base text-gold">{t("روابط سريعة")}</h3>
@@ -44,15 +46,23 @@ export function SiteFooter() {
         <div>
           <h3 className="text-base text-gold">{t("تواصل معنا")}</h3>
           <ul className="mt-3 space-y-3 text-sm text-primary-foreground/75">
-            <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-gold" /> 17608
-            </li>
-            <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-gold" /> support@ora-gold.com
-            </li>
-            <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-gold" /> {t("سموحة، الإسكندرية، مصر")}
-            </li>
+            {settings?.contact.hotline && (
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-gold" />
+                <span dir="ltr">{settings.contact.hotline}</span>
+              </li>
+            )}
+            {settings?.contact.email && (
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-gold" />
+                <span dir="ltr">{settings.contact.email}</span>
+              </li>
+            )}
+            {settings?.contact.address && (
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-4 w-4 text-gold" /> {settings.contact.address}
+              </li>
+            )}
           </ul>
         </div>
       </div>

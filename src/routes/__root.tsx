@@ -11,6 +11,7 @@ import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { LangProvider, readLang, useT, tr } from "@/lib/i18n";
+import { settingsQuery } from "@/lib/settings.queries";
 import { CartProvider } from "../lib/cart";
 import { FavoritesProvider } from "@/lib/favorites";
 import { Toaster } from "@/components/ui/sonner";
@@ -110,6 +111,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       ],
     };
   },
+
+  /**
+   * بيانات المتجر — الفوتر يطبع أرقام التواصل في كل صفحة، فتُجلب هنا مرة واحدة بدل مرة في
+   * كل شاشة. `prefetchQuery` لا `ensureQueryData`: هذه البيانات تزيّن الصفحة ولا تصنعها،
+   * وباك إند بعيد يجب أن يُفقد الفوتر أرقامه لا أن يُسقط الموقع كله.
+   */
+  loader: ({ context }) => context.queryClient.prefetchQuery(settingsQuery(readLang())),
 
   shellComponent: RootShell,
   component: RootComponent,
