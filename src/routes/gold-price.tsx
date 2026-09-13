@@ -4,6 +4,7 @@ import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { LiveTicker } from "@/components/LiveTicker";
 import { PriceBoard } from "@/components/PriceBoard";
+import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 
@@ -61,6 +62,10 @@ function GoldPricePage() {
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <PriceBoard metal="gold" gram={data?.gram} halted={data?.halted["gold"]} />
         <LiveTicker history={history} series="k24" label={t("عيار 24")} />
+      </div>
+
+      <div className="mt-6">
+        <PriceHistoryChart metal="gold" />
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
