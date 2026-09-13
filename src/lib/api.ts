@@ -9,7 +9,8 @@
 import { lang } from "./i18n";
 
 // `?.` لأن الاختبارات تشغّل هذه الوحدة في node، حيث لا `import.meta.env`.
-const BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
+// مُصدَّرة: استعمال البث الحيّ لها أيضًا في طلب تفويض القناة الخاصة، انظر use-notifications.
+export const BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
 const TOKEN_KEY = "ora.token";
 

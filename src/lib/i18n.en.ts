@@ -123,6 +123,9 @@ export const en: Record<string, string> = {
   "جنيه / جرام": "EGP / gram",
   "جنيه / أونصة": "EGP / ounce",
 
+  // الإشعارات
+  الإشعارات: "Notifications",
+  "لا توجد إشعارات بعد": "No notifications yet",
   // المفضلة
   المفضلة: "Favorites",
   "أضف للمفضلة": "Add to favorites",
