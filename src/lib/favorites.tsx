@@ -18,7 +18,8 @@ import { useAuth } from "./use-auth";
  * ما عندنا بدل التوفيق بين تخمين محلي وما يحفظه الخادم. الخادم يُسقط القطع المشطوبة من
  * القائمة، فالعدّاد لا يعدّ ما لا تعرضه الصفحة.
  *
- * الزائر غير المسجَّل يحفظ على جهازه، وعند أول دخول تُدمج قائمته في الحساب ثم تُمسح.
+ * الزائر غير المسجَّل يحفظ في ذاكرة الصفحة فقط، وعند أول دخول تُدمج قائمته في الحساب. لا شيء
+ * في localStorage غير رمز الجلسة: كل ما يُكتب هناك يقرؤه أي سكربت يصل للصفحة.
  */
 
 type FavoritesContextValue = {
@@ -33,24 +34,9 @@ type FavoritesContextValue = {
   prune: (known: string[]) => void;
 };
 
-const STORAGE_KEY = "ora-favorites-v1";
+/** مفتاح قديم كانت المفضلة تُحفظ فيه على الجهاز — يُمسح فقط. */
+const LEGACY_KEY = "ora-favorites-v1";
 const KEY = ["favorites"];
-
-const readLocal = (): string[] => {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as string[];
-  } catch {
-    return [];
-  }
-};
-
-const writeLocal = (slugs: string[]) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(slugs));
-  } catch {
-    /* متصفح يمنع التخزين */
-  }
-};
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
@@ -67,17 +53,15 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const qc = useQueryClient();
   const [guest, setGuest] = useState<string[]>([]);
-  const [guestReady, setGuestReady] = useState(false);
   const merged = useRef<number | null>(null);
 
   useEffect(() => {
-    setGuest(readLocal());
-    setGuestReady(true);
+    try {
+      localStorage.removeItem(LEGACY_KEY);
+    } catch {
+      /* لا شيء نفعله */
+    }
   }, []);
-
-  useEffect(() => {
-    if (guestReady && !user) writeLocal(guest);
-  }, [guest, guestReady, user]);
 
   const { data: server, isPending } = useQuery({
     queryKey: KEY,
@@ -87,23 +71,21 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   // الدمج مرة واحدة لكل حساب. كود مشطوب في القائمة المحلية يتجاهله الخادم ولا يُفشل الباقي.
   useEffect(() => {
-    if (!user || !guestReady || merged.current === user.id) return;
+    if (!user || merged.current === user.id) return;
     merged.current = user.id;
 
-    const local = readLocal();
-    if (local.length === 0) return;
+    if (guest.length === 0) return;
 
-    favorites("/favorites/merge", { method: "POST", body: { skus: local } })
+    favorites("/favorites/merge", { method: "POST", body: { skus: guest } })
       .then((list) => {
-        writeLocal([]);
         setGuest([]);
         qc.setQueryData(KEY, list);
       })
       .catch(() => {
-        /* تبقى محليًا وتُدمج في الدخول التالي */
+        /* تبقى في ذاكرة الصفحة وتُدمج مع الحساب التالي */
         merged.current = null;
       });
-  }, [user, guestReady, qc]);
+  }, [user, guest, qc]);
 
   const slugs = useMemo(() => (user ? (server ?? []) : guest), [user, server, guest]);
 
@@ -156,13 +138,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     () => ({
       slugs,
       count: slugs.length,
-      ready: !loading && (user ? !isPending : guestReady),
+      ready: !loading && (!user || !isPending),
       has: (slug: string) => slugs.includes(slug),
       toggle,
       clear,
       prune,
     }),
-    [slugs, loading, user, isPending, guestReady, toggle, clear, prune],
+    [slugs, loading, user, isPending, toggle, clear, prune],
   );
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;

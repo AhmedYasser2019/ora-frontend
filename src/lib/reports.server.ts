@@ -7,7 +7,7 @@
 
 import { readLang } from "./i18n";
 
-const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
+import { API_URL, backend } from "./backend.server";
 
 export type ReportKind = "weekly" | "monthly" | "quarterly" | "annual";
 
@@ -33,7 +33,7 @@ export type Report = {
 
 export async function fetchReports(): Promise<Report[]> {
   const res = await fetch(`${API_URL}/api/v1/reports`, {
-    headers: { accept: "application/json", "accept-language": readLang() },
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
   });
 
   if (!res.ok) throw new Error(`reports fetch failed: ${res.status}`);

@@ -7,7 +7,7 @@
 
 import { readLang } from "./i18n";
 
-const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
+import { API_URL, backend } from "./backend.server";
 
 /** ما يعيده الباك إند لكل مقال — انظر NewsController::present. */
 type ApiArticle = {
@@ -40,7 +40,7 @@ const toArticle = (a: ApiArticle): Article => ({
 
 export async function fetchNews(): Promise<Article[]> {
   const res = await fetch(`${API_URL}/api/v1/news`, {
-    headers: { accept: "application/json", "accept-language": readLang() },
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
   });
 
   if (!res.ok) throw new Error(`news fetch failed: ${res.status}`);

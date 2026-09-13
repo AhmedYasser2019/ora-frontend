@@ -9,7 +9,7 @@
 
 import { readLang } from "./i18n";
 
-const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
+import { API_URL, backend } from "./backend.server";
 
 export type GramPrices = {
   k24: number;
@@ -35,7 +35,7 @@ export type LivePrices = {
  */
 export async function fetchLivePrices(): Promise<LivePrices> {
   const res = await fetch(`${API_URL}/api/v1/prices`, {
-    headers: { accept: "application/json", "accept-language": readLang() },
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
   });
 
   if (!res.ok) throw new Error(`prices fetch failed: ${res.status}`);
@@ -51,9 +51,12 @@ export type HistoryRange = "1d" | "1w" | "1m" | "1y" | "10y";
 export type PriceHistory = { karat: number; points: [number, number][] };
 
 export async function fetchPriceHistory(metal: string, range: HistoryRange): Promise<PriceHistory> {
-  const res = await fetch(`${API_URL}/api/v1/prices/history?metal=${metal}&range=${range}`, {
-    headers: { accept: "application/json" },
-  });
+  const res = await fetch(
+    `${API_URL}/api/v1/prices/history?${new URLSearchParams({ metal, range })}`,
+    {
+      headers: backend({ accept: "application/json" }),
+    },
+  );
 
   if (!res.ok) throw new Error(`price history fetch failed: ${res.status}`);
 
