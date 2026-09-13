@@ -864,6 +864,7 @@ export const en: Record<string, string> = {
   "لا توجد حركات بعد — ابدأ بشحن رصيدك.": "No activity yet — start by topping up your balance.",
   المبلغ: "Amount",
   "الحد الأدنى للشحن 100 ج.م · التنفيذ فوري": "Minimum top-up EGP 100 · executed instantly",
+  "الشحن يتم بتحويل بنكي يعتمده مكتب الحسابات": "Top-ups are made by bank transfer, approved by accounts",
   "سعر الشراء / جرام 24": "Buy price / 24K gram",
   "سعر البيع / جرام 24": "Sell price / 24K gram",
   "سعر الجرام / عيار 21": "Price / 21K gram",

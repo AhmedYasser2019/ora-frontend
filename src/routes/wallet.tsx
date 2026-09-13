@@ -117,10 +117,10 @@ function WalletPage() {
   const refresh = useCallback(async () => {
     try {
       const [balances, lines] = await Promise.all([
-        api<Balance[]>("/wallet"),
+        api<{ data: Balance[] }>("/wallet"),
         api<{ data: Txn[] }>("/wallet/transactions"),
       ]);
-      setWallet(balances);
+      setWallet(balances.data);
       setTxns(lines.data);
     } catch {
       setWallet([]);
@@ -137,7 +137,12 @@ function WalletPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !valid) return;
-    if (isGold && gramPrice <= 0) {
+    // لا endpoint للشحن (انظر ACTIONS) — بدون هذا يُرسل المبلغ بالجنيه كجرامات شراء.
+    if (!isGold) {
+      toast.info(t("الشحن يتم بتحويل بنكي يعتمده مكتب الحسابات"));
+      return;
+    }
+    if (gramPrice <= 0) {
       toast.error(t("سعر الجرام غير متاح الآن"), { description: t("حاول بعد لحظات.") });
       return;
     }
