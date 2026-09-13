@@ -8,7 +8,7 @@
 
 import { readLang } from "./i18n";
 
-const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
+import { API_URL, backend } from "./backend.server";
 
 /** ما يعيده الباك إند لكل قطعة. */
 type ApiProduct = {
@@ -100,7 +100,7 @@ function toProduct(p: ApiProduct): Product {
 export async function fetchProducts(): Promise<Product[]> {
   // اسم القطعة وسطرها الفرعي يترجمهما الخادم من Accept-Language، فنمرّر لغة الزائر.
   const res = await fetch(`${API_URL}/api/v1/products`, {
-    headers: { accept: "application/json", "accept-language": readLang() },
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
   });
 
   if (!res.ok) throw new Error(`products fetch failed: ${res.status}`);

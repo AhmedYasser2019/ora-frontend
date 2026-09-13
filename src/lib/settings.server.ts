@@ -7,7 +7,7 @@
 
 import { readLang } from "./i18n";
 
-const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
+import { API_URL, backend } from "./backend.server";
 
 /** فرع واحد كما يكتبه المسؤول في الداشبورد — انظر SiteSettings في الباك إند. */
 export type Branch = {
@@ -36,7 +36,7 @@ export type SiteSettings = {
 
 export async function fetchSettings(): Promise<SiteSettings> {
   const res = await fetch(`${API_URL}/api/v1/settings`, {
-    headers: { accept: "application/json", "accept-language": readLang() },
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
   });
 
   if (!res.ok) throw new Error(`settings fetch failed: ${res.status}`);

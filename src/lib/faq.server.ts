@@ -7,7 +7,7 @@
 
 import { readLang } from "./i18n";
 
-const API_URL = process.env["API_URL"] ?? "http://localhost:8000";
+import { API_URL, backend } from "./backend.server";
 
 export type Faq = {
   id: number;
@@ -19,7 +19,7 @@ export type Faq = {
 
 export async function fetchFaqs(): Promise<Faq[]> {
   const res = await fetch(`${API_URL}/api/v1/faqs`, {
-    headers: { accept: "application/json", "accept-language": readLang() },
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
   });
 
   if (!res.ok) throw new Error(`faqs fetch failed: ${res.status}`);
