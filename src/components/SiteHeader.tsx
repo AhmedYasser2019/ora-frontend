@@ -8,6 +8,7 @@ import { useLang } from "@/lib/i18n";
 import { navLinks } from "@/lib/site";
 import { useSiteSettings } from "@/lib/settings.queries";
 
+import { NotificationBell } from "./NotificationBell";
 import { PriceMarquee } from "./PriceMarquee";
 
 export function SiteHeader() {
@@ -57,6 +58,7 @@ export function SiteHeader() {
               <p className="mt-1 text-[10px] tracking-[0.35em] text-gold-deep">GOLD JEWELRY</p>
             </Link>
             <div className="flex items-center gap-2">
+              <NotificationBell />
               <Link
                 to="/orders"
                 aria-label={t("طلباتي")}
