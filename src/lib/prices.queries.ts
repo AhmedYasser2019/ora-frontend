@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { intlLocale } from "./i18n";
-import { getLivePrices } from "./prices.functions";
+import { getLivePrices, getPriceHistory } from "./prices.functions";
+import type { HistoryRange } from "./prices.server";
 
 export const livePricesQuery = queryOptions({
   queryKey: ["live-prices"],
@@ -10,6 +11,13 @@ export const livePricesQuery = queryOptions({
   refetchOnWindowFocus: true,
   staleTime: 30_000,
 });
+
+export const priceHistoryQuery = (metal: "gold" | "silver", range: HistoryRange) =>
+  queryOptions({
+    queryKey: ["price-history", metal, range],
+    queryFn: () => getPriceHistory({ data: { metal, range } }),
+    staleTime: 60_000,
+  });
 
 export const egp = (n: number) =>
   new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: 0 }).format(Math.round(n));

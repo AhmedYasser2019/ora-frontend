@@ -5,6 +5,16 @@
 export const en: Record<string, string> = {
   // الوقت
   ث: "s",
+  // تاريخ السعر
+  "تاريخ السعر": "Price history",
+  الفترة: "Period",
+  "24 ساعة": "24h",
+  "جاري التحميل…": "Loading…",
+  أسبوع: "Week",
+  شهر: "Month",
+  سنة: "Year",
+  "10 سنين": "10 years",
+  "لا توجد بيانات لهذه الفترة بعد.": "No data for this period yet.",
   // الأخبار
   عالمي: "Global",
   محلي: "Local",

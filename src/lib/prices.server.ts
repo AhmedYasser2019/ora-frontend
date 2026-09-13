@@ -44,3 +44,20 @@ export async function fetchLivePrices(): Promise<LivePrices> {
 
   return body.data;
 }
+
+export type HistoryRange = "1d" | "1w" | "1m" | "1y" | "10y";
+
+/** `[ثواني يونكس, جنيه للجرام]` لعيار المعدن الأساسي (21 للذهب) — انظر PriceHistory في الباك إند. */
+export type PriceHistory = { karat: number; points: [number, number][] };
+
+export async function fetchPriceHistory(metal: string, range: HistoryRange): Promise<PriceHistory> {
+  const res = await fetch(`${API_URL}/api/v1/prices/history?metal=${metal}&range=${range}`, {
+    headers: { accept: "application/json" },
+  });
+
+  if (!res.ok) throw new Error(`price history fetch failed: ${res.status}`);
+
+  const body = (await res.json()) as { data: PriceHistory };
+
+  return body.data;
+}
