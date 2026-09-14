@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
@@ -46,9 +46,11 @@ function NewsPage() {
       {articles?.length ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {articles.map((a) => (
-            <article
+            <Link
               key={a.id}
-              className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
+              to="/news/$id"
+              params={{ id: String(a.id) }}
+              className="block overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
             >
               <img
                 src={a.img ?? fallbackImage[a.category]}
@@ -67,7 +69,7 @@ function NewsPage() {
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{a.excerpt}</p>
                 <p className="mt-4 text-[11px] text-gold-deep">{newsDate(a.publishedAt)}</p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       ) : (

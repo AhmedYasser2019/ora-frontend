@@ -55,7 +55,9 @@
 - الموجود: `POST /auth/otp` → `/auth/otp/verify` → `/auth/password` (throttle `otp`).
 - مش هتشتغل فعليًا غير لما SMS يتظبط (زي رقم 6).
 
-## ⬜ 8. حاجات صغيرة
+## ✅ 8. حاجات صغيرة — 2026-09-14
+- اتعمل: صفحتين `routes/news_.$id.tsx` و`reports_.$id.tsx` (`/news/:id`, `/reports/:id`) بتتقري على الخادم، وغير المنشور 404. الشكل المشترك في `components/Post.tsx`، والـ HTML بيتعرض بـ `Prose` (اتنقل من `Policy.tsx`). الكروت في `news.tsx` و`reports.tsx` و`FinancialNews.tsx` بقت لينكات. `reportsQuery` + `reportQuery` في `lib/reports.queries.ts` جديد.
+- الباك إند: `NewsController::show` و`ReportController::show` بقوا بينضّفوا الـ body (`Str::sanitizeHtml`) زي الصفحات. migration `2026_09_14_140000_add_app_links_to_site_settings` (`app_android_url`, `app_ios_url`) في تبويب «الإعدادات العامة» (لازم يبدأ بـ play.google.com / apps.apple.com)، و`/settings` فيه `app: {android, ios}`. أزرار الصفحة الرئيسية (`StoreButton` في `index.tsx`) بتفتح الرابط، والفاضي بيفضل «قريبًا». **محتاج `php artisan migrate` على السيرفر.**
 - صفحة تفاصيل للأخبار والتقارير (`GET /news/{id}`, `/reports/{id}`) — الكروت دلوقتي مش بتفتح.
 - أزرار Google Play / App Store في `routes/index.tsx:260-278` — لينكات لما التطبيق ينزل (ممكن من `/settings`).
 - مش مطلوب: `GOVERNORATES` ثابتة في `site.ts`، و`/devices` للموبايل بس.

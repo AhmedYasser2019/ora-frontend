@@ -208,6 +208,7 @@ export const en: Record<string, string> = {
   "محفظة وادخار بالجرام": "Wallet and saving by the gram",
   "تتبع الطلبات": "Order tracking",
   "قريبًا على": "Coming soon on",
+  "متاح على": "Get it on",
   "ذهب أصلي 100%": "100% genuine gold",
   "جودة معتمدة": "Certified quality",
   "توصيل آمن وسريع": "Fast, secure delivery",
@@ -775,6 +776,10 @@ export const en: Record<string, string> = {
 
   // صفحة المنتج
   "المنتج غير موجود": "Product not found",
+  "غير موجود": "Not found",
+  "الرابط اللي فتحته مش موجود أو اتشال.": "The link you opened doesn't exist or was removed.",
+  "كل الأخبار": "All news",
+  "كل التقارير": "All reports",
   "الرابط اللي فتحته مش موجود أو المنتج اتشال.":
     "The link you opened doesn't exist, or the product was removed.",
   "مرفقة مع كل قطعة": "Included with every piece",

@@ -1,10 +1,10 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { newsDate } from "@/lib/news.queries";
-import { getReports } from "@/lib/reports.functions";
+import { reportKindLabel as kindLabel, reportsQuery } from "@/lib/reports.queries";
 import newsGlobal from "@/assets/news-global.jpg";
 
 import { tr } from "@/lib/i18n";
@@ -31,19 +31,6 @@ export const Route = createFileRoute("/reports")({
   component: ReportsPage,
 });
 
-const reportsQuery = queryOptions({
-  queryKey: ["reports"],
-  queryFn: () => getReports(),
-  staleTime: 300_000,
-});
-
-const kindLabel = {
-  weekly: "أسبوعي",
-  monthly: "شهري",
-  quarterly: "ربع سنوي",
-  annual: "سنوي",
-} as const;
-
 function ReportsPage() {
   const t = useT();
   const { data: reports } = useQuery(reportsQuery);
@@ -56,9 +43,11 @@ function ReportsPage() {
       {reports?.length ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {reports.map((r) => (
-            <article
+            <Link
               key={r.id}
-              className="overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
+              to="/reports/$id"
+              params={{ id: String(r.id) }}
+              className="block overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-soft"
             >
               <img
                 src={r.img ?? newsGlobal}
@@ -77,7 +66,7 @@ function ReportsPage() {
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{r.excerpt}</p>
                 <p className="mt-4 text-[11px] text-gold-deep">{newsDate(r.publishedAt)}</p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       ) : (

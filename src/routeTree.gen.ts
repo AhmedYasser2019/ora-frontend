@@ -35,7 +35,9 @@ import { Route as SilverPriceRouteImport } from './routes/silver-price'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ZakatRouteImport } from './routes/zakat'
+import { Route as NewsIdRouteImport } from './routes/news_.$id'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
+import { Route as ReportsIdRouteImport } from './routes/reports_.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -167,9 +169,19 @@ const ZakatRoute = ZakatRouteImport.update({
   path: '/zakat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsIdRoute = NewsIdRouteImport.update({
+  id: '/news_/$id',
+  path: '/news/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsSlugRoute = ProductsSlugRouteImport.update({
   id: '/products/$slug',
   path: '/products/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsIdRoute = ReportsIdRouteImport.update({
+  id: '/reports_/$id',
+  path: '/reports/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -200,7 +212,9 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
+  '/news/$id': typeof NewsIdRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/reports/$id': typeof ReportsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -229,7 +243,9 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
+  '/news/$id': typeof NewsIdRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/reports/$id': typeof ReportsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -259,7 +275,9 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
+  '/news_/$id': typeof NewsIdRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/reports_/$id': typeof ReportsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -290,7 +308,9 @@ export interface FileRouteTypes {
     | '/terms'
     | '/wallet'
     | '/zakat'
+    | '/news/$id'
     | '/products/$slug'
+    | '/reports/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -319,7 +339,9 @@ export interface FileRouteTypes {
     | '/terms'
     | '/wallet'
     | '/zakat'
+    | '/news/$id'
     | '/products/$slug'
+    | '/reports/$id'
   id:
     | '__root__'
     | '/'
@@ -348,7 +370,9 @@ export interface FileRouteTypes {
     | '/terms'
     | '/wallet'
     | '/zakat'
+    | '/news_/$id'
     | '/products/$slug'
+    | '/reports_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -378,7 +402,9 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   WalletRoute: typeof WalletRoute
   ZakatRoute: typeof ZakatRoute
+  NewsIdRoute: typeof NewsIdRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
+  ReportsIdRoute: typeof ReportsIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -565,11 +591,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZakatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news_/$id': {
+      id: '/news_/$id'
+      path: '/news/$id'
+      fullPath: '/news/$id'
+      preLoaderRoute: typeof NewsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products/$slug': {
       id: '/products/$slug'
       path: '/products/$slug'
       fullPath: '/products/$slug'
       preLoaderRoute: typeof ProductsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports_/$id': {
+      id: '/reports_/$id'
+      path: '/reports/$id'
+      fullPath: '/reports/$id'
+      preLoaderRoute: typeof ReportsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -602,7 +642,9 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   WalletRoute: WalletRoute,
   ZakatRoute: ZakatRoute,
+  NewsIdRoute: NewsIdRoute,
   ProductsSlugRoute: ProductsSlugRoute,
+  ReportsIdRoute: ReportsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

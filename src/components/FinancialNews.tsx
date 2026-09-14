@@ -62,9 +62,11 @@ export function FinancialNews() {
           className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {articles.map((a) => (
-            <article
+            <Link
               key={a.id}
-              className="w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-gold/15 bg-primary-foreground/5 transition-colors hover:border-gold/50 sm:w-[300px]"
+              to="/news/$id"
+              params={{ id: String(a.id) }}
+              className="block w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-gold/15 bg-primary-foreground/5 transition-colors hover:border-gold/50 sm:w-[300px]"
             >
               <img
                 src={a.img ?? newsFallbackImage[a.category]}
@@ -87,7 +89,7 @@ export function FinancialNews() {
                   {a.excerpt}
                 </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
 

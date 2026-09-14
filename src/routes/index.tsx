@@ -25,6 +25,7 @@ import { FinancialNews } from "@/components/FinancialNews";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { useSiteSettings } from "@/lib/settings.queries";
 
 export const Route = createFileRoute("/")({
   head: () => {
@@ -88,6 +89,7 @@ function Home() {
   const { data: catalog } = useQuery(productsQuery);
   const products = (catalog ?? []).slice(0, FEATURED_COUNT);
   const t = useT();
+  const app = useSiteSettings()?.app;
 
   const gramRows = [
     { key: "k24" as const, k: t("عيار 24"), v: data?.gram.k24, u: t("جنيه / جرام") },
@@ -261,24 +263,8 @@ function Home() {
             </ul>
           </div>
           <div className="flex flex-col gap-3">
-            <span className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-gold/40 bg-primary-foreground/5 px-6 py-3">
-              <Smartphone className="h-6 w-6 text-gold" />
-              <span>
-                <span className="block text-[10px] text-primary-foreground/60">
-                  {t("قريبًا على")}
-                </span>
-                <span className="block text-sm font-semibold text-gold">Google Play</span>
-              </span>
-            </span>
-            <span className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-gold/40 bg-primary-foreground/5 px-6 py-3">
-              <Smartphone className="h-6 w-6 text-gold" />
-              <span>
-                <span className="block text-[10px] text-primary-foreground/60">
-                  {t("قريبًا على")}
-                </span>
-                <span className="block text-sm font-semibold text-gold">App Store</span>
-              </span>
-            </span>
+            <StoreButton store="Google Play" href={app?.android} />
+            <StoreButton store="App Store" href={app?.ios} />
           </div>
         </div>
       </section>
@@ -302,5 +288,31 @@ function Home() {
       {/* Footer */}
       <SiteFooter />
     </div>
+  );
+}
+
+/** رابط المتجر من الداشبورد؛ قبل نزول التطبيق يبقى الزر «قريبًا». */
+function StoreButton({ store, href }: { store: string; href: string | null | undefined }) {
+  const t = useT();
+  const inner = (
+    <>
+      <Smartphone className="h-6 w-6 text-gold" />
+      <span>
+        <span className="block text-[10px] text-primary-foreground/60">
+          {t(href ? "متاح على" : "قريبًا على")}
+        </span>
+        <span className="block text-sm font-semibold text-gold">{store}</span>
+      </span>
+    </>
+  );
+  const cls =
+    "flex items-center gap-3 rounded-2xl border border-gold/40 bg-primary-foreground/5 px-6 py-3";
+
+  return href ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={`${cls} hover:bg-gold/10`}>
+      {inner}
+    </a>
+  ) : (
+    <span className={`${cls} cursor-not-allowed`}>{inner}</span>
   );
 }
