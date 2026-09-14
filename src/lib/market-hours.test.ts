@@ -1,24 +1,33 @@
 import assert from "node:assert";
-import { marketStatus, splitDuration } from "./market-hours";
+import { secondsToNext, splitDuration, type Market } from "./market-hours";
 
-// Cairo is UTC+2 in winter. 2026-01-04 is a Sunday, 2026-01-05 a Monday.
-const cairo = (iso: string) => new Date(`${iso}+02:00`);
+const closed: Market = {
+  open: false,
+  server_time: "2026-01-09T12:00:00+02:00", // Friday
+  opens_at: "2026-01-10T10:00:00+02:00",
+  closes_at: null,
+};
+const now = Date.parse(closed.server_time);
 
-assert.equal(marketStatus(cairo("2026-01-05T12:00:00")).openNow, true);
-assert.equal(marketStatus(cairo("2026-01-05T09:59:59")).openNow, false);
-assert.equal(marketStatus(cairo("2026-01-05T21:59:59")).openNow, true);
-assert.equal(marketStatus(cairo("2026-01-05T22:00:00")).openNow, false);
-assert.equal(marketStatus(cairo("2026-01-10T12:00:00")).openNow, true); // Saturday
-assert.equal(marketStatus(cairo("2026-01-04T12:00:00")).openNow, false); // Sunday
+// Friday noon → Saturday 10:00 = 22 hours.
+assert.equal(secondsToNext(closed, 0, now), 22 * 3600);
+// Device clock five minutes behind the server: still counts against the server's clock.
+assert.equal(secondsToNext(closed, 300_000, now - 300_000), 22 * 3600);
+// Open → counts to closes_at.
+assert.equal(
+  secondsToNext(
+    {
+      open: true,
+      server_time: "2026-01-10T21:00:00+02:00",
+      opens_at: null,
+      closes_at: "2026-01-10T22:00:00+02:00",
+    },
+    0,
+    Date.parse("2026-01-10T21:00:00+02:00"),
+  ),
+  3600,
+);
+// Past the target never goes negative.
+assert.equal(secondsToNext(closed, 0, now + 23 * 3600_000), 0);
 
-// Sunday noon → Monday 10:00 = 22 hours.
-assert.deepEqual(splitDuration(marketStatus(cairo("2026-01-04T12:00:00")).secondsToNext), {
-  days: 0,
-  hours: 22,
-  minutes: 0,
-  seconds: 0,
-});
-// Monday 09:00 → opens in an hour.
-assert.equal(marketStatus(cairo("2026-01-05T09:00:00")).secondsToNext, 3600);
-// Monday 21:00 → open, closes in an hour.
-assert.equal(marketStatus(cairo("2026-01-05T21:00:00")).secondsToNext, 3600);
+assert.deepEqual(splitDuration(22 * 3600 + 61), { days: 0, hours: 22, minutes: 1, seconds: 1 });

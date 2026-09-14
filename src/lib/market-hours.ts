@@ -1,48 +1,25 @@
-// سوق الذهب المصري: الاثنين–السبت، 10 ص – 10 م بتوقيت القاهرة (الأحد إجازة).
-const TZ = "Africa/Cairo";
-const OPEN_HOUR = 10;
-const CLOSE_HOUR = 22;
-const OPEN_DAYS = [1, 2, 3, 4, 5, 6]; // Mon–Sat
+/**
+ * مواعيد السوق من الباك إند (`GET /v1/market`، انظر MarketController و config/market.php).
+ * الأيام والساعات تُضبط هناك فقط — الموقع لا يعرفها، يعدّ تنازليًا للحظة التي أعطاها الخادم.
+ */
+
 const DAY = 86400;
-const WEEK = 7 * DAY;
 
-const fmt = new Intl.DateTimeFormat("en-US", {
-  timeZone: TZ,
-  hour12: false,
-  weekday: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-});
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-/** Seconds since Sunday 00:00 in Cairo local time. */
-function secondsOfWeek(at: Date) {
-  const p = new Map(fmt.formatToParts(at).map((x) => [x.type, x.value]));
-  return (
-    DAYS.indexOf(p.get("weekday") ?? "") * DAY +
-    (Number(p.get("hour")) % 24) * 3600 +
-    Number(p.get("minute")) * 60 +
-    Number(p.get("second"))
-  );
-}
+/** ما يعيده MarketController::show — واحد فقط من `opens_at` / `closes_at` له قيمة. */
+export type Market = {
+  open: boolean;
+  server_time: string;
+  opens_at: string | null;
+  closes_at: string | null;
+};
 
 /**
- * ponytail: DST-naive — the countdown can be off by an hour for the few days
- * around a Cairo DST switch. Swap in a tz-aware date lib if that matters.
+ * الثواني الباقية حتى يُفتح السوق أو يُغلق، بساعة الخادم لا بساعة الجهاز.
+ * `skew` = ساعة الخادم − ساعة الجهاز لحظة وصول الرد، فجهاز ساعته غلط يعدّ صح.
  */
-export function marketStatus(at: Date = new Date()) {
-  const now = secondsOfWeek(at);
-  const opens = OPEN_DAYS.map((d) => d * DAY + OPEN_HOUR * 3600);
-
-  // طول الجلسة يُضاف لكل فتحة عند الحاجة: مصفوفة إغلاق موازية تُفهرس بنفس الرقم هي نسخة
-  // ثانية من نفس المعلومة، وفهرستها هي ما كان يشكو منه المدقّق.
-  const SESSION = (CLOSE_HOUR - OPEN_HOUR) * 3600;
-
-  const openNow = opens.some((o) => now >= o && now < o + SESSION);
-  const next = opens.map((o) => (o + (openNow ? SESSION : 0) - now + WEEK) % WEEK);
-
-  return { openNow, secondsToNext: Math.min(...next) };
+export function secondsToNext(m: Market, skew: number, now = Date.now()) {
+  const target = Date.parse((m.open ? m.closes_at : m.opens_at) ?? m.server_time);
+  return Math.max(0, Math.ceil((target - now - skew) / 1000));
 }
 
 export function splitDuration(total: number) {
