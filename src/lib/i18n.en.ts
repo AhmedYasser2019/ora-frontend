@@ -161,7 +161,6 @@ export const en: Record<string, string> = {
   "بي تي سي": "BTC",
   "جولد إيرا": "Gold Era",
   "أورا للذهب": "ORA Gold",
-  "شركة أورا للذهب والسبائك": "ORA Gold & Bullion Company",
 
   // صفحات الخطأ
   "الصفحة غير موجودة": "Page not found",
@@ -743,8 +742,8 @@ export const en: Record<string, string> = {
   "عنوان الدفع": "Payment address",
   "بدون رسوم من جانبنا": "No fees from us",
   "من ساعة إلى يوم عمل": "One hour to one business day",
-  "حوّل إلى حسابنا البنكي باسم شركة أورا للذهب والسبائك، ثم أرسل صورة الإيصال لخدمة العملاء.":
-    "Transfer to our bank account in the name of ORA Gold & Bullion Company, then send a photo of the receipt to customer service.",
+  "حوّل إلى حسابنا البنكي الموضّح أدناه، ثم أرسل صورة الإيصال لخدمة العملاء.":
+    "Transfer to our bank account shown below, then send a photo of the receipt to customer service.",
   "اشحن محفظتك مرة واحدة واشترِ منها في أي وقت دون انتظار تحويل جديد مع كل طلب.":
     "Top up your wallet once and buy from it any time, with no new transfer for every order.",
   الصفحة: "Page",
@@ -759,6 +758,7 @@ export const en: Record<string, string> = {
   نسخ: "Copy",
   "بيانات الحساب البنكي": "Bank account details",
   "اسم المستفيد": "Beneficiary name",
+  البنك: "Bank",
   "رقم الحساب": "Account number",
   "حوّل فقط إلى الحساب المعلن على هذه الصفحة. لن يطلب منك أي موظف التحويل إلى حساب شخصي، ولن يطلب منك رمز التحقق OTP أو كلمة المرور. راجع":
     "Only transfer to the account published on this page. No member of staff will ask you to transfer to a personal account, or ask for your OTP or password. See the",

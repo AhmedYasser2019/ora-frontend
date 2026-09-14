@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+import { useSiteSettings } from "@/lib/settings.queries";
 
 import { tr } from "@/lib/i18n";
 
@@ -25,25 +26,27 @@ export const Route = createFileRoute("/payment-methods")({
   component: PaymentMethodsPage,
 });
 
-const IBAN = "EG380003004567890123456789012";
-const ACCOUNT = "0123456789012345";
+type Payment = NonNullable<ReturnType<typeof useSiteSettings>>["payment"];
 
-const METHODS = [
+/** `value` نص يُنسخ، أو صفحة داخل الموقع، أو null حين لم يُكتب في الداشبورد بعد فيختفي الصندوق. */
+const methods = (p: Payment | undefined) => [
   {
     icon: Smartphone,
     name: "InstaPay",
     fee: "بدون رسوم",
     time: "فوري",
     desc: "حوّل من تطبيق بنكك مباشرة إلى عنوان الدفع الخاص بنا. أسرع وسيلة لتأكيد الطلب.",
-    detail: { label: "عنوان الدفع", value: "oragold@instapay" },
+    detail: { label: "عنوان الدفع", value: p?.instapay ?? null },
   },
   {
     icon: Building2,
     name: "تحويل بنكي",
     fee: "بدون رسوم من جانبنا",
     time: "من ساعة إلى يوم عمل",
-    desc: "حوّل إلى حسابنا البنكي باسم شركة أورا للذهب والسبائك، ثم أرسل صورة الإيصال لخدمة العملاء.",
-    detail: { label: "IBAN", value: IBAN },
+    desc: "حوّل إلى حسابنا البنكي الموضّح أدناه، ثم أرسل صورة الإيصال لخدمة العملاء.",
+    detail: p?.bank_iban
+      ? { label: "IBAN", value: p.bank_iban }
+      : { label: "رقم الحساب", value: p?.bank_account ?? null },
   },
   {
     icon: Wallet,
@@ -66,6 +69,13 @@ const METHODS = [
 function PaymentMethodsPage() {
   const t = useT();
   const [copied, setCopied] = useState("");
+  const payment = useSiteSettings()?.payment;
+  const bank = [
+    [t("البنك"), payment?.bank_name],
+    [t("اسم المستفيد"), payment?.bank_beneficiary],
+    [t("رقم الحساب"), payment?.bank_account],
+    ["IBAN", payment?.bank_iban],
+  ].filter((row): row is [string, string] => !!row[1]);
 
   const copy = async (value: string) => {
     try {
@@ -84,8 +94,9 @@ function PaymentMethodsPage() {
       subtitle="اختر الطريقة المناسبة لك وأكمل معاملتك بأمان. لا نفرض أي رسوم خدمة على أي وسيلة دفع."
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        {METHODS.map((m) => {
-          const isLink = m.detail.value === "/wallet" || m.detail.value === "/branches";
+        {methods(payment).map((m) => {
+          const { label, value } = m.detail;
+          const isLink = value === "/wallet" || value === "/branches";
           return (
             <article key={m.name} className="rounded-2xl border border-border bg-card p-6">
               <div className="flex items-center gap-3">
@@ -102,57 +113,57 @@ function PaymentMethodsPage() {
 
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t(m.desc)}</p>
 
-              <div className="mt-5 rounded-xl bg-secondary/60 p-3">
-                <p className="text-[11px] text-muted-foreground">{t(m.detail.label)}</p>
-                {isLink ? (
-                  <Link
-                    to={m.detail.value as "/wallet" | "/branches"}
-                    className="mt-1 inline-block text-sm font-semibold text-gold-deep hover:underline"
-                  >
-                    {t("افتح الصفحة")}
-                  </Link>
-                ) : (
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <code dir="ltr" className="truncate text-xs font-semibold text-primary">
-                      {m.detail.value}
-                    </code>
-                    <button
-                      onClick={() => copy(m.detail.value)}
-                      aria-label={`${t("نسخ")} ${t(m.detail.label)}`}
-                      className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground"
+              {value && (
+                <div className="mt-5 rounded-xl bg-secondary/60 p-3">
+                  <p className="text-[11px] text-muted-foreground">{t(label)}</p>
+                  {isLink ? (
+                    <Link
+                      to={value as "/wallet" | "/branches"}
+                      className="mt-1 inline-block text-sm font-semibold text-gold-deep hover:underline"
                     >
-                      {copied === m.detail.value ? (
-                        <Check className="h-3 w-3" />
-                      ) : (
-                        <Copy className="h-3 w-3" />
-                      )}
-                      {t("نسخ")}
-                    </button>
-                  </div>
-                )}
-              </div>
+                      {t("افتح الصفحة")}
+                    </Link>
+                  ) : (
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <code dir="ltr" className="truncate text-xs font-semibold text-primary">
+                        {value}
+                      </code>
+                      <button
+                        onClick={() => copy(value)}
+                        aria-label={`${t("نسخ")} ${t(label)}`}
+                        className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground"
+                      >
+                        {copied === value ? (
+                          <Check className="h-3 w-3" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                        {t("نسخ")}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </article>
           );
         })}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-border bg-card p-6">
-        <h2 className="font-display text-lg text-primary">{t("بيانات الحساب البنكي")}</h2>
-        <dl className="mt-4 grid gap-3 sm:grid-cols-3">
-          {[
-            [t("اسم المستفيد"), t("شركة أورا للذهب والسبائك")],
-            [t("رقم الحساب"), ACCOUNT],
-            ["IBAN", IBAN],
-          ].map(([k, v]) => (
-            <div key={k} className="rounded-xl bg-secondary/60 p-3">
-              <dt className="text-[11px] text-muted-foreground">{k}</dt>
-              <dd dir="ltr" className="mt-1 break-all text-xs font-semibold text-primary">
-                {v}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+      {(payment?.bank_iban || payment?.bank_account) && (
+        <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+          <h2 className="font-display text-lg text-primary">{t("بيانات الحساب البنكي")}</h2>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+            {bank.map(([k, v]) => (
+              <div key={k} className="rounded-xl bg-secondary/60 p-3">
+                <dt className="text-[11px] text-muted-foreground">{k}</dt>
+                <dd dir="ltr" className="mt-1 break-all text-xs font-semibold text-primary">
+                  {v}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
 
       <p className="mt-6 flex items-start gap-2 rounded-2xl border border-gold/40 bg-secondary/40 p-4 text-xs leading-relaxed text-muted-foreground">
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />

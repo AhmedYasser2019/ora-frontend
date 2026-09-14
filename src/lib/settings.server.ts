@@ -31,6 +31,14 @@ export type SiteSettings = {
     facebook: string | null;
     address: string | null;
   };
+  /** ما يُنسخ في تطبيق البنك على صفحة طرق الدفع. الفارغ لا يظهر — ولا بديل وهمي له. */
+  payment: {
+    instapay: string | null;
+    bank_name: string | null;
+    bank_beneficiary: string | null;
+    bank_account: string | null;
+    bank_iban: string | null;
+  };
   branches: Branch[];
 };
 
