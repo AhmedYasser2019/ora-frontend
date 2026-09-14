@@ -111,9 +111,3 @@ export async function fetchProducts(): Promise<Product[]> {
 }
 
 export type Metal = "gold" | "silver";
-
-export const CATEGORIES: Category[] = ["سبائك ذهب", "عملات ذهبية", "سبائك فضة"];
-
-/** المورّدون الموجودون فعلًا في الكتالوج — قائمة التاجر، لا قائمة ثابتة في الكود. */
-export const providersOf = (products: Product[]) =>
-  [...new Set(products.map((p) => p.provider).filter(Boolean))].sort();
