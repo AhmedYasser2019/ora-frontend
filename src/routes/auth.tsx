@@ -5,6 +5,7 @@ import {
   Check,
   IdCard,
   Image as ImageIcon,
+  KeyRound,
   LoaderCircle,
   Lock,
   LogIn,
@@ -174,12 +175,179 @@ function StepRail({ step }: { step: number }) {
   );
 }
 
+/**
+ * نسيت كلمة المرور: رقم الموبايل ← الرمز ← كلمة مرور جديدة. الخادم يرد «أُرسل» حتى لرقم غير
+ * مسجَّل، فلا تكشف الشاشة من له حساب. ولحد ما بوابة SMS تتظبط الرمز في لوج الخادم فقط.
+ */
+function ForgotPassword({ onDone }: { onDone: () => void }) {
+  const t = useT();
+  const [step, setStep] = useState<"phone" | "code" | "password">("phone");
+  const [busy, setBusy] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
+  const [resetToken, setResetToken] = useState("");
+  const [password, setPassword] = useState("");
+
+  const run = async (fn: () => Promise<void>) => {
+    setBusy(true);
+    try {
+      await fn();
+    } catch (err) {
+      if (err instanceof ApiError && err.errors["reset_token"]) setStep("phone");
+      toast.error(err instanceof ApiError ? err.firstMessage : t("حاول مرة أخرى"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const send = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!/^01[0-9]{9}$/.test(phone.trim())) {
+      toast.error(t("رقم موبايل غير صحيح"), { description: "01012345678" });
+      return;
+    }
+    run(async () => {
+      // `code` بيرجع من الخادم في وضع debug بس — للتجربة.
+      const res = await api<{ code?: string }>("/auth/otp", {
+        method: "POST",
+        body: { phone: phone.trim() },
+      });
+      setCode(res.code ?? "");
+      setStep("code");
+      toast.success(t("لو الرقم مسجَّل هيوصلك رمز التحقق"));
+    });
+  };
+
+  const verify = (e: React.FormEvent) => {
+    e.preventDefault();
+    run(async () => {
+      const { reset_token } = await api<{ reset_token: string }>("/auth/otp/verify", {
+        method: "POST",
+        body: { phone: phone.trim(), code: code.trim() },
+      });
+      setResetToken(reset_token);
+      setStep("password");
+    });
+  };
+
+  const reset = (e: React.FormEvent) => {
+    e.preventDefault();
+    run(async () => {
+      await api("/auth/password", {
+        method: "POST",
+        body: {
+          phone: phone.trim(),
+          reset_token: resetToken,
+          password,
+          password_confirmation: password,
+        },
+      });
+      toast.success(t("تم تغيير كلمة المرور"), {
+        description: t("سجّل الدخول بكلمة المرور الجديدة."),
+      });
+      onDone();
+    });
+  };
+
+  const submitBtn = (label: string) => (
+    <button
+      type="submit"
+      disabled={busy}
+      className="mt-1 flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+    >
+      {busy && <LoaderCircle className="h-4 w-4 animate-spin" />}
+      {t(label)}
+    </button>
+  );
+
+  return (
+    <div className="grid gap-4">
+      <h3 className="border-b border-border pb-3 text-center font-display text-xl text-gold-deep">
+        {t("نسيت كلمة المرور")}
+      </h3>
+
+      {step === "phone" && (
+        <form onSubmit={send} className="grid gap-4">
+          <p className="text-xs text-muted-foreground">
+            {t("اكتب رقم الموبايل المسجَّل في حسابك وهنبعتلك رمز تحقق.")}
+          </p>
+          <Field
+            id="reset-phone"
+            label="رقم الموبايل"
+            icon={Phone}
+            type="tel"
+            dir="ltr"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="01xxxxxxxxx"
+          />
+          {submitBtn("إرسال الرمز")}
+        </form>
+      )}
+
+      {step === "code" && (
+        <form onSubmit={verify} className="grid gap-4">
+          <Field
+            id="reset-code"
+            label="رمز التحقق"
+            icon={KeyRound}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            dir="ltr"
+            required
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="••••"
+          />
+          {submitBtn("تأكيد")}
+          <button
+            type="button"
+            onClick={() => setStep("phone")}
+            className="text-xs font-semibold text-muted-foreground underline"
+          >
+            {t("إعادة إرسال الرمز")}
+          </button>
+        </form>
+      )}
+
+      {step === "password" && (
+        <form onSubmit={reset} className="grid gap-4">
+          <Field
+            id="reset-password"
+            label="كلمة المرور الجديدة"
+            icon={Lock}
+            type="password"
+            dir="ltr"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
+          <p className="text-xs text-muted-foreground">{t("هيتم تسجيل خروجك من كل الأجهزة.")}</p>
+          {submitBtn("حفظ كلمة المرور")}
+        </form>
+      )}
+
+      <button
+        type="button"
+        onClick={onDone}
+        className="text-xs font-semibold text-muted-foreground underline"
+      >
+        {t("رجوع لتسجيل الدخول")}
+      </button>
+    </div>
+  );
+}
+
 function AuthPage() {
   const { next } = Route.useSearch();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const t = useT();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [step, setStep] = useState(1);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", password: "" });
@@ -220,8 +388,8 @@ function AuthPage() {
 
   const submitAccount = (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.password.length < 6) {
-      toast.error(t("كلمة المرور يجب ألا تقل عن 6 أحرف"));
+    if (form.password.length < 8) {
+      toast.error(t("كلمة المرور يجب ألا تقل عن 8 أحرف"));
       return;
     }
     if (!/^01[0-9]{9}$/.test(form.phone.trim())) {
@@ -401,7 +569,18 @@ function AuthPage() {
                 placeholder="••••••••"
               />
               {submitBtn("دخول")}
+              <button
+                type="button"
+                onClick={() => setMode("forgot")}
+                className="text-xs font-semibold text-muted-foreground underline"
+              >
+                {t("نسيت كلمة المرور؟")}
+              </button>
             </form>
+          </div>
+        ) : mode === "forgot" ? (
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8">
+            <ForgotPassword onDone={() => setMode("login")} />
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
@@ -458,7 +637,7 @@ function AuthPage() {
                     type="password"
                     dir="ltr"
                     required
-                    minLength={6}
+                    minLength={8}
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder="••••••••"
