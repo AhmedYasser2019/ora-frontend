@@ -20,7 +20,10 @@
 - الرفع multipart موجود كـ `upload()` في `src/lib/api.ts` (مستخدم في auth.tsx).
 - الهدف: فورم الشحن يبعت الطلب، وقائمة بطلبات الإيداع وحالتها.
 
-## ⬜ 3. الصفحات الثابتة من الداشبورد
+## ✅ 3. الصفحات الثابتة من الداشبورد — 2026-09-14
+- اتعمل: slug جديد `refund` (`PageSlug` + الترجمة)، وmigration `2026_09_14_120000_add_refund_page_and_site_copy` بتضيف صفه وبتنقل نص الموقع القديم (عربي + إنجليزي) للصفحات الفاضية بس. `PageController::show` بقى بينضّف الـ HTML (`Str::sanitizeHtml`).
+- الموقع: `src/lib/pages.{server,functions,queries}.ts` + `loadPage` في الـ loader (الصفحة الفاضية = 404)، و`components/Policy.tsx` بقى بيعرض HTML الداشبورد وتاريخ `updated_at`. `about.tsx` النص بس من الداشبورد (الصورة والكروت ثابتة). النصوص القديمة اتشالت من `i18n.en.ts`.
+- `usage` لسه مالهاش صفحة في الموقع (مش مطلوبة). **محتاج `php artisan migrate` على السيرفر.**
 - hardcoded: `routes/about.tsx`, `privacy.tsx`, `terms.tsx`, `shipping-policy.tsx`, `refund-policy.tsx`.
 - الموجود: `GET /v1/pages` و`GET /v1/pages/{slug}` — slugs: `about, privacy, terms, usage, shipping` (`App\Enums\PageSlug`).
 - **محتاج قرار:** `refund-policy` مالهاش slug، و`usage` مالهاش صفحة في الموقع.
