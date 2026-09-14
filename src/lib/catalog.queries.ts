@@ -1,7 +1,13 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { getProducts } from "./catalog.functions";
-import type { Product } from "./catalog.server";
+import type { Category, Product } from "./catalog.server";
+
+export const CATEGORIES: Category[] = ["سبائك ذهب", "عملات ذهبية", "سبائك فضة"];
+
+/** المورّدون الموجودون فعلًا في الكتالوج — قائمة التاجر، لا قائمة ثابتة في الكود. */
+export const providersOf = (products: Product[]) =>
+  [...new Set(products.map((p) => p.provider).filter(Boolean))].sort();
 
 /**
  * أسعار المنتجات تتحرك مع كل سعر ينشره المكتب، فالبثّ الحيّ هو ما يُبطل هذا الاستعلام —

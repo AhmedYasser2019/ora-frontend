@@ -7,8 +7,8 @@ import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
-import { productsQuery } from "@/lib/catalog.queries";
-import { CATEGORIES, providersOf, type Category, type Metal } from "@/lib/catalog.server";
+import { CATEGORIES, productsQuery, providersOf } from "@/lib/catalog.queries";
+import type { Category, Metal } from "@/lib/catalog.server";
 import { weightLabel } from "@/lib/site";
 
 import { tr } from "@/lib/i18n";
