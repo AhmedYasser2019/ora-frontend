@@ -39,6 +39,11 @@ export type SiteSettings = {
     bank_account: string | null;
     bank_iban: string | null;
   };
+  /** روابط المتجرين. الفارغ = التطبيق لم ينزل بعد، والزر يقول «قريبًا». */
+  app: {
+    android: string | null;
+    ios: string | null;
+  };
   branches: Branch[];
 };
 

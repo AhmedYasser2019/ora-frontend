@@ -50,3 +50,17 @@ export async function fetchNews(): Promise<Article[]> {
 
   return body.data.data.map(toArticle);
 }
+
+/** null = غير موجود أو لم يُنشر بعد. `body` HTML منظّف — انظر NewsController::show. */
+export async function fetchArticle(id: number): Promise<(Article & { body: string }) | null> {
+  const res = await fetch(`${API_URL}/api/v1/news/${id}`, {
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
+  });
+
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`article fetch failed: ${res.status}`);
+
+  const { data } = (await res.json()) as { data: ApiArticle & { body: string } };
+
+  return { ...toArticle(data), body: data.body };
+}

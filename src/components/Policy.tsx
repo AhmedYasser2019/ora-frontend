@@ -8,11 +8,16 @@ import type { PageSlug } from "@/lib/pages.server";
 export function PageBody({ slug }: { slug: PageSlug }) {
   const { data: page } = useQuery(pageQuery(slug, useLang().lang));
 
+  // منظّف على الباك إند (PageController::show) قبل أن يصل هنا.
+  return <Prose html={page?.body ?? ""} />;
+}
+
+/** HTML من محرّر الداشبورد، منظّف على الباك إند. مشترك بين الصفحات والأخبار والتقارير. */
+export function Prose({ html }: { html: string }) {
   return (
     <div
-      className="space-y-3 text-sm leading-relaxed text-muted-foreground [&_a]:text-gold-deep [&_a]:underline [&_h2:not(:first-child)]:mt-8 [&_h2]:font-display [&_h2]:text-xl [&_h2]:text-primary [&_h3]:mt-6 [&_h3]:text-base [&_h3]:text-primary [&_li]:ms-5 [&_ol]:list-decimal [&_ul]:list-disc"
-      // منظّف على الباك إند (PageController::show) قبل أن يصل هنا.
-      dangerouslySetInnerHTML={{ __html: page?.body ?? "" }}
+      className="space-y-3 text-sm leading-relaxed text-muted-foreground [&_a]:text-gold-deep [&_a]:underline [&_h2:not(:first-child)]:mt-8 [&_h2]:font-display [&_h2]:text-xl [&_h2]:text-primary [&_h3]:mt-6 [&_h3]:text-base [&_h3]:text-primary [&_img]:rounded-xl [&_li]:ms-5 [&_ol]:list-decimal [&_ul]:list-disc"
+      dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }

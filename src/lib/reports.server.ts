@@ -31,6 +31,15 @@ export type Report = {
   publishedAt: string;
 };
 
+const toReport = (r: ApiReport): Report => ({
+  id: r.id,
+  kind: r.kind,
+  title: r.title,
+  excerpt: r.excerpt,
+  img: r.image_url,
+  publishedAt: r.published_at,
+});
+
 export async function fetchReports(): Promise<Report[]> {
   const res = await fetch(`${API_URL}/api/v1/reports`, {
     headers: backend({ accept: "application/json", "accept-language": readLang() }),
@@ -41,12 +50,19 @@ export async function fetchReports(): Promise<Report[]> {
   // مُرقَّم مثل الأخبار: التقارير في `data.data`.
   const body = (await res.json()) as { data: { data: ApiReport[] } };
 
-  return body.data.data.map((r) => ({
-    id: r.id,
-    kind: r.kind,
-    title: r.title,
-    excerpt: r.excerpt,
-    img: r.image_url,
-    publishedAt: r.published_at,
-  }));
+  return body.data.data.map(toReport);
+}
+
+/** null = غير موجود أو لم يُنشر بعد. `body` HTML منظّف — انظر ReportController::show. */
+export async function fetchReport(id: number): Promise<(Report & { body: string }) | null> {
+  const res = await fetch(`${API_URL}/api/v1/reports/${id}`, {
+    headers: backend({ accept: "application/json", "accept-language": readLang() }),
+  });
+
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`report fetch failed: ${res.status}`);
+
+  const { data } = (await res.json()) as { data: ApiReport & { body: string } };
+
+  return { ...toReport(data), body: data.body };
 }
