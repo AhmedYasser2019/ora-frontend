@@ -3,6 +3,8 @@ import { BadgeCheck, Coins, ShieldCheck, Truck } from "lucide-react";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
+import { PageBody } from "@/components/Policy";
+import { loadPage } from "@/lib/pages.queries";
 import heroGold from "@/assets/hero-gold.jpg";
 
 import { tr } from "@/lib/i18n";
@@ -24,6 +26,7 @@ export const Route = createFileRoute("/about")({
       },
     ],
   }),
+  loader: ({ context }) => loadPage(context.queryClient, "about"),
   component: AboutPage,
 });
 
@@ -51,22 +54,8 @@ function AboutPage() {
           height={1008}
           className="rounded-3xl object-cover shadow-soft"
         />
-        <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
-          <p>
-            {t(
-              "بدأت أورا برؤية بسيطة: أن يكون شراء الذهب في مصر تجربة واضحة وآمنة، بعيدًا عن غموض الأسعار والمصاريف المخفية. لذلك نعرض سعر السوق لحظة بلحظة، ونوضح المصنعية قبل الشراء.",
-            )}
-          </p>
-          <p>
-            {t(
-              "نقدم سبائك ذهب وعملات ذهبية بأوزان متعددة تناسب المستثمر المبتدئ والمحترف، إلى جانب سبائك الفضة، مع خدمة إعادة شراء تضمن لك سيولة في أي وقت.",
-            )}
-          </p>
-          <p>
-            {t(
-              "فريقنا موجود في فروعنا بالإسكندرية والقاهرة والجيزة والمنصورة لمساعدتك في اختيار الأنسب لهدفك الاستثماري.",
-            )}
-          </p>
+        <div className="space-y-4">
+          <PageBody slug="about" />
           <Link
             to="/collection"
             className="inline-flex rounded-full bg-primary px-6 py-3 text-xs font-semibold text-primary-foreground"

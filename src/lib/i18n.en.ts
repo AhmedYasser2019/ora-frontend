@@ -50,7 +50,6 @@ export const en: Record<string, string> = {
   "05 مارس 2026": "05 March 2026",
   "18 يناير 2026": "18 January 2026",
   "02 يناير 2026": "02 January 2026",
-  "1 سبتمبر 2026": "1 September 2026",
   "الأخبار المالية": "Financial news",
   "ابقَ على اطلاع بآخر الأخبار المالية وأخبار سوق الذهب، مع تحليلات وتحديثات تساعدك على اتخاذ قرارات أذكى وفهم أفضل لحركة السوق.":
     "Stay up to date with the latest financial and gold-market news, with analysis and updates that help you make smarter decisions and better understand market moves.",
@@ -266,12 +265,6 @@ export const en: Record<string, string> = {
   "أورا للذهب والسبائك — بيت خبرة في المعادن النفيسة يجمع بين الأمان والشفافية وسهولة الاستثمار.":
     "ORA Gold & Bullion — a house of expertise in precious metals combining safety, transparency and easy investing.",
   "سبائك وعملات ذهب أورا": "ORA gold bars and coins",
-  "بدأت أورا برؤية بسيطة: أن يكون شراء الذهب في مصر تجربة واضحة وآمنة، بعيدًا عن غموض الأسعار والمصاريف المخفية. لذلك نعرض سعر السوق لحظة بلحظة، ونوضح المصنعية قبل الشراء.":
-    "ORA started with a simple idea: buying gold in Egypt should be clear and safe, free of opaque pricing and hidden costs. That's why we show the market price second by second and state the fabrication fee before you buy.",
-  "نقدم سبائك ذهب وعملات ذهبية بأوزان متعددة تناسب المستثمر المبتدئ والمحترف، إلى جانب سبائك الفضة، مع خدمة إعادة شراء تضمن لك سيولة في أي وقت.":
-    "We offer gold bars and coins in a range of weights to suit both first-time and seasoned investors, alongside silver bars, plus a buy-back service that keeps your holdings liquid at any time.",
-  "فريقنا موجود في فروعنا بالإسكندرية والقاهرة والجيزة والمنصورة لمساعدتك في اختيار الأنسب لهدفك الاستثماري.":
-    "Our team is on hand at our branches in Alexandria, Cairo, Giza and Mansoura to help you pick what fits your investment goal.",
   "تصفح مجموعتنا": "Browse our collection",
 
   // الحساب
@@ -918,155 +911,24 @@ export const en: Record<string, string> = {
     "How ORA Gold collects, uses and protects your personal data.",
   "نوضح هنا البيانات التي نجمعها، وسبب جمعها، وكيف نحميها.":
     "Here we set out what data we collect, why we collect it and how we protect it.",
-  "البيانات التي نجمعها": "The data we collect",
-  "بيانات الحساب: الاسم، البريد الإلكتروني، رقم الموبايل، وبيانات التحقق من الهوية عند طلبها.":
-    "Account data: name, email address, mobile number, and identity verification details when requested.",
-  "بيانات المعاملات: الطلبات، حركات المحفظة، وطرق الدفع المستخدمة (لا نحتفظ ببيانات بطاقتك كاملة).":
-    "Transaction data: orders, wallet activity and the payment methods used (we do not store your full card details).",
-  "بيانات تقنية: عنوان IP، نوع المتصفح والجهاز، وسجل التصفح داخل الموقع.":
-    "Technical data: IP address, browser and device type, and your browsing history within the site.",
-  "لماذا نجمعها": "Why we collect it",
-  "لتنفيذ طلباتك وإدارة محفظتك ومتابعة حالة المعاملات.":
-    "To fulfil your orders, run your wallet and track transaction status.",
-  "للالتزام بمتطلبات (اعرف عميلك) ومكافحة غسل الأموال المنصوص عليها في القانون المصري.":
-    "To meet the Know Your Customer and anti-money-laundering requirements set out in Egyptian law.",
-  "لتحسين الموقع وحماية الحسابات من الاستخدام غير المصرّح به.":
-    "To improve the site and protect accounts from unauthorised use.",
-  "مشاركة البيانات": "Sharing data",
-  "لا نبيع بياناتك الشخصية لأي طرف ثالث.": "We do not sell your personal data to any third party.",
-  "نشاركها فقط مع: مزودي خدمات الدفع، وشركات الشحن المؤمّن لتنفيذ التوصيل، والجهات الرقابية عند الطلب القانوني.":
-    "We share it only with payment service providers, insured couriers to carry out delivery, and regulators upon lawful request.",
-  "حماية البيانات": "Data protection",
-  "تُنقل كل البيانات عبر اتصال مشفّر (HTTPS)، وتُخزَّن كلمات المرور بصيغة مجزّأة لا يمكن استرجاعها.":
-    "All data travels over an encrypted connection (HTTPS), and passwords are stored hashed in an unrecoverable form.",
-  "الوصول إلى بيانات العملاء مقصور على الموظفين المصرّح لهم بحكم عملهم.":
-    "Access to customer data is limited to staff authorised by their role.",
-  حقوقك: "Your rights",
-  "يمكنك طلب نسخة من بياناتك أو تصحيحها أو حذف حسابك عبر support@ora-gold.com.":
-    "You can request a copy of your data, correct it, or delete your account via support@ora-gold.com.",
-  "حذف الحساب لا يشمل بيانات المعاملات التي يُلزمنا القانون بحفظها لمدة محددة.":
-    "Deleting an account does not cover transaction records the law requires us to keep for a set period.",
-  "ملفات تعريف الارتباط": "Cookies",
-  "نستخدم ملفات تعريف ارتباط أساسية لتشغيل تسجيل الدخول والسلة، وأخرى تحليلية لفهم استخدام الموقع.":
-    "We use essential cookies to run sign-in and the cart, and analytics cookies to understand how the site is used.",
-  "يمكنك تعطيل غير الأساسية من إعدادات متصفحك دون التأثير على الشراء.":
-    "You can disable non-essential cookies in your browser settings without affecting purchases.",
 
   "سياسة الاسترجاع واسترداد الأموال | أورا للذهب": "Returns & refunds policy | ORA Gold",
   "شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من أورا للذهب.":
     "The terms and timeframes for returning gold bars and coins and getting refunds from ORA Gold.",
   "نشتري منك ذهبك في أي وقت، وهذه هي شروط الاسترجاع والاسترداد.":
     "We buy your gold back any time — these are the return and refund terms.",
-  "طبيعة المنتج": "The nature of the product",
-  "أسعار الذهب والفضة متغيرة لحظيًا، لذلك لا ينطبق على المعادن النفيسة حق الإرجاع خلال 14 يومًا بنفس السعر المعتاد في السلع الاستهلاكية.":
-    "Gold and silver prices move by the second, so the 14-day same-price return right that applies to consumer goods does not apply to precious metals.",
-  "بدلًا من ذلك، نلتزم بإعادة الشراء منك في أي وقت بسعر إعادة البيع المعلن لحظة تنفيذ العملية.":
-    "Instead, we commit to buying back from you at any time at the published buy-back price at the moment the transaction is executed.",
-  "إعادة البيع لأورا": "Selling back to ORA",
-  "يمكنك بيع أي منتج اشتريته منا في أي فرع، أو من خلال محفظتك على الموقع.":
-    "You can sell any product you bought from us at any branch, or through your wallet on the site.",
-  "يُحسب السعر بقيمة المعدن بسعر البيع اللحظي، مضافًا إليه الجزء المستردّ من المصنعية وفق برنامج الكاش باك.":
-    "The price is the metal value at the live sell price, plus the refundable share of the fabrication fee under the cashback programme.",
-  "الكاش باك يصل إلى 50% من المصنعية بشرط بقاء السبيكة في عبوتها الأصلية غير مفتوحة وبختم سليم.":
-    "Cashback reaches up to 50% of the fabrication fee, provided the bar stays in its original, unopened packaging with the seal intact.",
-  "حالات الاسترجاع الكامل": "Cases of a full return",
-  "اختلاف المنتج المسلَّم عن المنتج المطلوب.":
-    "The product delivered differs from the one ordered.",
-  "وصول العبوة تالفة أو مفكوكة الختم — بشرط الإبلاغ قبل التوقيع بالاستلام.":
-    "The packaging arrives damaged or with a broken seal — provided you report it before signing for delivery.",
-  "خطأ في السعر من جانبنا. في هذه الحالات يُرد المبلغ بالكامل دون أي خصم.":
-    "A pricing error on our side. In these cases the amount is refunded in full with no deduction.",
-  "استرداد الأموال": "Refunds",
-  "يتم الرد بنفس وسيلة الدفع المستخدمة في الشراء.":
-    "Refunds are issued to the same payment method used for the purchase.",
-  "التحويل البنكي و InstaPay: من 3 إلى 5 أيام عمل من تاريخ اعتماد الطلب.":
-    "Bank transfer and InstaPay: 3 to 5 business days from the date the request is approved.",
-  "رصيد المحفظة: فوري.": "Wallet balance: instant.",
-  "سحب الرصيد من المحفظة": "Withdrawing from the wallet",
-  "الحد الأدنى للسحب 500 جنيه، والحد الأقصى 200,000 جنيه في اليوم.":
-    "The minimum withdrawal is EGP 500 and the maximum is EGP 200,000 per day.",
-  "يُنفَّذ السحب خلال يوم عمل واحد إلى حسابك البنكي المسجّل باسمك.":
-    "Withdrawals are executed within one business day to a bank account registered in your name.",
-  "لا توجد رسوم على السحب. يبقى الطلب في حالة (قيد التنفيذ) حتى اعتماده.":
-    "There are no withdrawal fees. The request stays in Processing until it is approved.",
 
   "سياسة الشحن والتوصيل | أورا للذهب": "Shipping & delivery policy | ORA Gold",
   "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من أورا لكل محافظات مصر.":
     "Timings, fees and terms for shipping and delivering ORA gold bars and coins to every governorate in Egypt.",
   "توصيل مؤمّن بالكامل لكل محافظات مصر، أو استلام من أي فرع.":
     "Fully insured delivery to every governorate in Egypt, or pickup from any branch.",
-  "طرق الاستلام": "Ways to receive your order",
-  "الاستلام من الفرع: مجاني، ومتاح في أي من فروعنا خلال ساعات العمل بعد تأكيد الطلب.":
-    "Branch pickup: free, available at any of our branches during business hours once the order is confirmed.",
-  "التوصيل للمنزل: عبر شركات شحن متخصصة في نقل المعادن النفيسة، مع تأمين كامل على قيمة الشحنة.":
-    "Home delivery: through couriers specialised in precious-metal transport, with full insurance on the shipment's value.",
-  الرسوم: "Fees",
-  "رسوم التوصيل 150 جنيهًا لكل طلب داخل جمهورية مصر العربية.":
-    "Delivery costs EGP 150 per order anywhere in Egypt.",
-  "التوصيل مجاني للطلبات التي تتجاوز 50,000 جنيه.": "Delivery is free on orders above EGP 50,000.",
-  "لا توجد رسوم إضافية على التأمين — هو مشمول في رسوم التوصيل.":
-    "There is no extra charge for insurance — it is included in the delivery fee.",
-  "مواعيد التسليم": "Delivery times",
-  "القاهرة والجيزة والإسكندرية: من يوم إلى يومي عمل من تأكيد السداد.":
-    "Cairo, Giza and Alexandria: one to two business days from payment confirmation.",
-  "باقي المحافظات: من يومين إلى 4 أيام عمل.": "Other governorates: two to four business days.",
-  "لا يتم الشحن أيام الجمع والعطلات الرسمية.": "We do not ship on Fridays or public holidays.",
-  "شروط التسليم": "Delivery conditions",
-  "يُسلَّم الطلب لصاحب الحساب شخصيًا بعد إبراز بطاقة الرقم القومي المطابقة لبيانات الطلب.":
-    "Orders are handed to the account holder in person on presentation of a national ID matching the order details.",
-  "يُرجى فحص سلامة العبوة والختم قبل التوقيع بالاستلام. التوقيع يعني قبول الشحنة بحالتها.":
-    "Please check the packaging and seal before signing. Signing means you accept the shipment as received.",
-  "لا نسلّم لطرف ثالث إلا بتوكيل رسمي موثّق.":
-    "We do not release orders to a third party without a notarised power of attorney.",
-  "تأخر أو فقد الشحنة": "Delayed or lost shipments",
-  "في حالة تأخر الشحنة عن الموعد المعلن، تواصل معنا على 17608 وسنتابع مع شركة الشحن فورًا.":
-    "If a shipment is later than the stated date, call us on 17608 and we'll chase the courier immediately.",
-  "الشحنة مؤمّنة بالكامل: في حالة الفقد أو التلف أثناء النقل، تُعوَّض قيمتها كاملة بسعر يوم الشراء.":
-    "Shipments are fully insured: if lost or damaged in transit, the full value is compensated at the purchase-day price.",
 
   "الشروط والأحكام | أورا للذهب": "Terms & conditions | ORA Gold",
   "الشروط والأحكام الخاصة باستخدام موقع أورا للذهب وشراء وبيع السبائك والعملات.":
     "The terms and conditions for using the ORA Gold site and buying and selling bars and coins.",
   "اقرأ الشروط بعناية قبل استخدام الموقع أو تنفيذ أي عملية شراء أو بيع.":
     "Read the terms carefully before using the site or making any purchase or sale.",
-  "قبول الشروط": "Accepting the terms",
-  "باستخدامك موقع أورا للذهب أو إنشاء حساب عليه، فإنك توافق على الالتزام بهذه الشروط والأحكام وبسياسة الخصوصية المرتبطة بها.":
-    "By using the ORA Gold site or creating an account on it, you agree to be bound by these terms and conditions and the related privacy policy.",
-  "إذا كنت لا توافق على أي بند من هذه البنود، يُرجى التوقف عن استخدام الموقع.":
-    "If you do not agree to any of these clauses, please stop using the site.",
-  "الأهلية والحساب": "Eligibility and your account",
-  "يشترط أن يكون عمرك 21 سنة فأكثر وأن تمتلك بطاقة رقم قومي مصرية سارية لفتح حساب وتنفيذ المعاملات.":
-    "You must be 21 or older and hold a valid Egyptian national ID to open an account and transact.",
-  "أنت مسؤول عن سرية بيانات الدخول الخاصة بك وعن كل ما يتم من خلال حسابك. أبلغنا فورًا عند الاشتباه في أي استخدام غير مصرّح به.":
-    "You are responsible for keeping your sign-in details confidential and for everything done through your account. Tell us immediately if you suspect unauthorised use.",
-  "لا تشارك رمز التحقق OTP مع أي شخص، بما في ذلك موظفي أورا. لن يطلبه منك أي موظف.":
-    "Never share your OTP with anyone, including ORA staff. No member of staff will ask you for it.",
-  "الأسعار وتثبيت السعر": "Prices and price locking",
-  "الأسعار المعروضة على الموقع هي الأسعار التي ينشرها مكتب التسعير لدينا بالجنيه المصري، وتتغير لحظيًا. السعر المُلزِم هو الذي يُثبَّت لك عند تأكيد الطلب، لا السعر المعروض قبله.":
-    "The prices shown on the site are those published by our price desk in Egyptian pounds and change moment to moment. The binding price is the one locked for you when you confirm an order, not the one displayed beforehand.",
-  "يوجد فرق بين سعر الشراء وسعر إعادة البيع يمثل هامش التاجر، وهو معلن على صفحة الأسعار.":
-    "There is a gap between the buy price and the buy-back price representing the dealer margin, which is published on the prices page.",
-  "يُثبَّت السعر النهائي لحظة تأكيد الطلب فقط. أي سعر معروض قبل التأكيد هو سعر استرشادي قابل للتغير.":
-    "The final price is locked only at the moment you confirm the order. Any price shown before that is indicative and subject to change.",
-  "الطلبات والتنفيذ": "Orders and fulfilment",
-  "إرسال الطلب لا يعني قبوله. يمر كل طلب بحالة (قيد التنفيذ) حتى يتم تأكيد السداد ومطابقة البيانات.":
-    "Submitting an order does not mean it is accepted. Every order sits in Processing until payment is confirmed and details are checked.",
-  "يحق لأورا رفض أو إلغاء أي طلب في حالة خطأ واضح في السعر، أو عدم توفر المنتج، أو الاشتباه في مخالفة هذه الشروط.":
-    "ORA may refuse or cancel any order in the event of an obvious pricing error, unavailable stock, or suspected breach of these terms.",
-  "في حالة إلغاء طلب مدفوع، يُرد المبلغ بالكامل خلال المدة الموضحة في سياسة الاسترجاع.":
-    "If a paid order is cancelled, the amount is refunded in full within the period set out in the returns policy.",
-  المسؤولية: "Liability",
-  "أورا غير مسؤولة عن أي خسائر ناتجة عن تقلبات أسعار المعادن النفيسة. الاستثمار في الذهب يحمل مخاطر سوقية.":
-    "ORA is not liable for losses arising from movements in precious-metal prices. Investing in gold carries market risk.",
-  "لا يُعد أي محتوى على الموقع — بما في ذلك الأخبار والتحليلات والحاسبات — نصيحة استثمارية أو مالية.":
-    "No content on this site — including news, analysis and calculators — constitutes investment or financial advice.",
-  "الحاسبات (الزكاة والميزانية) أدوات استرشادية تعتمد على أسعار لحظية وقد تختلف نتائجها عن السعر النهائي.":
-    "The zakat and budget calculators are indicative tools based on live prices; their results may differ from the final price.",
-  "القانون الواجب التطبيق": "Governing law",
-  "تخضع هذه الشروط لأحكام القانون المصري، وتختص محاكم الإسكندرية الاقتصادية بنظر أي نزاع ينشأ عنها.":
-    "These terms are governed by Egyptian law, and the Alexandria Economic Courts have jurisdiction over any dispute arising from them.",
-  "قد نقوم بتحديث هذه الشروط من وقت لآخر، ويسري التحديث من تاريخ نشره على هذه الصفحة.":
-    "We may update these terms from time to time; an update takes effect from the date it is published on this page.",
 
   // المحافظات والمدن
   القاهرة: "Cairo",
