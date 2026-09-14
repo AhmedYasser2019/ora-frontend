@@ -34,7 +34,9 @@
 - `src/components/FinancialNews.tsx` فيه 4 مقالات ثابتة.
 - استخدم `newsQuery` من `src/lib/news.queries.ts` (زي `routes/news.tsx`).
 
-## ⬜ 5. طرق الدفع وبيانات البنك
+## ✅ 5. طرق الدفع وبيانات البنك — 2026-09-14
+- اتعمل: migration `2026_09_14_130000_add_payment_details_to_site_settings` (`instapay, bank_name, bank_beneficiary, bank_account, bank_iban`) من غير seed — الأرقام الوهمية اتشالت. تبويب «الدفع» في `SiteSettings` (IBAN لازم EG + 27 رقم، والمسافات بتتشال). `/settings` بقى فيه `payment`. `OrderController` بقى `in:instapay,bank,wallet,cash`. الاختبارات في `SiteSettingsTest` و`PhysicalOrderTest`.
+- الموقع: `payment-methods.tsx` بياخد من `useSiteSettings().payment`، وأي قيمة فاضية صندوقها بيختفي، وكارت الحساب البنكي مش بيظهر غير لو فيه IBAN أو رقم حساب. **محتاج `php artisan migrate` على السيرفر + تعبئة بيانات الدفع من الداشبورد.**
 - `src/routes/payment-methods.tsx:28-38`: IBAN ورقم الحساب وInstaPay ثابتين وشكلهم placeholder.
 - `/settings` مفيهوش بيانات دفع → محتاج إضافة في الباك إند (SiteSettings + الداشبورد) الأول.
 - كمان: `OrderController` بيقبل `payment_method` أي string ≤ 24 — يتقفل على `instapay, bank, wallet, cash` (نفس `PAYMENTS` في `checkout.tsx`).
