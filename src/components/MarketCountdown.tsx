@@ -1,18 +1,34 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
+import { api } from "@/lib/api";
 import { useT } from "@/lib/i18n";
-import { marketStatus, splitDuration } from "@/lib/market-hours";
+import { secondsToNext, splitDuration, type Market } from "@/lib/market-hours";
 
 export function MarketCountdown() {
-  const [status, setStatus] = useState(() => marketStatus());
+  // من المتصفح لا من الخادم: عدّاد محسوب وقت الـ SSR يكون قديمًا لحظة وصول الصفحة.
+  const { data, dataUpdatedAt, refetch } = useQuery({
+    queryKey: ["market"],
+    queryFn: () => api<Market>("/market"),
+  });
+  const [now, setNow] = useState(Date.now);
   const t = useT();
 
   useEffect(() => {
-    const id = setInterval(() => setStatus(marketStatus()), 1000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const { days, hours, minutes, seconds } = splitDuration(status.secondsToNext);
+  const left = data ? secondsToNext(data, Date.parse(data.server_time) - dataUpdatedAt, now) : null;
+
+  // وصل العدّاد للصفر: السوق اتفتح أو اتقفل، والخادم يقول اللحظة الجاية.
+  useEffect(() => {
+    if (left === 0) void refetch();
+  }, [left, refetch]);
+
+  if (!data || left === null) return null;
+
+  const { days, hours, minutes, seconds } = splitDuration(left);
   const boxes = [
     { v: seconds, l: t("ثانية") },
     { v: minutes, l: t("دقيقة") },
@@ -26,19 +42,17 @@ export function MarketCountdown() {
         <div className="flex items-center justify-between gap-4">
           <span
             className={`h-5 w-5 shrink-0 rounded-full ${
-              status.openNow ? "bg-primary" : "animate-pulse bg-destructive"
+              data.open ? "bg-primary" : "animate-pulse bg-destructive"
             }`}
           />
           <div className="text-start">
             <p
-              className={`text-lg font-semibold ${
-                status.openNow ? "text-primary" : "text-destructive"
-              }`}
+              className={`text-lg font-semibold ${data.open ? "text-primary" : "text-destructive"}`}
             >
-              {status.openNow ? t("السوق مفتوح الآن") : t("السوق مغلق الآن")}
+              {data.open ? t("السوق مفتوح الآن") : t("السوق مغلق الآن")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {status.openNow
+              {data.open
                 ? t("التداول متاح · يغلق السوق بعد")
                 : t("برجاء الانتظار، سيفتح السوق بعد")}
             </p>
