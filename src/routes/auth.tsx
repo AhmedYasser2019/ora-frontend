@@ -10,7 +10,6 @@ import {
   LogIn,
   Mail,
   Phone,
-  ShieldCheck,
   TrendingUp,
   User,
 } from "lucide-react";
@@ -126,8 +125,7 @@ function ImageDrop({
 const STEPS = [
   { n: 1, title: "بيانات الحساب", icon: User },
   { n: 2, title: "توثيق الهوية", icon: IdCard },
-  { n: 3, title: "تأكيد الحساب (OTP)", icon: ShieldCheck },
-  { n: 4, title: "خبرة الاستثمار", icon: TrendingUp },
+  { n: 3, title: "خبرة الاستثمار", icon: TrendingUp },
 ] as const;
 
 const EXPERIENCE = [
@@ -188,7 +186,6 @@ function AuthPage() {
   const [kyc, setKyc] = useState({ docType: "id", docNumber: "" });
   const [docFront, setDocFront] = useState<File | null>(null);
   const [docBack, setDocBack] = useState<File | null>(null);
-  const [otp, setOtp] = useState("");
   const [experience, setExperience] = useState<string>(EXPERIENCE[0]);
 
   const target = safeNext(next);
@@ -252,18 +249,6 @@ function AuthPage() {
       return;
     }
     setStep(3);
-  };
-
-  // ponytail: خطوة صورية. التسجيل في الباك إند لا يتحقق من الهاتف — الـ OTP هناك لاستعادة
-  // كلمة المرور فقط، ولا توجد بوابة SMS مشتراة بعد (AuthController يسجّل الكود في اللوج).
-  // احذف الخطوة أو اربطها بـ /auth/otp حين تُشترى البوابة؛ إبقاؤها الآن يوهم بتحقق لا يحدث.
-  const submitOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!/^[0-9]{6}$/.test(otp.trim())) {
-      toast.error(t("الكود 6 أرقام"));
-      return;
-    }
-    setStep(4);
   };
 
   /**
@@ -535,27 +520,6 @@ function AuthPage() {
               )}
 
               {step === 3 && (
-                <form onSubmit={submitOtp} className="grid gap-4">
-                  <p className="text-xs text-muted-foreground">
-                    {t("اكتب كود التأكيد المرسل إلى")} <span dir="ltr">{form.email}</span>{" "}
-                    {t("(أي 6 أرقام أثناء التجربة).")}
-                  </p>
-                  <Field
-                    id="otp"
-                    label="كود التأكيد"
-                    icon={ShieldCheck}
-                    dir="ltr"
-                    inputMode="numeric"
-                    required
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="123456"
-                  />
-                  {stepNav(2, "تأكيد", 4)}
-                </form>
-              )}
-
-              {step === 4 && (
                 <form onSubmit={finish} className="grid gap-4">
                   <p className="text-xs text-muted-foreground">
                     {t("اختر ما يصف خبرتك، عشان نرشّح لك المنتجات المناسبة.")}
@@ -577,7 +541,7 @@ function AuthPage() {
                       {t(x)}
                     </label>
                   ))}
-                  {stepNav(3, "إنهاء التسجيل")}
+                  {stepNav(2, "إنهاء التسجيل")}
                 </form>
               )}
             </div>
