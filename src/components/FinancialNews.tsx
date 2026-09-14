@@ -1,45 +1,22 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
 
 import { useT } from "@/lib/i18n";
-import newsGlobal from "@/assets/news-global.jpg";
-import newsLocal from "@/assets/news-local.jpg";
+import { newsCategoryLabel, newsDate, newsFallbackImage, newsQuery } from "@/lib/news.queries";
 
-const articles = [
-  {
-    img: newsGlobal,
-    kind: "عالمي",
-    t: "المشهد النقدي العالمي وآفاق الذهب والمعادن الثمينة — 2026",
-    d: "يدخل العالم عام 2026 في مرحلة نقدية ومالية غير مسبوقة تاريخيًا، تتسم بارتفاع قياسي في مستويات الدين وهشاشة متزايدة في أسواق السندات.",
-    date: "24 أغسطس 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "محلي",
-    t: "المشهد المحلي لسوق الذهب في مصر",
-    d: "آفاق الذهب والمعادن الثمينة — يشهد سوق الذهب في مصر تفاعلًا مباشرًا مع التحولات النقدية والاقتصادية العالمية.",
-    date: "22 أغسطس 2026",
-  },
-  {
-    img: newsLocal,
-    kind: "محلي",
-    t: "نظرة على الذهب والفضة في مصر | مارس 2026",
-    d: "يواصل سوق المعادن الثمينة في مصر التأثر بمزيج من الاتجاهات العالمية والعوامل المحلية، وحتى مارس 2026 ما يزال الذهب مدعومًا.",
-    date: "12 مارس 2026",
-  },
-  {
-    img: newsGlobal,
-    kind: "عالمي",
-    t: "الرؤية العالمية للذهب والفضة | مارس 2026",
-    d: "يظل الذهب والفضة في دائرة الاهتمام العالمي مع استمرار المستثمرين في الموازنة بين الاستقرار والمخاطر والتمركز طويل الأجل.",
-    date: "05 مارس 2026",
-  },
-];
+/** أحدث المقالات فقط؛ الباقي في صفحة الأخبار. */
+const HOME_COUNT = 6;
 
 export function FinancialNews() {
   const scroller = useRef<HTMLDivElement>(null);
   const t = useT();
+  const { data } = useQuery(newsQuery);
+  const articles = data?.slice(0, HOME_COUNT);
+
+  // لا قسم فارغ في الصفحة الرئيسية؛ صفحة /news تعرض رسالة "لا توجد أخبار".
+  if (!articles?.length) return null;
 
   const scrollBy = (dir: 1 | -1) => {
     scroller.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
@@ -86,12 +63,12 @@ export function FinancialNews() {
         >
           {articles.map((a) => (
             <article
-              key={a.t}
+              key={a.id}
               className="w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-gold/15 bg-primary-foreground/5 transition-colors hover:border-gold/50 sm:w-[300px]"
             >
               <img
-                src={a.img}
-                alt={t(a.t)}
+                src={a.img ?? newsFallbackImage[a.category]}
+                alt={a.title}
                 loading="lazy"
                 width={1088}
                 height={608}
@@ -100,13 +77,14 @@ export function FinancialNews() {
               <div className="p-4">
                 <div className="flex items-center justify-between text-[11px] text-gold/80">
                   <span className="rounded-full border border-gold/30 px-2 py-0.5">
-                    {t(a.kind)}
+                    {t(newsCategoryLabel[a.category])}
                   </span>
-                  <span>{t(a.date)}</span>
+                  <span>{newsDate(a.publishedAt)}</span>
                 </div>
-                <h3 className="mt-3 text-base leading-snug text-primary-foreground">{t(a.t)}</h3>
+                {/* العنوان والمقتطف يصلان مترجمين من الخادم، فلا يمرّان على t(). */}
+                <h3 className="mt-3 text-base leading-snug text-primary-foreground">{a.title}</h3>
                 <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-primary-foreground/60">
-                  {t(a.d)}
+                  {a.excerpt}
                 </p>
               </div>
             </article>

@@ -17,6 +17,7 @@ import heroGold from "@/assets/hero-gold.jpg";
 import { intlLocale, tr, useT } from "@/lib/i18n";
 import { livePricesQuery, egp } from "@/lib/prices.queries";
 import { productsQuery } from "@/lib/catalog.queries";
+import { newsQuery } from "@/lib/news.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { PriceChart } from "@/components/LiveTicker";
 import { MarketCountdown } from "@/components/MarketCountdown";
@@ -50,6 +51,8 @@ export const Route = createFileRoute("/")({
     Promise.all([
       context.queryClient.ensureQueryData(livePricesQuery),
       context.queryClient.ensureQueryData(productsQuery),
+      // الأخبار ثانوية هنا: فشلها لا يُسقط الصفحة الرئيسية، والقسم يختفي.
+      context.queryClient.ensureQueryData(newsQuery).catch(() => undefined),
     ]),
   component: Home,
 });
