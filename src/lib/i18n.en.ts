@@ -863,8 +863,15 @@ export const en: Record<string, string> = {
   "آخر 20 عملية": "Last 20 transactions",
   "لا توجد حركات بعد — ابدأ بشحن رصيدك.": "No activity yet — start by topping up your balance.",
   المبلغ: "Amount",
-  "الحد الأدنى للشحن 100 ج.م · التنفيذ فوري": "Minimum top-up EGP 100 · executed instantly",
-  "الشحن يتم بتحويل بنكي يعتمده مكتب الحسابات": "Top-ups are made by bank transfer, approved by accounts",
+  "حوّل المبلغ أولًا على": "First transfer the amount using our",
+  "، ثم ارفع الإيصال. يُضاف الرصيد بعد مراجعة مكتب الحسابات.":
+    ", then upload the receipt. Your balance is credited once accounts confirms it.",
+  "رقم التحويل": "Transfer reference",
+  "صورة الإيصال": "Receipt",
+  "تم إرسال طلب الشحن": "Top-up request sent",
+  "يُضاف الرصيد بعد أن يتأكد مكتب الحسابات من وصول التحويل.":
+    "Your balance is credited once accounts confirms the transfer arrived.",
+  "طلبات الشحن": "Top-up requests",
   "سعر الشراء / جرام 24": "Buy price / 24K gram",
   "سعر البيع / جرام 24": "Sell price / 24K gram",
   "سعر الجرام / عيار 21": "Price / 21K gram",

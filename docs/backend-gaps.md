@@ -13,7 +13,8 @@
 - المستخدم: `src/components/MarketCountdown.tsx` (في `routes/index.tsx`). فيه `market-hours.test.ts`.
 - الهدف: العدّاد ياخد من `/market` بدل الحساب المحلي.
 
-## ⬜ 2. شحن المحفظة (طلبات الإيداع)
+## ✅ 2. شحن المحفظة (طلبات الإيداع) — 2026-09-14
+- اتعمل: تبويب «شحن رصيد» في `src/routes/wallet.tsx` بقى فورم (مبلغ + رقم التحويل + الإيصال) بيبعت `upload("/deposits")`، وكارت «طلبات الشحن» تحت الحركات بالحالة (`status_label`) وملاحظة المكتب. اتشال نص «الحد الأدنى 100 · التنفيذ فوري» الغلط، ولينك لـ `/payment-methods`. الترجمة في `i18n.en.ts`.
 - `src/routes/wallet.tsx:140` بيطلع toast بس وفيه تعليق قديم «لا endpoint للشحن».
 - الموجود: `GET/POST /v1/deposits` في `DepositController` — `amount` (جنيه) + `reference` + `receipt` (jpg/png/pdf ≤ 8MB)، multipart. الديمو 403.
 - الرفع multipart موجود كـ `upload()` في `src/lib/api.ts` (مستخدم في auth.tsx).

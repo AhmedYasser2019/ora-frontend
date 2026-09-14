@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, upload } from "@/lib/api";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
 import { useLivePrices } from "@/lib/use-live-prices";
@@ -56,9 +56,26 @@ type Txn = {
   recorded_at: string;
 };
 
+/** طلب إيداع كما يعيده GET /deposits — المبلغ بالجنيه نصًّا. */
+type Deposit = {
+  id: number;
+  amount: string;
+  reference: string;
+  status: "pending" | "approved" | "rejected";
+  status_label: string;
+  note: string | null;
+  requested_at: string;
+};
+
+const DEPOSIT_TONE: Record<Deposit["status"], string> = {
+  pending: "bg-secondary text-primary",
+  approved: "bg-gold/15 text-gold-deep",
+  rejected: "bg-destructive/10 text-destructive",
+};
+
 type Action = "deposit" | "buy_gold";
 
-// الشحن يتم بتحويل يعتمده مكتب الحسابات — لا توجد بوابة دفع بعد، فلا endpoint له.
+// الشحن طلب إيداع: العميل يحوّل ويرفع الإيصال، ومكتب الحسابات يضيف الرصيد بعد التأكد.
 // البيع والسحب موقوفان بطلب الإدارة.
 const ACTIONS: { key: Action; label: string; unit: string; cta: string }[] = [
   { key: "deposit", label: "شحن رصيد", unit: "جنيه", cta: "اشحن الرصيد" },
@@ -98,6 +115,9 @@ function WalletPage() {
   const [fetching, setFetching] = useState(true);
   const [action, setAction] = useState<Action>("deposit");
   const [amount, setAmount] = useState("");
+  const [reference, setReference] = useState("");
+  const [receipt, setReceipt] = useState<File | null>(null);
+  const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   // سعر واحد: سعر الشراء لعيار 21، وهو العيار الذي تُطلب به المحفظة أدناه.
@@ -115,6 +135,8 @@ function WalletPage() {
   }, [loading, user, navigate]);
 
   const refresh = useCallback(async () => {
+    // منفصل: فشل قائمة الطلبات لا يخفي الرصيد.
+    api<Deposit[]>("/deposits").then(setDeposits, () => setDeposits([]));
     try {
       const [balances, lines] = await Promise.all([
         api<{ data: Balance[] }>("/wallet"),
@@ -137,9 +159,27 @@ function WalletPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !valid) return;
-    // لا endpoint للشحن (انظر ACTIONS) — بدون هذا يُرسل المبلغ بالجنيه كجرامات شراء.
     if (!isGold) {
-      toast.info(t("الشحن يتم بتحويل بنكي يعتمده مكتب الحسابات"));
+      if (!receipt) return;
+      setSubmitting(true);
+      try {
+        const body = new FormData();
+        body.append("amount", parsed.toFixed(2));
+        body.append("reference", reference.trim());
+        body.append("receipt", receipt);
+        setDeposits(await upload<Deposit[]>("/deposits", body));
+        setAmount("");
+        setReference("");
+        setReceipt(null);
+        (e.target as HTMLFormElement).reset();
+        toast.success(t("تم إرسال طلب الشحن"), {
+          description: t("يُضاف الرصيد بعد أن يتأكد مكتب الحسابات من وصول التحويل."),
+        });
+      } catch (err) {
+        toast.error(t(err instanceof ApiError ? err.firstMessage : "تعذر تنفيذ العملية"));
+      } finally {
+        setSubmitting(false);
+      }
       return;
     }
     if (gramPrice <= 0) {
@@ -284,6 +324,35 @@ function WalletPage() {
                 </ul>
               )}
             </div>
+
+            {deposits.length > 0 && (
+              <div className="rounded-2xl border border-border bg-card">
+                <h2 className="border-b border-border px-5 py-4 font-display text-lg text-primary">
+                  {t("طلبات الشحن")}
+                </h2>
+                <ul className="divide-y divide-border">
+                  {deposits.map((d) => (
+                    <li key={d.id} className="flex items-center gap-4 px-5 py-4">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-primary">
+                          {egp(Number(d.amount))} {t("ج.م")}{" "}
+                          <span className="text-xs font-normal text-muted-foreground" dir="ltr">
+                            #{d.reference}
+                          </span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">{txnDate(d.requested_at)}</p>
+                        {d.note && <p className="mt-1 text-xs text-primary">{d.note}</p>}
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${DEPOSIT_TONE[d.status]}`}
+                      >
+                        {d.status_label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <aside className="space-y-4">
@@ -329,9 +398,51 @@ function WalletPage() {
                 </div>
 
                 {action === "deposit" && (
-                  <p className="text-[11px] text-muted-foreground">
-                    {t("الحد الأدنى للشحن 100 ج.م · التنفيذ فوري")}
-                  </p>
+                  <>
+                    <p className="text-[11px] text-muted-foreground">
+                      {t("حوّل المبلغ أولًا على")}{" "}
+                      <Link
+                        to="/payment-methods"
+                        className="font-semibold text-gold-deep hover:underline"
+                      >
+                        {t("بيانات الدفع")}
+                      </Link>
+                      {t("، ثم ارفع الإيصال. يُضاف الرصيد بعد مراجعة مكتب الحسابات.")}
+                    </p>
+                    <div>
+                      <label
+                        htmlFor="reference"
+                        className="mb-1 block text-xs font-semibold text-primary"
+                      >
+                        {t("رقم التحويل")}
+                      </label>
+                      <input
+                        id="reference"
+                        dir="ltr"
+                        className={input}
+                        value={reference}
+                        onChange={(e) => setReference(e.target.value)}
+                        maxLength={64}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="receipt"
+                        className="mb-1 block text-xs font-semibold text-primary"
+                      >
+                        {t("صورة الإيصال")} (JPG, PNG, PDF · 8MB)
+                      </label>
+                      <input
+                        id="receipt"
+                        type="file"
+                        accept="image/jpeg,image/png,application/pdf"
+                        className={input}
+                        onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
+                        required
+                      />
+                    </div>
+                  </>
                 )}
 
                 {isGold && (
