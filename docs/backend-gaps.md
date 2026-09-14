@@ -29,7 +29,8 @@
 - **محتاج قرار:** `refund-policy` مالهاش slug، و`usage` مالهاش صفحة في الموقع.
 - اتبع نفس نمط `news.server.ts` / `news.functions.ts` / `news.queries.ts`.
 
-## ⬜ 4. أخبار الصفحة الرئيسية
+## ✅ 4. أخبار الصفحة الرئيسية — 2026-09-14
+- اتعمل: `FinancialNews.tsx` بياخد أحدث 6 من `newsQuery` (عنوان/مقتطف مترجمين من الخادم + `newsDate`)، والقسم بيختفي لو مفيش أخبار. الـ loader في `routes/index.tsx` بيجيبها على الخادم، وفشلها مش بيوقع الصفحة. صورة القسم الافتراضية واسم القسم اتنقلوا لـ `news.queries.ts` (مشتركين مع `routes/news.tsx`). ترجمات المقالات الثابتة اتشالت من `i18n.en.ts`.
 - `src/components/FinancialNews.tsx` فيه 4 مقالات ثابتة.
 - استخدم `newsQuery` من `src/lib/news.queries.ts` (زي `routes/news.tsx`).
 

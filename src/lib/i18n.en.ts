@@ -18,38 +18,6 @@ export const en: Record<string, string> = {
   // الأخبار
   عالمي: "Global",
   محلي: "Local",
-  "المشهد النقدي العالمي وآفاق الذهب والمعادن الثمينة — 2026":
-    "The global monetary landscape and the outlook for gold and precious metals — 2026",
-  "يدخل العالم عام 2026 في مرحلة نقدية ومالية غير مسبوقة تاريخيًا، تتسم بارتفاع قياسي في مستويات الدين وهشاشة متزايدة في أسواق السندات.":
-    "The world enters 2026 in a historically unprecedented monetary and fiscal phase, marked by record debt levels and growing fragility in bond markets.",
-  "يدخل العالم عام 2026 في مرحلة نقدية ومالية غير مسبوقة، تتسم بارتفاع قياسي في مستويات الدين وهشاشة متزايدة في أسواق السندات، ما يدفع البنوك المركزية لزيادة حيازاتها من الذهب.":
-    "The world enters 2026 in an unprecedented monetary and fiscal phase, marked by record debt levels and growing fragility in bond markets, pushing central banks to increase their gold holdings.",
-  "المشهد المحلي لسوق الذهب في مصر": "The local picture of Egypt's gold market",
-  "آفاق الذهب والمعادن الثمينة — يشهد سوق الذهب في مصر تفاعلًا مباشرًا مع التحولات النقدية والاقتصادية العالمية.":
-    "The outlook for gold and precious metals — Egypt's gold market responds directly to global monetary and economic shifts.",
-  "يشهد سوق الذهب في مصر تفاعلًا مباشرًا مع التحولات النقدية العالمية، مع طلب قوي على السبائك والعملات كوسيلة للحفاظ على القيمة أمام تحركات سعر الصرف.":
-    "Egypt's gold market responds directly to global monetary shifts, with strong demand for bars and coins as a way to preserve value against exchange-rate moves.",
-  "نظرة على الذهب والفضة في مصر | مارس 2026": "A look at gold and silver in Egypt | March 2026",
-  "يواصل سوق المعادن الثمينة في مصر التأثر بمزيج من الاتجاهات العالمية والعوامل المحلية، وحتى مارس 2026 ما يزال الذهب مدعومًا.":
-    "Egypt's precious-metals market continues to be shaped by a mix of global trends and local factors, and as of March 2026 gold remains well supported.",
-  "يواصل سوق المعادن الثمينة في مصر التأثر بمزيج من الاتجاهات العالمية والعوامل المحلية، وما يزال الذهب مدعومًا بالطلب الاستثماري ومشتريات الأفراد.":
-    "Egypt's precious-metals market continues to be shaped by a mix of global trends and local factors, with gold still supported by investment demand and retail buying.",
-  "الرؤية العالمية للذهب والفضة | مارس 2026": "The global view on gold and silver | March 2026",
-  "يظل الذهب والفضة في دائرة الاهتمام العالمي مع استمرار المستثمرين في الموازنة بين الاستقرار والمخاطر والتمركز طويل الأجل.":
-    "Gold and silver stay in the global spotlight as investors keep balancing stability, risk and long-term positioning.",
-  "الفضة: معدن صناعي واستثماري في وقت واحد":
-    "Silver: an industrial and an investment metal at once",
-  "الطلب الصناعي على الفضة من الطاقة الشمسية والإلكترونيات يضيف بعدًا جديدًا لتحركات سعرها إلى جانب دورها كملاذ آمن.":
-    "Industrial demand for silver from solar power and electronics adds a new dimension to its price moves alongside its safe-haven role.",
-  "دليل المستثمر المبتدئ في سبائك الذهب بمصر": "A beginner's guide to gold bars in Egypt",
-  "الفرق بين السبائك والعملات والمشغولات، ومصاريف المصنعية، وكيف تختار الوزن المناسب لبدء استثمارك بأمان.":
-    "The difference between bars, coins and jewellery, how fabrication fees work, and how to pick the right weight to start investing safely.",
-  "24 أغسطس 2026": "24 August 2026",
-  "22 أغسطس 2026": "22 August 2026",
-  "12 مارس 2026": "12 March 2026",
-  "05 مارس 2026": "05 March 2026",
-  "18 يناير 2026": "18 January 2026",
-  "02 يناير 2026": "02 January 2026",
   "الأخبار المالية": "Financial news",
   "ابقَ على اطلاع بآخر الأخبار المالية وأخبار سوق الذهب، مع تحليلات وتحديثات تساعدك على اتخاذ قرارات أذكى وفهم أفضل لحركة السوق.":
     "Stay up to date with the latest financial and gold-market news, with analysis and updates that help you make smarter decisions and better understand market moves.",

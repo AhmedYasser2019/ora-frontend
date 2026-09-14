@@ -3,9 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { newsDate, newsQuery } from "@/lib/news.queries";
-import newsGlobal from "@/assets/news-global.jpg";
-import newsLocal from "@/assets/news-local.jpg";
+import {
+  newsCategoryLabel as categoryLabel,
+  newsDate,
+  newsFallbackImage as fallbackImage,
+  newsQuery,
+} from "@/lib/news.queries";
 
 import { tr } from "@/lib/i18n";
 
@@ -30,11 +33,6 @@ export const Route = createFileRoute("/news")({
   loader: ({ context }) => context.queryClient.ensureQueryData(newsQuery),
   component: NewsPage,
 });
-
-/** صورة القسم حين لا يرفع المحرّر صورة للمقال. */
-const fallbackImage = { global: newsGlobal, local: newsLocal } as const;
-
-const categoryLabel = { global: "عالمي", local: "محلي" } as const;
 
 function NewsPage() {
   const t = useT();
