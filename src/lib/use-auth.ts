@@ -47,10 +47,16 @@ export function useAuth() {
   const signOut = useCallback(async () => {
     // قبل مسح الرمز: الحذف من /devices يحتاج الجلسة نفسها.
     await unregisterPush();
+    // الخادم يلغي الرمز، فلا تبقى نسخة منسوخة منه صالحة. في الديمو يُلغى الرمزان.
+    await api("/auth/token", { method: "DELETE" }).catch(() => {});
+    if (data?.is_demo) {
+      leaveDemo();
+      await api("/auth/token", { method: "DELETE" }).catch(() => {});
+    }
     setToken(null);
     // ما في الذاكرة يخصّ حسابًا انتهت جلسته — السلة والمفضلة والممتلكات معه.
     qc.clear();
-  }, [qc]);
+  }, [data, qc]);
 
   /** بين الحساب الحقيقي وحساب الديمو المربوط به. كل ما في الذاكرة يخصّ الحساب السابق. */
   const switchDemo = useCallback(async () => {

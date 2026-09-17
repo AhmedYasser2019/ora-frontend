@@ -52,7 +52,7 @@ function AccountPage() {
   const { user, loading, signOut, switchDemo } = useAuth();
   const navigate = useNavigate();
   const t = useT();
-  const [profile, setProfile] = useState({ full_name: "", phone: "" });
+  const [profile, setProfile] = useState({ full_name: "", phone: "", current_password: "" });
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [switching, setSwitching] = useState(false);
@@ -73,9 +73,12 @@ function AccountPage() {
   useEffect(() => {
     if (!user) return;
     // useAuth حمّل /me بالفعل، فالبيانات هنا هي نفسها بلا نداء ثانٍ.
-    setProfile({ full_name: user.name ?? "", phone: user.phone ?? "" });
+    setProfile({ full_name: user.name ?? "", phone: user.phone ?? "", current_password: "" });
     setFetching(false);
   }, [user]);
+
+  // رقم جديد يطلب كلمة المرور الحالية: الرمز المسروق وحده لا ينقل الحساب لرقم آخر.
+  const phoneChanged = !!user && profile.phone.trim() !== (user.phone ?? "");
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,8 +87,14 @@ function AccountPage() {
     try {
       await api("/me", {
         method: "PATCH",
-        body: { name: profile.full_name.trim(), phone: profile.phone.trim() },
+        body: {
+          name: profile.full_name.trim(),
+          ...(phoneChanged
+            ? { phone: profile.phone.trim(), current_password: profile.current_password }
+            : {}),
+        },
       });
+      setProfile((p) => ({ ...p, current_password: "" }));
       toast.success(t("تم حفظ بياناتك"));
     } catch (e) {
       toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر حفظ البيانات"));
@@ -189,6 +198,25 @@ function AccountPage() {
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
                 />
               </div>
+              {phoneChanged && (
+                <div>
+                  <label
+                    htmlFor="current_password"
+                    className="mb-1.5 block text-xs font-semibold text-primary"
+                  >
+                    {t("كلمة المرور الحالية")}
+                  </label>
+                  <input
+                    id="current_password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={profile.current_password}
+                    onChange={(e) => setProfile({ ...profile, current_password: e.target.value })}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                  />
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={saving}
