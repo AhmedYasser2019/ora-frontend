@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 import { toast } from "sonner";
 
 import { api, BASE, getToken } from "./api";
+import { useLang } from "./i18n";
 import { useAuth } from "./use-auth";
+import { pushAvailable, registerPush } from "./web-push";
 
 /** شكل صفّ في صندوق الإشعارات — نفس ما يُرجعه NotificationController::present. */
 export type AppNotification = {
@@ -75,6 +77,26 @@ export function useNotifications() {
     };
   }, [user, qc]);
 
+  // إشعارات المتصفح: تسجيل صامت إن كان الإذن ممنوحًا (ومن جديد عند تغيير اللغة، فالتنبيه
+  // يصل بلغة الجهاز)، وإلا يظهر زر التفعيل في الجرس.
+  const { lang, t } = useLang();
+  const [canEnablePush, setCanEnablePush] = useState(false);
+
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) return;
+    registerPush().catch(() => {});
+    void pushAvailable().then((ok) =>
+      setCanEnablePush(ok && Notification.permission === "default"),
+    );
+  }, [userId, lang]);
+
+  const enablePush = async () => {
+    setCanEnablePush(false);
+    if (!(await registerPush(true).catch(() => false))) return;
+    toast.success(t("تم تفعيل إشعارات المتصفح"));
+  };
+
   const markRead = async (ids?: string[]) => {
     await api("/notifications/read", { method: "POST", body: { ids } });
     void qc.invalidateQueries({ queryKey: QUERY_KEY });
@@ -84,5 +106,7 @@ export function useNotifications() {
     notifications: data?.data ?? [],
     unreadCount: data?.unread_count ?? 0,
     markRead,
+    canEnablePush,
+    enablePush,
   };
 }

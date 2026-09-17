@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useSyncExternalStore } from "react";
 
 import { api, enterDemo, getToken, leaveDemo, setToken } from "./api";
+import { unregisterPush } from "./web-push";
 
 export type User = {
   id: number;
@@ -44,6 +45,8 @@ export function useAuth() {
   });
 
   const signOut = useCallback(async () => {
+    // قبل مسح الرمز: الحذف من /devices يحتاج الجلسة نفسها.
+    await unregisterPush();
     setToken(null);
     // ما في الذاكرة يخصّ حسابًا انتهت جلسته — السلة والمفضلة والممتلكات معه.
     qc.clear();
