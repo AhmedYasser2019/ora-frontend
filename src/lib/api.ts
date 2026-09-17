@@ -175,3 +175,34 @@ export async function upload<T>(path: string, form: FormData): Promise<T> {
 
   return (body?.data ?? body) as T;
 }
+
+let arrived = false;
+
+/**
+ * يبلّغ الباك إند بكل صفحة تُفتح — هذا ما ترسم منه صفحة «تحليلات الزيارات» في الداشبورد.
+ * أول صفحة فقط تحمل الموقع الذي جاء منه الزائر، وفشل النداء لا يعني الزائر في شيء.
+ */
+export function trackView(page: string) {
+  let referrer: string | undefined;
+  if (!arrived) {
+    arrived = true;
+    try {
+      const host = document.referrer ? new URL(document.referrer).host : "";
+      if (host && host !== location.host) referrer = document.referrer;
+    } catch {
+      /* referrer غير صالح — نتجاهله */
+    }
+  }
+
+  const token = getToken();
+  fetch(`${BASE}/api/v1/views`, {
+    method: "POST",
+    keepalive: true,
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ page, referrer }),
+  }).catch(() => {});
+}
