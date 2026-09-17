@@ -93,6 +93,8 @@ export const en: Record<string, string> = {
   // الإشعارات
   الإشعارات: "Notifications",
   "لا توجد إشعارات بعد": "No notifications yet",
+  "فعّل إشعارات المتصفح": "Enable browser notifications",
+  "تم تفعيل إشعارات المتصفح": "Browser notifications enabled",
   // المفضلة
   المفضلة: "Favorites",
   "أضف للمفضلة": "Add to favorites",

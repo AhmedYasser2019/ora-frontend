@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Bell, CheckCheck } from "lucide-react";
+import { Bell, BellRing, CheckCheck } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ const actionTo = (action: AppNotification["action"]) =>
 
 export function NotificationBell() {
   const { user } = useAuth();
-  const { notifications, unreadCount, markRead } = useNotifications();
+  const { notifications, unreadCount, markRead, canEnablePush, enablePush } = useNotifications();
   const t = useT();
 
   if (!user) return null;
@@ -50,6 +50,12 @@ export function NotificationBell() {
           {unreadCount > 0 && <CheckCheck className="h-3.5 w-3.5 text-muted-foreground" />}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {canEnablePush && (
+          <DropdownMenuItem onSelect={() => void enablePush()} className="gap-2 text-primary">
+            <BellRing className="h-4 w-4" />
+            {t("فعّل إشعارات المتصفح")}
+          </DropdownMenuItem>
+        )}
         {notifications.length === 0 ? (
           <p className="px-2 py-6 text-center text-sm text-muted-foreground">
             {t("لا توجد إشعارات بعد")}
