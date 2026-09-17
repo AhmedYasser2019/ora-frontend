@@ -6,8 +6,9 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { LangProvider, readLang, tr } from "@/lib/i18n";
@@ -15,6 +16,7 @@ import { settingsQuery } from "@/lib/settings.queries";
 import { CartProvider } from "../lib/cart";
 import { FavoritesProvider } from "@/lib/favorites";
 import { Toaster } from "@/components/ui/sonner";
+import { trackView } from "@/lib/api";
 
 /**
  * تُرسم أحيانًا خارج <LangProvider> (لو فشل RootComponent قبل تركيب الـ provider)،
@@ -145,6 +147,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // في المتصفح فقط: useEffect لا يعمل على الخادم، فالصفحة تُعدّ مرة لكل فتح لا لكل رسم.
+  useEffect(() => trackView(pathname), [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
