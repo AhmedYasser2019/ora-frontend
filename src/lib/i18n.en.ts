@@ -289,6 +289,7 @@ export const en: Record<string, string> = {
   "لو الرقم مسجَّل هيوصلك رمز التحقق": "If this number is registered, you'll receive a code",
   "رمز التحقق": "Verification code",
   "إعادة إرسال الرمز": "Resend code",
+  "أرسلنا رمز التحقق إلى موبايلك": "We sent a verification code to your phone",
   "كلمة المرور الجديدة": "New password",
   "هيتم تسجيل خروجك من كل الأجهزة.": "You'll be signed out on all devices.",
   "حفظ كلمة المرور": "Save password",
