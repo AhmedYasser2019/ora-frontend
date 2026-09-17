@@ -351,6 +351,8 @@ function AuthPage() {
   const [step, setStep] = useState(1);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", password: "" });
+  // null حتى يطلب الخادم رمزًا بعد كلمة المرور (CUSTOMER_TWO_FACTOR في الباك إند).
+  const [loginCode, setLoginCode] = useState<string | null>(null);
   const [kyc, setKyc] = useState({ docType: "id", docNumber: "" });
   const [docFront, setDocFront] = useState<File | null>(null);
   const [docBack, setDocBack] = useState<File | null>(null);
@@ -364,17 +366,33 @@ function AuthPage() {
     if (!loading && user && !wizard) navigate({ to: target });
   }, [loading, user, wizard, navigate, target]);
 
-  const login = async (e: React.FormEvent) => {
+  const login = async (e: React.SyntheticEvent, code = loginCode) => {
     e.preventDefault();
     setBusy(true);
     try {
-      const { token } = await api<{ token: string }>("/auth/token", {
-        method: "POST",
-        // الباك إند يقبل بريدًا أو هاتفًا؛ الموقع يجمع بريدًا والتطبيق يجمع هاتفًا.
-        body: { email: form.email.trim(), password: form.password, device_name: "web" },
-      });
+      const res = await api<{ token?: string; two_factor?: boolean; code?: string }>(
+        "/auth/token",
+        {
+          method: "POST",
+          // الباك إند يقبل بريدًا أو هاتفًا؛ الموقع يجمع بريدًا والتطبيق يجمع هاتفًا.
+          body: {
+            email: form.email.trim(),
+            password: form.password,
+            device_name: "web",
+            ...(code !== null ? { code: code.trim() } : {}),
+          },
+        },
+      );
 
-      setToken(token);
+      // كلمة المرور صحيحة والخادم أرسل رمزًا للموبايل: نفس الطلب مرة ثانية ومعه الرمز.
+      // `code` بيرجع من الخادم في وضع debug بس — للتجربة.
+      if (!res.token) {
+        setLoginCode(res.code ?? "");
+        toast.success(t("أرسلنا رمز التحقق إلى موبايلك"));
+        return;
+      }
+
+      setToken(res.token);
       toast.success(t("مرحبًا بعودتك"));
       navigate({ to: target });
     } catch (err) {
@@ -568,7 +586,32 @@ function AuthPage() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="••••••••"
               />
+              {loginCode !== null && (
+                <Field
+                  id="login-code"
+                  label="رمز التحقق"
+                  icon={KeyRound}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  dir="ltr"
+                  required
+                  autoFocus
+                  value={loginCode}
+                  onChange={(e) => setLoginCode(e.target.value)}
+                  placeholder="••••"
+                />
+              )}
               {submitBtn("دخول")}
+              {loginCode !== null && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={(e) => login(e, null)}
+                  className="text-xs font-semibold text-muted-foreground underline"
+                >
+                  {t("إعادة إرسال الرمز")}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setMode("forgot")}
