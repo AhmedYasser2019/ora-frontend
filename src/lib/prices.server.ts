@@ -45,7 +45,7 @@ export async function fetchLivePrices(): Promise<LivePrices> {
   return body.data;
 }
 
-export type HistoryRange = "1d" | "1w" | "1m" | "1y" | "10y";
+export type HistoryRange = "1d" | "1w" | "1m" | "3m" | "1y" | "10y";
 
 /** `[ثواني يونكس, جنيه للجرام]` لعيار المعدن الأساسي (21 للذهب) — انظر PriceHistory في الباك إند. */
 export type PriceHistory = { karat: number; points: [number, number][] };
