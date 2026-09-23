@@ -10,6 +10,7 @@ const RANGES: [HistoryRange, string][] = [
   ["1d", "24 ساعة"],
   ["1w", "أسبوع"],
   ["1m", "شهر"],
+  ["3m", "3 شهور"],
   ["1y", "سنة"],
   ["10y", "10 سنين"],
 ];
@@ -18,6 +19,7 @@ const FORMAT: Record<HistoryRange, Intl.DateTimeFormatOptions> = {
   "1d": { hour: "2-digit", minute: "2-digit" },
   "1w": { weekday: "short", hour: "2-digit" },
   "1m": { day: "numeric", month: "short" },
+  "3m": { day: "numeric", month: "short" },
   "1y": { month: "short", year: "2-digit" },
   "10y": { year: "numeric" },
 };
