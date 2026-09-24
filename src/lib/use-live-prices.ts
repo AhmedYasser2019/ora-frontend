@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 
@@ -19,69 +19,86 @@ const SAMPLE_MS = 5_000;
  * بشكل الواجهة (`snapshot`) فنضعها في الكاش كما هي — الواجهة لا تحسب سعرًا أبدًا.
  * البثّ لا يخرج إلا حين يتغيّر شيء فعلًا، فالسوق الهادئ لا يوقظ كل جهاز كل ثانية.
  *
+ * اتصال واحد للصفحة كلها: الهيدر والصفحة يستدعيان هذا الـ hook معًا، فالسوكت يعيش على
+ * مستوى الوحدة ويُغلق حين يخرج آخر مستخدم له.
+ *
  * الاستعلام في prices.queries يظل يعمل كشبكة أمان لو كان السوكت محجوبًا.
  */
+type Status = { live: boolean; pushedAt: number };
+
+let status: Status = { live: false, pushedAt: 0 };
+const listeners = new Set<() => void>();
+let echo: Echo<"reverb"> | null = null;
+let users = 0;
+
+const setStatus = (patch: Partial<Status>) => {
+  status = { ...status, ...patch };
+  listeners.forEach((l) => l());
+};
+
+const subscribe = (l: () => void) => {
+  listeners.add(l);
+  return () => listeners.delete(l);
+};
+
+function connect(queryClient: QueryClient) {
+  const key = import.meta.env["VITE_REVERB_APP_KEY"];
+  if (!key) return;
+
+  // pusher-js عبر متغيّر عام هو ما يتوقعه laravel-echo.
+  (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
+
+  echo = new Echo({
+    broadcaster: "reverb",
+    key,
+    wsHost: import.meta.env["VITE_REVERB_HOST"],
+    wsPort: Number(import.meta.env["VITE_REVERB_PORT"] ?? 8080),
+    wssPort: Number(import.meta.env["VITE_REVERB_PORT"] ?? 443),
+    forceTLS: (import.meta.env["VITE_REVERB_SCHEME"] ?? "https") === "https",
+    enabledTransports: ["ws", "wss"],
+  });
+
+  const connection = echo.connector.pusher.connection;
+  connection.bind("connected", () => setStatus({ live: true }));
+  for (const state of ["unavailable", "disconnected", "failed"]) {
+    connection.bind(state, () => setStatus({ live: false }));
+  }
+
+  echo.channel("prices").listen(".board.updated", (payload: { snapshot: LivePrices }) => {
+    if (!payload.snapshot) return;
+
+    queryClient.setQueryData(livePricesQuery.queryKey, payload.snapshot);
+
+    // أسعار المنتجات محسوبة على الخادم من نفس السعر، فهي تتغيّر مع كل بثّ. نطلبها
+    // من جديد بدل حسابها هنا — الحساب في الواجهة نسخة ثانية من قواعد التسعير.
+    // وكذلك قيمة ما اشتراه العميل اليوم — ممتلكاته وطلباته.
+    for (const key of ["products", "holdings", "orders"]) {
+      void queryClient.invalidateQueries({ queryKey: [key] });
+    }
+
+    setStatus({ live: true, pushedAt: Date.now() });
+  });
+}
+
 export function useLivePrices() {
   const queryClient = useQueryClient();
   const query = useQuery(livePricesQuery);
-  const [live, setLive] = useState(false);
-  const [pushedAt, setPushedAt] = useState(0);
+  const { live, pushedAt } = useSyncExternalStore(
+    subscribe,
+    () => status,
+    () => status,
+  );
   const [history, setHistory] = useState<PriceTick[]>([]);
 
   useEffect(() => {
-    const key = import.meta.env["VITE_REVERB_APP_KEY"];
-    if (!key) return;
-
-    // pusher-js عبر متغيّر عام هو ما يتوقعه laravel-echo.
-    (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
-
-    const echo = new Echo({
-      broadcaster: "reverb",
-      key,
-      wsHost: import.meta.env["VITE_REVERB_HOST"],
-      wsPort: Number(import.meta.env["VITE_REVERB_PORT"] ?? 8080),
-      wssPort: Number(import.meta.env["VITE_REVERB_PORT"] ?? 443),
-      forceTLS: (import.meta.env["VITE_REVERB_SCHEME"] ?? "https") === "https",
-      enabledTransports: ["ws", "wss"],
-    });
-
-    const connection = echo.connector.pusher.connection;
-    connection.bind("connected", () => setLive(true));
-    connection.bind("unavailable", () => setLive(false));
-    connection.bind("disconnected", () => setLive(false));
-    connection.bind("failed", () => setLive(false));
-
-    echo.channel("prices").listen(".board.updated", (payload: { snapshot: LivePrices }) => {
-      const data = payload.snapshot;
-      if (!data) return;
-
-      queryClient.setQueryData(livePricesQuery.queryKey, data);
-      setLive(true);
-
-      // أسعار المنتجات محسوبة على الخادم من نفس السعر، فهي تتغيّر مع كل بثّ. نطلبها
-      // من جديد بدل حسابها هنا — الحساب في الواجهة نسخة ثانية من قواعد التسعير.
-      // وكذلك قيمة ما اشتراه العميل اليوم — ممتلكاته وطلباته.
-      for (const key of ["products", "holdings", "orders"]) {
-        void queryClient.invalidateQueries({ queryKey: [key] });
-      }
-
-      const at = Date.now();
-      setPushedAt(at);
-
-      // المعدن الموقوف لا يرسل سعرًا، فلا نضيف نقطة للرسم البياني عنه.
-      const { k24, k21, silver } = data.gram;
-      if (k24 === undefined && k21 === undefined && silver === undefined) return;
-
-      setHistory((prev) =>
-        [...prev, { at, k24: k24 ?? 0, k21: k21 ?? 0, silver: silver ?? 0 }].filter(
-          (tick) => at - tick.at <= WINDOW_MS,
-        ),
-      );
-    });
+    if (users++ === 0) connect(queryClient);
 
     return () => {
+      if (--users > 0 || !echo) return;
       echo.leave("prices");
       echo.disconnect();
+      echo = null;
+      setStatus({ live: false });
     };
   }, [queryClient]);
 
@@ -105,7 +122,7 @@ export function useLivePrices() {
     sample();
     const interval = setInterval(sample, SAMPLE_MS);
     return () => clearInterval(interval);
-  }, [queryClient, hasData]);
+  }, [queryClient, hasData, pushedAt]);
 
   return {
     data: query.data,
