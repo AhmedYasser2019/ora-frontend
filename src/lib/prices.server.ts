@@ -18,14 +18,8 @@ export type GramPrices = {
 };
 
 export type LivePrices = {
-  updatedAt: string;
-  /** الخادم يسعّر بالجنيه مباشرة، فلا يوجد سعر دولار نُسعِّر منه. */
-  usdEgp: number | null;
-  spreadPct: number | null;
   /** سعر الشراء: ما يدفعه العميل. */
   gram: Partial<GramPrices>;
-  /** سعر إعادة البيع: ما نشتري به من العميل. */
-  sell: Partial<GramPrices>;
   /** المعادن الموقوف تداولها، والسبب. المفتاح موجود = لا يوجد سعر لعرضه. */
   halted: Record<string, string>;
 };
