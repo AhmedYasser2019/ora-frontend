@@ -108,7 +108,7 @@ export function fieldErrors(body: Envelope<unknown> | null): Record<string, stri
 }
 
 type Options = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   /** مفتاح التكرار لطلب لا يجوز أن يُنفَّذ مرتين. */
   idempotencyKey?: string;

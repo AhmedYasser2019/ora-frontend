@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   FlaskConical,
+  KeyRound,
   LoaderCircle,
   LogOut,
   Save,
@@ -232,6 +233,9 @@ function AccountPage() {
             </form>
           )}
 
+          {/* حساب الديمو كلمة مروره عشوائية لا يعرفها أحد. */}
+          {!user.is_demo && <ChangePassword />}
+
           <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
             <button
               onClick={toggleDemo}
@@ -273,6 +277,86 @@ function AccountPage() {
         </p>
       </div>
     </PageShell>
+  );
+}
+
+/**
+ * `PUT /me/password`. الخادم يُنهي جلسات الأجهزة الأخرى ويُبقي هذه، فلا خروج هنا.
+ */
+function ChangePassword() {
+  const t = useT();
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await api("/me/password", {
+        method: "PUT",
+        body: { current_password: current, password: next, password_confirmation: next },
+      });
+      setCurrent("");
+      setNext("");
+      toast.success(t("تم تغيير كلمة المرور"), {
+        description: t("تم تسجيل خروج أجهزتك الأخرى."),
+      });
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر تغيير كلمة المرور"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const box =
+    "w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold";
+
+  return (
+    <details className="mt-6 border-t border-border pt-5">
+      <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-primary">
+        <KeyRound className="h-3.5 w-3.5" /> {t("تغيير كلمة المرور")}
+      </summary>
+      <form onSubmit={submit} className="mt-4 grid gap-4">
+        <div>
+          <label htmlFor="cp_current" className="mb-1.5 block text-xs font-semibold text-primary">
+            {t("كلمة المرور الحالية")}
+          </label>
+          <input
+            id="cp_current"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            className={box}
+          />
+        </div>
+        <div>
+          <label htmlFor="cp_new" className="mb-1.5 block text-xs font-semibold text-primary">
+            {t("كلمة المرور الجديدة")}
+          </label>
+          <input
+            id="cp_new"
+            type="password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+            value={next}
+            onChange={(e) => setNext(e.target.value)}
+            className={box}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={busy}
+          className="flex items-center justify-center gap-2 rounded-full border border-primary py-2.5 text-sm font-semibold text-primary hover:bg-muted disabled:opacity-60"
+        >
+          {busy && <LoaderCircle className="h-4 w-4 animate-spin" />}
+          {t("حفظ كلمة المرور")}
+        </button>
+      </form>
+    </details>
   );
 }
 
