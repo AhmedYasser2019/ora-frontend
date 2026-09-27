@@ -33,13 +33,13 @@ export const Route = createFileRoute("/auth")({
   validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
     meta: [
-      { title: tr("تسجيل الدخول | أورا للذهب") },
+      { title: tr("تسجيل الدخول | زاد جولد") },
       {
         name: "description",
-        content: tr("سجّل الدخول أو أنشئ حسابك في أورا للذهب لمتابعة طلباتك وحفظ بياناتك."),
+        content: tr("سجّل الدخول أو أنشئ حسابك في زاد جولد لمتابعة طلباتك وحفظ بياناتك."),
       },
-      { property: "og:title", content: tr("تسجيل الدخول | أورا للذهب") },
-      { property: "og:description", content: tr("حسابك في أورا للذهب والسبائك.") },
+      { property: "og:title", content: tr("تسجيل الدخول | زاد جولد") },
+      { property: "og:description", content: tr("حسابك في زاد جولد للذهب والسبائك.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -708,7 +708,7 @@ function AuthPage() {
 
   return (
     <PageShell
-      title="حسابك في أورا"
+      title="حسابك في زاد جولد"
       subtitle="سجّل الدخول أو أنشئ حسابك خطوة بخطوة لمتابعة طلباتك وحفظ بياناتك بأمان."
     >
       <div className={`mx-auto ${mode === "signup" ? "max-w-5xl" : "max-w-md"}`}>

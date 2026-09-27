@@ -13,14 +13,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: tr("الأسئلة الشائعة | مركز المساعدة — أورا للذهب") },
+      { title: tr("الأسئلة الشائعة | مركز المساعدة — زاد جولد") },
       {
         name: "description",
         content: tr(
           "إجابات على أكثر الأسئلة شيوعًا عن شراء الذهب، الأسعار، المحفظة، الإيداع، الطلبات وأمان الحساب.",
         ),
       },
-      { property: "og:title", content: tr("الأسئلة الشائعة | أورا للذهب") },
+      { property: "og:title", content: tr("الأسئلة الشائعة | زاد جولد") },
       { property: "og:description", content: tr("مركز المساعدة وإجابات أسئلتك.") },
     ],
   }),

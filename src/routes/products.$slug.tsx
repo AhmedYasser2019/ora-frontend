@@ -29,7 +29,7 @@ export const Route = createFileRoute("/products/$slug")({
   head: ({ loaderData }) => {
     const p = loaderData?.product;
     if (!p) return {};
-    const title = `${tr(p.t)} | ${tr("أورا للذهب")}`;
+    const title = `${tr(p.t)} | ${tr("زاد جولد")}`;
     return {
       meta: [
         { title },
@@ -89,7 +89,7 @@ function ProductPage() {
     [t("الوزن"), weightLabel(p.weightG)],
     [t("المصنعية"), p.premium === undefined ? "—" : `${egp(p.premium)} ${t("ج.م")}`],
     [t("التوفر"), p.available ? t("متوفر") : t("غير متوفر")],
-    [t("كود المنتج"), `ORA-${p.slug.toUpperCase()}`],
+    [t("كود المنتج"), `ZAD-${p.slug.toUpperCase()}`],
   ];
 
   return (

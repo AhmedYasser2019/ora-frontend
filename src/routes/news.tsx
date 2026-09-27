@@ -15,14 +15,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: tr("الأخبار المالية وتحليلات سوق الذهب | أورا") },
+      { title: tr("الأخبار المالية وتحليلات سوق الذهب | زاد جولد") },
       {
         name: "description",
         content: tr(
           "تحليلات وأخبار عالمية ومحلية عن سوق الذهب والفضة في مصر والعالم، وتأثير السياسات النقدية على أسعار المعادن الثمينة.",
         ),
       },
-      { property: "og:title", content: tr("الأخبار المالية | أورا للذهب") },
+      { property: "og:title", content: tr("الأخبار المالية | زاد جولد") },
       {
         property: "og:description",
         content: tr("آخر أخبار وتحليلات سوق الذهب والفضة عالميًا ومحليًا."),

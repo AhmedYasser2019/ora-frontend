@@ -27,9 +27,9 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: tr("إتمام الطلب | أورا للذهب") },
-      { name: "description", content: tr("أكد طلبك لشراء الذهب بسعر لحظي مثبت مع أورا.") },
-      { property: "og:title", content: tr("إتمام الطلب | أورا للذهب") },
+      { title: tr("إتمام الطلب | زاد جولد") },
+      { name: "description", content: tr("أكد طلبك لشراء الذهب بسعر لحظي مثبت مع زاد جولد.") },
+      { property: "og:title", content: tr("إتمام الطلب | زاد جولد") },
       { property: "og:description", content: tr("تأكيد طلب شراء الذهب بأسعار لحظية.") },
     ],
   }),
@@ -147,7 +147,7 @@ function CheckoutPage() {
 
   if (placed) {
     return (
-      <PageShell title="تم استلام طلبك" subtitle="شكرًا لثقتك في أورا.">
+      <PageShell title="تم استلام طلبك" subtitle="شكرًا لثقتك في زاد جولد.">
         <div className="mx-auto max-w-lg rounded-2xl border border-border bg-card p-10 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-gold-deep" />
           <p className="mt-4 text-xl text-primary">

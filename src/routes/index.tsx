@@ -29,7 +29,7 @@ import { useSiteSettings } from "@/lib/settings.queries";
 
 export const Route = createFileRoute("/")({
   head: () => {
-    const title = tr("أورا | شراء سبائك وعملات الذهب في مصر");
+    const title = tr("زاد جولد | شراء سبائك وعملات الذهب في مصر");
 
     return {
       meta: [
@@ -37,13 +37,13 @@ export const Route = createFileRoute("/")({
         {
           name: "description",
           content: tr(
-            "أورا للذهب: سبائك وعملات ذهبية معتمدة، أسعار الذهب اللحظية، حساب الزكاة وتوصيل آمن داخل مصر.",
+            "زاد جولد: سبائك وعملات ذهبية معتمدة، أسعار الذهب اللحظية، حساب الزكاة وتوصيل آمن داخل مصر.",
           ),
         },
         { property: "og:title", content: title },
         {
           property: "og:description",
-          content: tr("استثمر في الذهب والفضة بثقة مع أورا. سبائك وعملات وأسعار لحظية."),
+          content: tr("استثمر في الذهب والفضة بثقة مع زاد جولد. سبائك وعملات وأسعار لحظية."),
         },
       ],
     };
@@ -245,7 +245,7 @@ function Home() {
       <section className="bg-gradient-green py-14 text-primary-foreground">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-[1fr_auto] sm:items-center">
           <div>
-            <p className="text-sm text-gold">{t("حمّل تطبيق أورا")}</p>
+            <p className="text-sm text-gold">{t("حمّل تطبيق زاد جولد")}</p>
             <h2 className="mt-2 font-display text-3xl text-gold">
               {t("استثمارك في الذهب من جيبك")}
             </h2>

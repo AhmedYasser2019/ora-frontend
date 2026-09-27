@@ -25,15 +25,15 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: tr("إتصل بنا | أورا للذهب") },
+      { title: tr("إتصل بنا | زاد جولد") },
       {
         name: "description",
         content: tr(
-          "تواصل مع خدمة عملاء أورا للذهب على الرقم الموحد 17608 أو عبر البريد الإلكتروني أو نموذج التواصل.",
+          "تواصل مع خدمة عملاء زاد جولد على الرقم الموحد 17608 أو عبر البريد الإلكتروني أو نموذج التواصل.",
         ),
       },
-      { property: "og:title", content: tr("إتصل بنا | أورا للذهب") },
-      { property: "og:description", content: tr("خدمة عملاء أورا للذهب.") },
+      { property: "og:title", content: tr("إتصل بنا | زاد جولد") },
+      { property: "og:description", content: tr("خدمة عملاء زاد جولد.") },
     ],
   }),
   component: ContactPage,
@@ -236,7 +236,7 @@ function ContactPage() {
                     className={input}
                     value={form.orderId}
                     onChange={(e) => setForm({ ...form, orderId: e.target.value })}
-                    placeholder="ORA-XXXXXX"
+                    placeholder="ZAD-XXXXXX"
                   />
                 </div>
               </div>

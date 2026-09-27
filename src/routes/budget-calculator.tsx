@@ -17,14 +17,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/budget-calculator")({
   head: () => ({
     meta: [
-      { title: tr("حاسبة الميزانية | كم ذهب تشتري بميزانيتك؟ — أورا") },
+      { title: tr("حاسبة الميزانية | كم ذهب تشتري بميزانيتك؟ — زاد جولد") },
       {
         name: "description",
         content: tr(
           "أدخل ميزانيتك واختر المعدن والعيار، وسنعرض لك بالسعر اللحظي كم جرامًا تشتري وأفضل المنتجات في حدود ميزانيتك.",
         ),
       },
-      { property: "og:title", content: tr("حاسبة الميزانية | أورا للذهب") },
+      { property: "og:title", content: tr("حاسبة الميزانية | زاد جولد") },
       {
         property: "og:description",
         content: tr("احسب كم ذهبًا أو فضة تشتري بميزانيتك بالسعر اللحظي."),

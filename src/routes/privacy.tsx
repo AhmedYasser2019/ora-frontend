@@ -9,15 +9,15 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: tr("سياسة الخصوصية | أورا للذهب") },
+      { title: tr("سياسة الخصوصية | زاد جولد") },
       {
         name: "description",
-        content: tr("كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها."),
+        content: tr("كيف تجمع زاد جولد بياناتك الشخصية وتستخدمها وتحميها."),
       },
-      { property: "og:title", content: tr("سياسة الخصوصية | أورا للذهب") },
+      { property: "og:title", content: tr("سياسة الخصوصية | زاد جولد") },
       {
         property: "og:description",
-        content: tr("كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها."),
+        content: tr("كيف تجمع زاد جولد بياناتك الشخصية وتستخدمها وتحميها."),
       },
     ],
   }),

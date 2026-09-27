@@ -12,14 +12,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
-      { title: tr("تقارير سوق الذهب والفضة | أورا") },
+      { title: tr("تقارير سوق الذهب والفضة | زاد جولد") },
       {
         name: "description",
         content: tr(
           "تقارير دورية أسبوعية وشهرية وسنوية عن أداء الذهب والفضة في مصر والعالم، مع أرقام الطلب والعرض وحركة الأسعار.",
         ),
       },
-      { property: "og:title", content: tr("التقارير | أورا للذهب") },
+      { property: "og:title", content: tr("التقارير | زاد جولد") },
       {
         property: "og:description",
         content: tr("تقارير دورية عن أداء سوق الذهب والفضة محليًا وعالميًا."),

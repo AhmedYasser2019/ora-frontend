@@ -24,9 +24,9 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: tr("حسابي | أورا للذهب") },
-      { name: "description", content: tr("إدارة بيانات حسابك في أورا للذهب.") },
-      { property: "og:title", content: tr("حسابي | أورا للذهب") },
+      { title: tr("حسابي | زاد جولد") },
+      { name: "description", content: tr("إدارة بيانات حسابك في زاد جولد.") },
+      { property: "og:title", content: tr("حسابي | زاد جولد") },
       { property: "og:description", content: tr("إدارة بيانات حسابك.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -151,7 +151,7 @@ function AccountPage() {
             </span>
             <div>
               <p className="font-display text-lg text-primary">
-                {profile.full_name || t("عميل أورا")}
+                {profile.full_name || t("عميل زاد جولد")}
               </p>
               {user.is_demo ? (
                 <p className="text-xs font-semibold text-gold-deep">

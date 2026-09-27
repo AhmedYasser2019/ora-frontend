@@ -12,10 +12,10 @@ import { lang } from "./i18n";
 // مُصدَّرة: استعمال البث الحيّ لها أيضًا في طلب تفويض القناة الخاصة، انظر use-notifications.
 export const BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
-const TOKEN_KEY = "ora.token";
+const TOKEN_KEY = "zadgold.token";
 
 /** رمز الحساب الحقيقي، محفوظ جانبًا ما دام المستخدم في حساب الديمو المربوط به. */
-const REAL_TOKEN_KEY = "ora.token.real";
+const REAL_TOKEN_KEY = "zadgold.token.real";
 
 export const getToken = () => {
   try {
@@ -36,7 +36,7 @@ export const setToken = (token: string | null) => {
   } catch {
     /* متصفح يمنع التخزين — الجلسة تعيش حتى إغلاق الصفحة فقط */
   }
-  window.dispatchEvent(new Event("ora:auth"));
+  window.dispatchEvent(new Event("zadgold:auth"));
 };
 
 /**

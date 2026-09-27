@@ -82,7 +82,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => {
-    const title = tr("ORA | أورا للذهب والسبائك");
+    const title = tr("زاد جولد للذهب والسبائك");
 
     return {
       meta: [
@@ -91,7 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { title },
         {
           name: "description",
-          content: tr("استثمر في الذهب والفضة بثقة مع أورا: سبائك وعملات ذهبية وأسعار لحظية."),
+          content: tr("استثمر في الذهب والفضة بثقة مع زاد جولد: سبائك وعملات ذهبية وأسعار لحظية."),
         },
         { property: "og:title", content: title },
         {

@@ -1,4 +1,4 @@
-# أورا — واجهة المتجر
+# زاد جولد — واجهة المتجر
 
 TanStack Start (React 19). تقرأ كل شيء من الباك إند في `ora-backend` عبر `/api/v1`.
 
@@ -30,7 +30,7 @@ bun dev            # المنفذ 3000
 cd ../ora-backend
 php artisan serve --port=8000
 php artisan reverb:start --port=8090      # البثّ الحيّ
-php artisan schedule:work                 # ora:broadcast-board كل ثانية
+php artisan schedule:work                 # zadgold:broadcast-board كل ثانية
 ```
 
 ## المتغيّرات

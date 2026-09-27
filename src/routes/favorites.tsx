@@ -12,12 +12,12 @@ import { bySlug, productsQuery } from "@/lib/catalog.queries";
 export const Route = createFileRoute("/favorites")({
   head: () => ({
     meta: [
-      { title: tr("المفضلة | أورا للذهب") },
+      { title: tr("المفضلة | زاد جولد") },
       {
         name: "description",
-        content: tr("المنتجات اللي حفظتها في المفضلة بأسعار الذهب اللحظية من أورا."),
+        content: tr("المنتجات اللي حفظتها في المفضلة بأسعار الذهب اللحظية من زاد جولد."),
       },
-      { property: "og:title", content: tr("المفضلة | أورا للذهب") },
+      { property: "og:title", content: tr("المفضلة | زاد جولد") },
       { property: "og:description", content: tr("منتجاتك المحفوظة بأسعار لحظية.") },
     ],
   }),

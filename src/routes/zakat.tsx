@@ -12,14 +12,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/zakat")({
   head: () => ({
     meta: [
-      { title: tr("حساب زكاة الذهب والفضة | أورا") },
+      { title: tr("حساب زكاة الذهب والفضة | زاد جولد") },
       {
         name: "description",
         content: tr(
           "احسب زكاة الذهب والفضة بدقة بناءً على أسعار السوق اللحظية في مصر مع نصاب الزكاة ونسبة 2.5%.",
         ),
       },
-      { property: "og:title", content: tr("حساب زكاة الذهب | أورا") },
+      { property: "og:title", content: tr("حساب زكاة الذهب | زاد جولد") },
       { property: "og:description", content: tr("حاسبة زكاة الذهب والفضة بأسعار لحظية.") },
     ],
   }),

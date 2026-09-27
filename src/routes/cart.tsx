@@ -15,12 +15,12 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: tr("سلة الشراء | أورا للذهب") },
+      { title: tr("سلة الشراء | زاد جولد") },
       {
         name: "description",
-        content: tr("راجع سبائك وعملات الذهب في سلتك بأسعار لحظية قبل إتمام الطلب مع أورا."),
+        content: tr("راجع سبائك وعملات الذهب في سلتك بأسعار لحظية قبل إتمام الطلب مع زاد جولد."),
       },
-      { property: "og:title", content: tr("سلة الشراء | أورا للذهب") },
+      { property: "og:title", content: tr("سلة الشراء | زاد جولد") },
       { property: "og:description", content: tr("مراجعة السلة بأسعار الذهب اللحظية قبل الشراء.") },
     ],
   }),

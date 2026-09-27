@@ -13,12 +13,12 @@ export type User = {
   [key: string]: unknown;
 };
 
-/** `setToken` يبثّ `ora:auth`، و`storage` يغطي تبويبًا آخر — فتتفق كل الشاشات على جلسة واحدة. */
+/** `setToken` يبثّ `zadgold:auth`، و`storage` يغطي تبويبًا آخر — فتتفق كل الشاشات على جلسة واحدة. */
 const subscribe = (cb: () => void) => {
-  window.addEventListener("ora:auth", cb);
+  window.addEventListener("zadgold:auth", cb);
   window.addEventListener("storage", cb);
   return () => {
-    window.removeEventListener("ora:auth", cb);
+    window.removeEventListener("zadgold:auth", cb);
     window.removeEventListener("storage", cb);
   };
 };

@@ -16,9 +16,9 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
-      { title: tr("طلباتي | أورا للذهب") },
-      { name: "description", content: tr("تابع حالة طلباتك في أورا للذهب وتفاصيل كل طلب.") },
-      { property: "og:title", content: tr("طلباتي | أورا للذهب") },
+      { title: tr("طلباتي | زاد جولد") },
+      { name: "description", content: tr("تابع حالة طلباتك في زاد جولد وتفاصيل كل طلب.") },
+      { property: "og:title", content: tr("طلباتي | زاد جولد") },
       { property: "og:description", content: tr("متابعة حالة الطلبات.") },
     ],
   }),

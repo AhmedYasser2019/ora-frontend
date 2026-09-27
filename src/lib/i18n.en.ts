@@ -101,9 +101,9 @@ export const en: Record<string, string> = {
   "إزالة من المفضلة": "Remove from favorites",
   "تمت الإضافة للمفضلة": "Added to favorites",
   "تمت الإزالة من المفضلة": "Removed from favorites",
-  "المفضلة | أورا للذهب": "Favorites | ORA Gold",
-  "المنتجات اللي حفظتها في المفضلة بأسعار الذهب اللحظية من أورا.":
-    "The products you saved to your favorites, with ORA's live gold prices.",
+  "المفضلة | زاد جولد": "Favorites | Zad Gold",
+  "المنتجات اللي حفظتها في المفضلة بأسعار الذهب اللحظية من زاد جولد.":
+    "The products you saved to your favorites, with Zad Gold's live gold prices.",
   "منتجاتك المحفوظة بأسعار لحظية.": "Your saved products at live prices.",
   "المنتجات اللي حفظتها للرجوع ليها، بأسعار محدثة لحظيًا مع سعر الذهب.":
     "The products you saved for later, priced live with the gold rate.",
@@ -122,13 +122,13 @@ export const en: Record<string, string> = {
   "لازم تسجّل الدخول قبل الإضافة للسلة": "You need to sign in before adding to the cart",
 
   // الهيدر والفوتر والتنقل
-  "أورا للذهب والسبائك — استثمار واضح وآمن في المعادن النفيسة.":
-    "ORA Gold & Bullion — clear, secure investing in precious metals.",
+  "زاد جولد للذهب والسبائك — استثمار واضح وآمن في المعادن النفيسة.":
+    "Zad Gold & Bullion — clear, secure investing in precious metals.",
   "روابط سريعة": "Quick links",
   "مركز المساعدة": "Help centre",
   "تواصل معنا": "Contact us",
   "سموحة، الإسكندرية، مصر": "Smouha, Alexandria, Egypt",
-  "جميع الحقوق محفوظة © أورا للذهب 2026": "All rights reserved © ORA Gold 2026",
+  "جميع الحقوق محفوظة © زاد جولد 2026": "All rights reserved © Zad Gold 2026",
   "توصيل آمن ومؤمّن لكل محافظات مصر": "Safe, insured delivery to every governorate in Egypt",
   "تغيير اللغة": "Change language",
   القائمة: "Menu",
@@ -158,11 +158,10 @@ export const en: Record<string, string> = {
   "سبائك ذهب": "Gold bars",
   "عملات ذهبية": "Gold coins",
   "سبائك فضة": "Silver bars",
-  أورا: "ORA",
   سام: "Sam",
   "بي تي سي": "BTC",
   "جولد إيرا": "Gold Era",
-  "أورا للذهب": "ORA Gold",
+  "زاد جولد": "Zad Gold",
 
   // صفحات الخطأ
   "الصفحة غير موجودة": "Page not found",
@@ -173,17 +172,17 @@ export const en: Record<string, string> = {
   "حدث خطأ من جانبنا. جرّب تحديث الصفحة أو العودة للرئيسية.":
     "Something went wrong on our end. Try refreshing or head back home.",
   "حاول مرة أخرى": "Try again",
-  "ORA | أورا للذهب والسبائك": "ORA | Gold & Bullion",
-  "استثمر في الذهب والفضة بثقة مع أورا: سبائك وعملات ذهبية وأسعار لحظية.":
+  "زاد جولد للذهب والسبائك": "Zad Gold | Gold & Bullion",
+  "استثمر في الذهب والفضة بثقة مع زاد جولد: سبائك وعملات ذهبية وأسعار لحظية.":
     "Invest in gold and silver with confidence: certified bars, coins and live prices.",
   "سبائك وعملات ذهبية معتمدة وأسعار لحظية للذهب في مصر.":
     "Certified gold bars and coins with live gold prices in Egypt.",
 
   // الصفحة الرئيسية
-  "أورا | شراء سبائك وعملات الذهب في مصر": "ORA | Buy gold bars and coins in Egypt",
-  "أورا للذهب: سبائك وعملات ذهبية معتمدة، أسعار الذهب اللحظية، حساب الزكاة وتوصيل آمن داخل مصر.":
-    "ORA Gold: certified gold bars and coins, live gold prices, a zakat calculator and secure delivery across Egypt.",
-  "استثمر في الذهب والفضة بثقة مع أورا. سبائك وعملات وأسعار لحظية.":
+  "زاد جولد | شراء سبائك وعملات الذهب في مصر": "Zad Gold | Buy gold bars and coins in Egypt",
+  "زاد جولد: سبائك وعملات ذهبية معتمدة، أسعار الذهب اللحظية، حساب الزكاة وتوصيل آمن داخل مصر.":
+    "Zad Gold: certified gold bars and coins, live gold prices, a zakat calculator and secure delivery across Egypt.",
+  "استثمر في الذهب والفضة بثقة مع زاد جولد. سبائك وعملات وأسعار لحظية.":
     "Invest in gold and silver with confidence. Bars, coins and live prices.",
   "سعر الذهب اللحظي": "Live gold price",
   "تابع تحديث الأسعار لحظة بلحظة.": "Follow price updates second by second.",
@@ -202,7 +201,7 @@ export const en: Record<string, string> = {
   "سعر الذهب اليوم": "Today's gold price",
   "عرض الكل": "View all",
   خدماتنا: "Our services",
-  "حمّل تطبيق أورا": "Get the ORA app",
+  "حمّل تطبيق زاد جولد": "Get the Zad Gold app",
   "استثمارك في الذهب من جيبك": "Your gold investment, in your pocket",
   "اشترِ الذهب وبِعه وتابع أسعاره لحظة بلحظة، واستعرض المنتجات وأدر محفظتك من أي مكان — بنفس الأسعار والحسابات الموجودة على الموقع.":
     "Buy and sell gold, follow prices second by second, browse products and manage your wallet from anywhere — with the same prices and calculations as the website.",
@@ -216,12 +215,12 @@ export const en: Record<string, string> = {
   "توصيل آمن وسريع": "Fast, secure delivery",
 
   // من نحن
-  "من نحن | أورا للذهب والسبائك في مصر": "About us | ORA Gold & Bullion in Egypt",
-  "تعرّف على أورا للذهب: شركة متخصصة في بيع وشراء سبائك وعملات الذهب والفضة في مصر بشهادات أصل وأسعار شفافة.":
-    "Meet ORA Gold: a company specialised in buying and selling gold and silver bars and coins in Egypt, with certificates of authenticity and transparent pricing.",
-  "من نحن | أورا للذهب": "About us | ORA Gold",
-  "قصة أورا وقيمنا في الاستثمار الآمن في المعادن النفيسة.":
-    "ORA's story and our values around safe investing in precious metals.",
+  "من نحن | زاد جولد للذهب والسبائك في مصر": "About us | Zad Gold & Bullion in Egypt",
+  "تعرّف على زاد جولد: شركة متخصصة في بيع وشراء سبائك وعملات الذهب والفضة في مصر بشهادات أصل وأسعار شفافة.":
+    "Meet Zad Gold: a company specialised in buying and selling gold and silver bars and coins in Egypt, with certificates of authenticity and transparent pricing.",
+  "من نحن | زاد جولد": "About us | Zad Gold",
+  "قصة زاد جولد وقيمنا في الاستثمار الآمن في المعادن النفيسة.":
+    "Zad Gold's story and our values around safe investing in precious metals.",
   "كل قطعة مصحوبة بشهادة أصل ووزن معتمد.":
     "Every piece comes with a certificate of authenticity and a certified weight.",
   "شفافية السعر": "Price transparency",
@@ -232,21 +231,21 @@ export const en: Record<string, string> = {
     "We buy back what you bought from us at the best price in the market.",
   "توصيل مؤمّن": "Insured delivery",
   "شحن آمن ومؤمّن لكل محافظات مصر.": "Safe, insured shipping to every governorate in Egypt.",
-  "أورا للذهب والسبائك — بيت خبرة في المعادن النفيسة يجمع بين الأمان والشفافية وسهولة الاستثمار.":
-    "ORA Gold & Bullion — a house of expertise in precious metals combining safety, transparency and easy investing.",
-  "سبائك وعملات ذهب أورا": "ORA gold bars and coins",
+  "زاد جولد للذهب والسبائك — بيت خبرة في المعادن النفيسة يجمع بين الأمان والشفافية وسهولة الاستثمار.":
+    "Zad Gold & Bullion — a house of expertise in precious metals combining safety, transparency and easy investing.",
+  "سبائك وعملات ذهب زاد جولد": "Zad Gold bars and coins",
   "تصفح مجموعتنا": "Browse our collection",
 
   // الحساب
-  "حسابي | أورا للذهب": "My account | ORA Gold",
-  "إدارة بيانات حسابك في أورا للذهب.": "Manage your ORA Gold account details.",
+  "حسابي | زاد جولد": "My account | Zad Gold",
+  "إدارة بيانات حسابك في زاد جولد.": "Manage your Zad Gold account details.",
   "إدارة بيانات حسابك.": "Manage your account details.",
   "تعذر حفظ البيانات": "Couldn't save your details",
   "تم حفظ بياناتك": "Your details were saved",
   "تم تسجيل الخروج": "Signed out",
   "بياناتك محفوظة بأمان وتُستخدم لتسريع إتمام طلباتك.":
     "Your details are stored securely and used to speed up checkout.",
-  "عميل أورا": "ORA customer",
+  "عميل زاد جولد": "Zad Gold customer",
   "الاسم الكامل": "Full name",
   "رقم الموبايل": "Mobile number",
   "حفظ البيانات": "Save details",
@@ -266,10 +265,10 @@ export const en: Record<string, string> = {
   "تابع سلتك من هنا": "Check your cart here",
 
   // تسجيل الدخول وإنشاء الحساب
-  "تسجيل الدخول | أورا للذهب": "Sign in | ORA Gold",
-  "سجّل الدخول أو أنشئ حسابك في أورا للذهب لمتابعة طلباتك وحفظ بياناتك.":
-    "Sign in or create your ORA Gold account to track orders and save your details.",
-  "حسابك في أورا للذهب والسبائك.": "Your ORA Gold & Bullion account.",
+  "تسجيل الدخول | زاد جولد": "Sign in | Zad Gold",
+  "سجّل الدخول أو أنشئ حسابك في زاد جولد لمتابعة طلباتك وحفظ بياناتك.":
+    "Sign in or create your Zad Gold account to track orders and save your details.",
+  "حسابك في زاد جولد للذهب والسبائك.": "Your Zad Gold & Bullion account.",
   "اختر صورة": "Choose an image",
   "بيانات الحساب": "Account details",
   "توثيق الهوية": "Identity verification",
@@ -324,7 +323,7 @@ export const en: Record<string, string> = {
   "اكتب اسمك": "Enter your name",
   "الاسم طويل جدًا": "Name is too long",
   "الرمز 4 أرقام": "The code is 4 digits",
-  "حسابك في أورا": "Your ORA account",
+  "حسابك في زاد جولد": "Your Zad Gold account",
   "سجّل الدخول أو أنشئ حسابك خطوة بخطوة لمتابعة طلباتك وحفظ بياناتك بأمان.":
     "Sign in, or create your account step by step to track orders and store your details securely.",
   "تسجيل الدخول": "Sign in",
@@ -352,13 +351,13 @@ export const en: Record<string, string> = {
   "إنهاء التسجيل": "Finish sign-up",
 
   // الفروع
-  "فروع أورا للذهب في مصر | العناوين ومواعيد العمل":
-    "ORA Gold branches in Egypt | Addresses and opening hours",
-  "عناوين فروع أورا للذهب في الإسكندرية والقاهرة والجيزة والمنصورة، مع أرقام التواصل ومواعيد العمل.":
-    "Addresses of ORA Gold branches in Alexandria, Cairo, Giza and Mansoura, with contact numbers and opening hours.",
-  "فروعنا | أورا للذهب": "Branches | ORA Gold",
-  "فروع أورا في مصر: العناوين والمواعيد وأرقام التواصل.":
-    "ORA branches in Egypt: addresses, hours and contact numbers.",
+  "فروع زاد جولد في مصر | العناوين ومواعيد العمل":
+    "Zad Gold branches in Egypt | Addresses and opening hours",
+  "عناوين فروع زاد جولد في الإسكندرية والقاهرة والجيزة والمنصورة، مع أرقام التواصل ومواعيد العمل.":
+    "Addresses of Zad Gold branches in Alexandria, Cairo, Giza and Mansoura, with contact numbers and opening hours.",
+  "فروعنا | زاد جولد": "Branches | Zad Gold",
+  "فروع زاد جولد في مصر: العناوين والمواعيد وأرقام التواصل.":
+    "Zad Gold branches in Egypt: addresses, hours and contact numbers.",
   "زور أقرب فرع لك لشراء أو بيع الذهب والفضة، مع فحص فوري وشهادة أصل لكل قطعة.":
     "Visit your nearest branch to buy or sell gold and silver, with on-the-spot testing and a certificate of authenticity for every piece.",
   "الاتجاهات على الخريطة": "Directions on the map",
@@ -377,11 +376,11 @@ export const en: Record<string, string> = {
   "السبت – الخميس 10 ص – 9 م": "Saturday – Thursday 10am – 9pm",
 
   // حاسبة الميزانية
-  "حاسبة الميزانية | كم ذهب تشتري بميزانيتك؟ — أورا":
-    "Budget calculator | How much gold can your budget buy? — ORA",
+  "حاسبة الميزانية | كم ذهب تشتري بميزانيتك؟ — زاد جولد":
+    "Budget calculator | How much gold can your budget buy? — Zad Gold",
   "أدخل ميزانيتك واختر المعدن والعيار، وسنعرض لك بالسعر اللحظي كم جرامًا تشتري وأفضل المنتجات في حدود ميزانيتك.":
     "Enter your budget, pick the metal and karat, and we'll show you at the live price how many grams you can buy and the best products within your budget.",
-  "حاسبة الميزانية | أورا للذهب": "Budget calculator | ORA Gold",
+  "حاسبة الميزانية | زاد جولد": "Budget calculator | Zad Gold",
   "احسب كم ذهبًا أو فضة تشتري بميزانيتك بالسعر اللحظي.":
     "Work out how much gold or silver your budget buys at the live price.",
   "أدخل ميزانيتك واختر المعدن والعيار، وسنستخدم السعر المباشر المطابق لنعرض لك أفضل ما يمكنك شراؤه ضمن ميزانيتك.":
@@ -422,9 +421,9 @@ export const en: Record<string, string> = {
     "Prices shown are calculated from live metal prices and may change as the market updates. The final price can also differ by product, supplier, purity and applicable fees.",
 
   // السلة
-  "سلة الشراء | أورا للذهب": "Cart | ORA Gold",
-  "راجع سبائك وعملات الذهب في سلتك بأسعار لحظية قبل إتمام الطلب مع أورا.":
-    "Review the gold bars and coins in your cart at live prices before checking out with ORA.",
+  "سلة الشراء | زاد جولد": "Cart | Zad Gold",
+  "راجع سبائك وعملات الذهب في سلتك بأسعار لحظية قبل إتمام الطلب مع زاد جولد.":
+    "Review the gold bars and coins in your cart at live prices before checking out with Zad Gold.",
   "مراجعة السلة بأسعار الذهب اللحظية قبل الشراء.":
     "Review your cart at live gold prices before buying.",
   "الأسعار في السلة محدثة لحظيًا مع سعر الذهب، ويتم تثبيت السعر النهائي عند تأكيد الطلب.":
@@ -449,9 +448,9 @@ export const en: Record<string, string> = {
   "متابعة التسوق": "Continue shopping",
 
   // إتمام الطلب
-  "إتمام الطلب | أورا للذهب": "Checkout | ORA Gold",
-  "أكد طلبك لشراء الذهب بسعر لحظي مثبت مع أورا.":
-    "Confirm your gold order at a locked live price with ORA.",
+  "إتمام الطلب | زاد جولد": "Checkout | Zad Gold",
+  "أكد طلبك لشراء الذهب بسعر لحظي مثبت مع زاد جولد.":
+    "Confirm your gold order at a locked live price with Zad Gold.",
   "تأكيد طلب شراء الذهب بأسعار لحظية.": "Confirm your gold purchase at live prices.",
   "تحويل بنكي": "Bank transfer",
   "رصيد المحفظة": "Wallet balance",
@@ -467,7 +466,7 @@ export const en: Record<string, string> = {
     "Street, building number and floor — at least 10 characters.",
   "تعذر إتمام الطلب": "Couldn't place the order",
   "تم استلام طلبك": "We've received your order",
-  "شكرًا لثقتك في أورا.": "Thank you for trusting ORA.",
+  "شكرًا لثقتك في زاد جولد.": "Thank you for trusting Zad Gold.",
   "طلبك رقم": "Order",
   "عدد الطلبات": "Orders placed:",
   "تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم.":
@@ -498,10 +497,10 @@ export const en: Record<string, string> = {
   التوصيل: "Delivery",
 
   // المجموعة
-  "مجموعتنا | سبائك وعملات الذهب — أورا": "Our collection | Gold bars and coins — ORA",
-  "تصفح مجموعة أورا من سبائك الذهب والعملات الذهبية وسبائك الفضة بأسعار لحظية، مع فلاتر بالمعدن والفئة والوزن والمورّد.":
-    "Browse ORA's range of gold bars, gold coins and silver bars at live prices, with filters by metal, category, weight and supplier.",
-  "مجموعتنا | أورا للذهب": "Our collection | ORA Gold",
+  "مجموعتنا | سبائك وعملات الذهب — زاد جولد": "Our collection | Gold bars and coins — Zad Gold",
+  "تصفح مجموعة زاد جولد من سبائك الذهب والعملات الذهبية وسبائك الفضة بأسعار لحظية، مع فلاتر بالمعدن والفئة والوزن والمورّد.":
+    "Browse Zad Gold's range of gold bars, gold coins and silver bars at live prices, with filters by metal, category, weight and supplier.",
+  "مجموعتنا | زاد جولد": "Our collection | Zad Gold",
   "سبائك ذهب وعملات ذهبية وسبائك فضة بأسعار لحظية.":
     "Gold bars, gold coins and silver bars at live prices.",
   "الأكثر رواجًا": "Most popular",
@@ -534,10 +533,10 @@ export const en: Record<string, string> = {
   "مسح الفلاتر": "Clear filters",
 
   // اتصل بنا
-  "إتصل بنا | أورا للذهب": "Contact us | ORA Gold",
-  "تواصل مع خدمة عملاء أورا للذهب على الرقم الموحد 17608 أو عبر البريد الإلكتروني أو نموذج التواصل.":
-    "Reach ORA Gold customer service on 17608, by email, or through the contact form.",
-  "خدمة عملاء أورا للذهب.": "ORA Gold customer service.",
+  "إتصل بنا | زاد جولد": "Contact us | Zad Gold",
+  "تواصل مع خدمة عملاء زاد جولد على الرقم الموحد 17608 أو عبر البريد الإلكتروني أو نموذج التواصل.":
+    "Reach Zad Gold customer service on 17608, by email, or through the contact form.",
+  "خدمة عملاء زاد جولد.": "Zad Gold customer service.",
   "استفسار عن منتج": "Product enquiry",
   "مشكلة في طلب": "Problem with an order",
   "المحفظة والأرصدة": "Wallet and balances",
@@ -567,13 +566,13 @@ export const en: Record<string, string> = {
   "شاهد كل الفروع": "See all branches",
 
   // الأسئلة الشائعة
-  "الأسئلة الشائعة | مركز المساعدة — أورا للذهب": "FAQ | Help centre — ORA Gold",
+  "الأسئلة الشائعة | مركز المساعدة — زاد جولد": "FAQ | Help centre — Zad Gold",
   "إجابات على أكثر الأسئلة شيوعًا عن شراء الذهب، الأسعار، المحفظة، الإيداع، الطلبات وأمان الحساب.":
     "Answers to the most common questions about buying gold, prices, the wallet, deposits, orders and account security.",
-  "الأسئلة الشائعة | أورا للذهب": "FAQ | ORA Gold",
+  "الأسئلة الشائعة | زاد جولد": "FAQ | Zad Gold",
   "مركز المساعدة وإجابات أسئلتك.": "Help centre and answers to your questions.",
   "الحساب والتسجيل": "Account and sign-up",
-  "ما هو أورا للذهب؟": "What is ORA Gold?",
+  "ما هو زاد جولد؟": "What is Zad Gold?",
   "منصة مصرية لشراء سبائك وعملات الذهب والفضة المعتمدة، بأسعار مرتبطة بالسوق لحظة بلحظة، مع محفظة رقمية تتيح لك الادخار بالجرام.":
     "An Egyptian platform for buying certified gold and silver bars and coins at prices tied to the market second by second, with a digital wallet that lets you save by the gram.",
   "كيف أنشئ حساب؟": "How do I create an account?",
@@ -624,7 +623,7 @@ export const en: Record<string, string> = {
   "يمكنك إلغاء الطلب ما دام في حالة (قيد التنفيذ). بعد التنفيذ يتم التعامل معه كإرجاع من الفرع بسعر البيع اللحظي.":
     "You can cancel while the order is still Processing. After fulfilment it is handled as an in-branch return at the live sell price.",
   "البيع وإعادة الشراء": "Selling and buy-back",
-  "هل يمكنني بيع الذهب لأورا؟": "Can I sell gold to ORA?",
+  "هل يمكنني بيع الذهب لزاد جولد؟": "Can I sell gold to Zad Gold?",
   "نعم، نشتري منك المنتجات المادية في أي فرع خلال ساعات العمل. البيع من داخل المحفظة متوقف حاليًا.":
     "Yes — we buy physical products from you at any branch during business hours. Selling from inside the wallet is currently paused.",
   "على أي سعر يتم البيع؟": "Which price applies when selling?",
@@ -666,10 +665,10 @@ export const en: Record<string, string> = {
   "نعم، عبر شركات متخصصة في نقل المعادن النفيسة مع تأمين كامل على قيمة الشحنة.":
     "Yes — through couriers specialised in precious-metal transport, with full insurance on the shipment's value.",
   الأمان: "Security",
-  "هل استخدام أورا آمن؟": "Is ORA safe to use?",
+  "هل استخدام زاد جولد آمن؟": "Is Zad Gold safe to use?",
   "كل الاتصالات مشفّرة، وكلمات المرور مخزّنة بصيغة لا يمكن استرجاعها، وأرصدة المحفظة لا تتغير إلا عبر عمليات موثّقة مسجّلة في دفتر حركات.":
     "All traffic is encrypted, passwords are stored in an unrecoverable form, and wallet balances only change through documented operations recorded in a transaction ledger.",
-  "هل أشارك رمز التحقق OTP مع موظفي أورا؟": "Should I share my OTP with ORA staff?",
+  "هل أشارك رمز التحقق OTP مع موظفي زاد جولد؟": "Should I share my OTP with Zad Gold staff?",
   "لا، أبدًا. لن يطلب منك أي موظف رمز التحقق أو كلمة المرور. أي شخص يطلبها منتحل صفة.":
     "Never. No member of staff will ask for your OTP or password. Anyone who does is impersonating us.",
   "ماذا أفعل إذا وجدت معاملة لا أعرفها؟": "What if I see a transaction I don't recognise?",
@@ -682,9 +681,9 @@ export const en: Record<string, string> = {
   "استخدم كلمة مرور قوية غير مستخدمة في مواقع أخرى، ولا تشارك بيانات دخولك، وراجع سجل معاملاتك بانتظام.":
     "Use a strong password you don't reuse elsewhere, never share your sign-in details, and review your transaction log regularly.",
   الدعم: "Support",
-  "كيف أتواصل مع أورا؟": "How do I contact ORA?",
-  "على الرقم الموحد 17608 يوميًا خلال ساعات العمل، أو عبر support@ora-gold.com، أو من نموذج صفحة اتصل بنا.":
-    "On 17608 daily during business hours, at support@ora-gold.com, or through the form on the contact page.",
+  "كيف أتواصل مع زاد جولد؟": "How do I contact Zad Gold?",
+  "على الرقم الموحد 17608 يوميًا خلال ساعات العمل، أو عبر support@zadgold-gold.com، أو من نموذج صفحة اتصل بنا.":
+    "On 17608 daily during business hours, at support@zadgold-gold.com, or through the form on the contact page.",
   "ما البيانات المطلوبة عند التواصل؟": "What details should I have ready?",
   "رقم الطلب أو المعاملة، والبريد المسجّل بالحساب، ووصف مختصر للمشكلة. هذا يختصر وقت الرد كثيرًا.":
     "The order or transaction number, the email registered to the account, and a short description of the problem. It speeds up the reply a lot.",
@@ -702,10 +701,10 @@ export const en: Record<string, string> = {
     "Our customer service team is available daily during business hours on 17608.",
 
   // صفحات أسعار الذهب والفضة
-  "سعر الذهب اليوم لحظة بلحظة في مصر | أورا": "Today's live gold price in Egypt | ORA",
+  "سعر الذهب اليوم لحظة بلحظة في مصر | زاد جولد": "Today's live gold price in Egypt | Zad Gold",
   "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و22 و21 و18 وسعر الفضة والأوقية والدولار، بتحديث مباشر كل ثوانٍ.":
     "Today's live gold price in Egypt for 24K, 22K, 21K and 18K, plus silver, the ounce and the dollar, updated live every few seconds.",
-  "سعر الذهب اليوم لحظة بلحظة | أورا": "Today's live gold price | ORA",
+  "سعر الذهب اليوم لحظة بلحظة | زاد جولد": "Today's live gold price | Zad Gold",
   "أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.":
     "Live gold and silver prices in Egyptian pounds with a live update feed.",
   "سعر الجرام كما ينشره مكتب التسعير بالجنيه المصري، لعيار 21 وعيار 24، ويصلك لحظة تغيّره.":
@@ -713,10 +712,10 @@ export const en: Record<string, string> = {
   "الدولار / الجنيه": "USD / EGP",
   "أوقية الذهب (عيار 24)": "Gold ounce (24K)",
   "أوقية الفضة": "Silver ounce",
-  "سعر الفضة اليوم لحظة بلحظة في مصر | أورا": "Today's live silver price in Egypt | ORA",
+  "سعر الفضة اليوم لحظة بلحظة في مصر | زاد جولد": "Today's live silver price in Egypt | Zad Gold",
   "سعر الفضة اليوم في مصر لحظيًا للجرام والأوقية، بسعر شراء وسعر بيع معلنين وتحديث مباشر كل ثوانٍ.":
     "Today's live silver price in Egypt per gram and per ounce, with published buy and sell prices updated live every few seconds.",
-  "سعر الفضة اليوم لحظة بلحظة | أورا": "Today's live silver price | ORA",
+  "سعر الفضة اليوم لحظة بلحظة | زاد جولد": "Today's live silver price | Zad Gold",
   "أسعار الفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.":
     "Live silver prices in Egyptian pounds with a live update feed.",
   "سعر الفضة اليوم": "Today's silver price",
@@ -729,10 +728,10 @@ export const en: Record<string, string> = {
   "الفضة مدخل منخفض التكلفة للاستثمار في المعادن النفيسة: سعر الجرام أقل بكثير من الذهب، مما يتيح بدء الادخار بمبالغ صغيرة وتنويع المحفظة. في المقابل تكون تقلباتها السعرية أعلى من الذهب، ونسبة المصنعية على السبائك الصغيرة أكبر — لذلك تكون السبائك الأثقل أفضل من حيث التكلفة لكل جرام.":
     "Silver is a low-cost way into precious metals: the gram price is far below gold, so you can start saving with small amounts and diversify your portfolio. In return it is more volatile than gold, and fabrication fees on small bars are proportionally higher — which makes heavier bars better value per gram.",
   "تصفح سبائك الفضة": "Browse silver bars",
-  "سبائك الفضة وسعر الفضة اليوم | أورا": "Silver bars and today's silver price | ORA",
+  "سبائك الفضة وسعر الفضة اليوم | زاد جولد": "Silver bars and today's silver price | Zad Gold",
   "سبائك فضة 999 بأوزان مختلفة مع سعر الفضة اللحظي للجرام في مصر وشهادة أصل لكل سبيكة.":
     "999 silver bars in a range of weights with the live silver gram price in Egypt and a certificate of authenticity for every bar.",
-  "سبائك الفضة | أورا": "Silver bars | ORA",
+  "سبائك الفضة | زاد جولد": "Silver bars | Zad Gold",
   "سعر الفضة اللحظي وسبائك فضة 999 معتمدة.": "Live silver prices and certified 999 silver bars.",
   "سبائك فضة نقية 999 بأوزان متعددة، بسعر الجرام المنشور لحظة بلحظة.":
     "999 fine silver bars in a range of weights, at the published gram price, moment by moment.",
@@ -743,9 +742,9 @@ export const en: Record<string, string> = {
   "نشتري منك في أي وقت": "We buy back any time",
 
   // الطلبات
-  "طلباتي | أورا للذهب": "My orders | ORA Gold",
-  "تابع حالة طلباتك في أورا للذهب وتفاصيل كل طلب.":
-    "Track the status and details of your ORA Gold orders.",
+  "طلباتي | زاد جولد": "My orders | Zad Gold",
+  "تابع حالة طلباتك في زاد جولد وتفاصيل كل طلب.":
+    "Track the status and details of your Zad Gold orders.",
   "متابعة حالة الطلبات.": "Track your order status.",
   "قيد التنفيذ": "Processing",
   "تم التأكيد": "Confirmed",
@@ -763,10 +762,10 @@ export const en: Record<string, string> = {
   "إلغاء الطلب": "Cancel order",
 
   // طرق الدفع
-  "طرق الدفع | أورا للذهب": "Payment methods | ORA Gold",
+  "طرق الدفع | زاد جولد": "Payment methods | Zad Gold",
   "ادفع عبر InstaPay أو التحويل البنكي أو رصيد المحفظة أو نقدًا في الفرع — بدون رسوم خدمة.":
     "Pay by InstaPay, bank transfer, wallet balance or cash at a branch — with no service fees.",
-  "طرق الدفع المتاحة في أورا للذهب.": "Payment methods available at ORA Gold.",
+  "طرق الدفع المتاحة في زاد جولد.": "Payment methods available at Zad Gold.",
   "بدون رسوم": "No fees",
   فوري: "Instant",
   "حوّل من تطبيق بنكك مباشرة إلى عنوان الدفع الخاص بنا. أسرع وسيلة لتأكيد الطلب.":
@@ -831,10 +830,10 @@ export const en: Record<string, string> = {
   "منتجات ذات صلة": "Related products",
 
   // المحفظة
-  "محفظتي | أورا للذهب": "My wallet | ORA Gold",
+  "محفظتي | زاد جولد": "My wallet | Zad Gold",
   "رصيدك النقدي ورصيد الذهب بالجرام، مع شحن الرصيد والشراء بالسعر اللحظي.":
     "Your cash and gold balances by the gram, with top-ups and buying at the live price.",
-  "محفظة أورا للادخار في الذهب.": "The ORA wallet for saving in gold.",
+  "محفظة زاد جولد للادخار في الذهب.": "The Zad Gold wallet for saving in gold.",
   "شحن رصيد": "Top up",
   "اشحن الرصيد": "Top up balance",
   "سحب رصيد": "Withdraw",
@@ -878,10 +877,10 @@ export const en: Record<string, string> = {
   "أي فرع": "any branch",
 
   // الزكاة
-  "حساب زكاة الذهب والفضة | أورا": "Gold and silver zakat calculator | ORA",
+  "حساب زكاة الذهب والفضة | زاد جولد": "Gold and silver zakat calculator | Zad Gold",
   "احسب زكاة الذهب والفضة بدقة بناءً على أسعار السوق اللحظية في مصر مع نصاب الزكاة ونسبة 2.5%.":
     "Calculate zakat on gold and silver accurately from live market prices in Egypt, with the nisab threshold and the 2.5% rate.",
-  "حساب زكاة الذهب | أورا": "Gold zakat calculator | ORA",
+  "حساب زكاة الذهب | زاد جولد": "Gold zakat calculator | Zad Gold",
   "حاسبة زكاة الذهب والفضة بأسعار لحظية.": "A gold and silver zakat calculator at live prices.",
   "نصاب الزكاة 85 جرامًا من الذهب عيار 21، أو 595 جرامًا من الفضة لمن يملك فضة وحدها، ونسبتها 2.5% بعد مرور حَوْل هجري كامل — وفق ما تعتمده دار الإفتاء المصرية.":
     "The nisab is 85 grams of 21K gold, or 595 grams of silver for anyone holding silver alone, and the rate is 2.5% after a full lunar year \u2014 as adopted by Egypt's Dar al-Ifta.",
@@ -902,35 +901,35 @@ export const en: Record<string, string> = {
     "Jewellery worn in customary amounts, without extravagance, carries no zakat; zakat is due on what is saved or hoarded. This result is indicative and follows the fatwas of Egypt's Dar al-Ifta.",
 
   // صفحة الأخبار
-  "الأخبار المالية وتحليلات سوق الذهب | أورا": "Financial news and gold market analysis | ORA",
+  "الأخبار المالية وتحليلات سوق الذهب | زاد جولد": "Financial news and gold market analysis | Zad Gold",
   "تحليلات وأخبار عالمية ومحلية عن سوق الذهب والفضة في مصر والعالم، وتأثير السياسات النقدية على أسعار المعادن الثمينة.":
     "Global and local news and analysis on the gold and silver market in Egypt and worldwide, and how monetary policy moves precious-metal prices.",
-  "الأخبار المالية | أورا للذهب": "Financial news | ORA Gold",
+  "الأخبار المالية | زاد جولد": "Financial news | Zad Gold",
   "آخر أخبار وتحليلات سوق الذهب والفضة عالميًا ومحليًا.":
     "The latest gold and silver market news and analysis, globally and locally.",
 
   // السياسات
-  "سياسة الخصوصية | أورا للذهب": "Privacy policy | ORA Gold",
-  "كيف تجمع أورا للذهب بياناتك الشخصية وتستخدمها وتحميها.":
-    "How ORA Gold collects, uses and protects your personal data.",
+  "سياسة الخصوصية | زاد جولد": "Privacy policy | Zad Gold",
+  "كيف تجمع زاد جولد بياناتك الشخصية وتستخدمها وتحميها.":
+    "How Zad Gold collects, uses and protects your personal data.",
   "نوضح هنا البيانات التي نجمعها، وسبب جمعها، وكيف نحميها.":
     "Here we set out what data we collect, why we collect it and how we protect it.",
 
-  "سياسة الاسترجاع واسترداد الأموال | أورا للذهب": "Returns & refunds policy | ORA Gold",
-  "شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من أورا للذهب.":
-    "The terms and timeframes for returning gold bars and coins and getting refunds from ORA Gold.",
+  "سياسة الاسترجاع واسترداد الأموال | زاد جولد": "Returns & refunds policy | Zad Gold",
+  "شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من زاد جولد.":
+    "The terms and timeframes for returning gold bars and coins and getting refunds from Zad Gold.",
   "نشتري منك ذهبك في أي وقت، وهذه هي شروط الاسترجاع والاسترداد.":
     "We buy your gold back any time — these are the return and refund terms.",
 
-  "سياسة الشحن والتوصيل | أورا للذهب": "Shipping & delivery policy | ORA Gold",
-  "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من أورا لكل محافظات مصر.":
-    "Timings, fees and terms for shipping and delivering ORA gold bars and coins to every governorate in Egypt.",
+  "سياسة الشحن والتوصيل | زاد جولد": "Shipping & delivery policy | Zad Gold",
+  "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من زاد جولد لكل محافظات مصر.":
+    "Timings, fees and terms for shipping and delivering Zad Gold bars and coins to every governorate in Egypt.",
   "توصيل مؤمّن بالكامل لكل محافظات مصر، أو استلام من أي فرع.":
     "Fully insured delivery to every governorate in Egypt, or pickup from any branch.",
 
-  "الشروط والأحكام | أورا للذهب": "Terms & conditions | ORA Gold",
-  "الشروط والأحكام الخاصة باستخدام موقع أورا للذهب وشراء وبيع السبائك والعملات.":
-    "The terms and conditions for using the ORA Gold site and buying and selling bars and coins.",
+  "الشروط والأحكام | زاد جولد": "Terms & conditions | Zad Gold",
+  "الشروط والأحكام الخاصة باستخدام موقع زاد جولد وشراء وبيع السبائك والعملات.":
+    "The terms and conditions for using the Zad Gold site and buying and selling bars and coins.",
   "اقرأ الشروط بعناية قبل استخدام الموقع أو تنفيذ أي عملية شراء أو بيع.":
     "Read the terms carefully before using the site or making any purchase or sale.",
 
@@ -966,11 +965,11 @@ export const en: Record<string, string> = {
 
   // المنتجات
   "سبيكة ذهب 0.25 جرام": "0.25g Gold Bar",
-  "سبيكة ذهب خالص عيار 24 بوزن 0.25 جرام من أورا، مختومة من مصلحة الدمغة والموازين ومغلّفة في عبوة مؤمّنة ضد العبث. السعر مرتبط بسعر الذهب اللحظي في السوق المصري، ويمكنك استرداد حتى 50% من المصنعية عند إعادة البيع بشرط بقاء العبوة الأصلية.":
-    "A 0.25g pure 24K gold bar from ORA, hallmarked by the Egyptian Assay and Weights Authority and sealed in tamper-evident packaging. The price tracks the live gold price in the Egyptian market, and you can recover up to 50% of the fabrication fee on buy-back as long as the original packaging is intact.",
+  "سبيكة ذهب خالص عيار 24 بوزن 0.25 جرام من زاد جولد، مختومة من مصلحة الدمغة والموازين ومغلّفة في عبوة مؤمّنة ضد العبث. السعر مرتبط بسعر الذهب اللحظي في السوق المصري، ويمكنك استرداد حتى 50% من المصنعية عند إعادة البيع بشرط بقاء العبوة الأصلية.":
+    "A 0.25g pure 24K gold bar from Zad Gold, hallmarked by the Egyptian Assay and Weights Authority and sealed in tamper-evident packaging. The price tracks the live gold price in the Egyptian market, and you can recover up to 50% of the fabrication fee on buy-back as long as the original packaging is intact.",
   "سبيكة ذهب 0.5 جرام": "0.5g Gold Bar",
-  "سبيكة ذهب خالص عيار 24 بوزن 0.5 جرام من أورا، مختومة من مصلحة الدمغة والموازين ومغلّفة في عبوة مؤمّنة ضد العبث. السعر مرتبط بسعر الذهب اللحظي في السوق المصري، ويمكنك استرداد حتى 50% من المصنعية عند إعادة البيع بشرط بقاء العبوة الأصلية.":
-    "A 0.5g pure 24K gold bar from ORA, hallmarked by the Egyptian Assay and Weights Authority and sealed in tamper-evident packaging. The price tracks the live gold price in the Egyptian market, and you can recover up to 50% of the fabrication fee on buy-back as long as the original packaging is intact.",
+  "سبيكة ذهب خالص عيار 24 بوزن 0.5 جرام من زاد جولد، مختومة من مصلحة الدمغة والموازين ومغلّفة في عبوة مؤمّنة ضد العبث. السعر مرتبط بسعر الذهب اللحظي في السوق المصري، ويمكنك استرداد حتى 50% من المصنعية عند إعادة البيع بشرط بقاء العبوة الأصلية.":
+    "A 0.5g pure 24K gold bar from Zad Gold, hallmarked by the Egyptian Assay and Weights Authority and sealed in tamper-evident packaging. The price tracks the live gold price in the Egyptian market, and you can recover up to 50% of the fabrication fee on buy-back as long as the original packaging is intact.",
   "سبيكة ذهب 1 جرام": "1g Gold Bar",
   "سبيكة ذهب خالص عيار 24 بوزن 1 جرام من سام، مختومة من مصلحة الدمغة والموازين ومغلّفة في عبوة مؤمّنة ضد العبث. السعر مرتبط بسعر الذهب اللحظي في السوق المصري، ويمكنك استرداد حتى 50% من المصنعية عند إعادة البيع بشرط بقاء العبوة الأصلية.":
     "A 1g pure 24K gold bar from Sam, hallmarked by the Egyptian Assay and Weights Authority and sealed in tamper-evident packaging. The price tracks the live gold price in the Egyptian market, and you can recover up to 50% of the fabrication fee on buy-back as long as the original packaging is intact.",
@@ -1001,12 +1000,12 @@ export const en: Record<string, string> = {
   "نصف جنيه ذهب": "Half Gold Sovereign",
   "نصف جنيه ذهب عيار 22 بوزن 4 جرام، من أكثر العملات الذهبية تداولًا في السوق المصري وأسرعها في إعادة البيع. مرفق معها شهادة أصل وعبوة محكمة الغلق.":
     "A Half Gold Sovereign, 22K, weighing 4g — one of the most actively traded gold coins in the Egyptian market and among the quickest to resell. Supplied with a certificate of authenticity in sealed packaging.",
-  "عملة ذهب أورا": "ORA Gold Coin",
-  "عملة ذهب أورا عيار 24 بوزن 8 جرام، من أكثر العملات الذهبية تداولًا في السوق المصري وأسرعها في إعادة البيع. مرفق معها شهادة أصل وعبوة محكمة الغلق.":
-    "A ORA Gold Coin, 24K, weighing 8g — one of the most actively traded gold coins in the Egyptian market and among the quickest to resell. Supplied with a certificate of authenticity in sealed packaging.",
-  "عملة ذهب أورا 4 جرام": "ORA Gold Coin 4g",
-  "عملة ذهب أورا 4 جرام عيار 24 بوزن 4 جرام، من أكثر العملات الذهبية تداولًا في السوق المصري وأسرعها في إعادة البيع. مرفق معها شهادة أصل وعبوة محكمة الغلق.":
-    "A ORA Gold Coin 4g, 24K, weighing 4g — one of the most actively traded gold coins in the Egyptian market and among the quickest to resell. Supplied with a certificate of authenticity in sealed packaging.",
+  "عملة ذهب زاد جولد": "Zad Gold Coin",
+  "عملة ذهب زاد جولد عيار 24 بوزن 8 جرام، من أكثر العملات الذهبية تداولًا في السوق المصري وأسرعها في إعادة البيع. مرفق معها شهادة أصل وعبوة محكمة الغلق.":
+    "A Zad Gold Gold Coin, 24K, weighing 8g — one of the most actively traded gold coins in the Egyptian market and among the quickest to resell. Supplied with a certificate of authenticity in sealed packaging.",
+  "عملة ذهب زاد جولد 4 جرام": "Zad Gold Coin 4g",
+  "عملة ذهب زاد جولد 4 جرام عيار 24 بوزن 4 جرام، من أكثر العملات الذهبية تداولًا في السوق المصري وأسرعها في إعادة البيع. مرفق معها شهادة أصل وعبوة محكمة الغلق.":
+    "A Zad Gold Gold Coin 4g, 24K, weighing 4g — one of the most actively traded gold coins in the Egyptian market and among the quickest to resell. Supplied with a certificate of authenticity in sealed packaging.",
   "طقم ذهب كلاسيك": "Classic Gold Set",
   "طقم ذهب كلاسيك عيار 21 بوزن 12 جرام، مدموغ بمصلحة الدمغة والموازين ومرفق معه فاتورة ضريبية معتمدة وشهادة ضمان.":
     "A Classic Gold Set, 21K, weighing 12g — hallmarked by the Egyptian Assay and Weights Authority and supplied with an approved tax invoice and a warranty certificate.",
@@ -1052,10 +1051,10 @@ export const en: Record<string, string> = {
   أسبوعي: "Weekly",
   "ربع سنوي": "Quarterly",
   سنوي: "Annual",
-  "تقارير سوق الذهب والفضة | أورا": "Gold and silver market reports | Ora",
+  "تقارير سوق الذهب والفضة | زاد جولد": "Gold and silver market reports | Zad Gold",
   "تقارير دورية أسبوعية وشهرية وسنوية عن أداء الذهب والفضة في مصر والعالم، مع أرقام الطلب والعرض وحركة الأسعار.":
     "Weekly, monthly and annual reports on gold and silver performance in Egypt and worldwide, with supply, demand and price data.",
-  "التقارير | أورا للذهب": "Reports | Ora Gold",
+  "التقارير | زاد جولد": "Reports | Zad Gold",
   "تقارير دورية عن أداء سوق الذهب والفضة محليًا وعالميًا.":
     "Regular reports on the performance of the gold and silver market locally and globally.",
   "تقارير دورية عن أداء سوق الذهب والفضة محليًا وعالميًا، بأرقام ومؤشرات تساعدك على قراءة السوق قبل قرار الشراء أو البيع.":
@@ -1063,7 +1062,7 @@ export const en: Record<string, string> = {
   "لا توجد تقارير منشورة حاليًا. تابعنا قريبًا.": "No reports published yet. Check back soon.",
   // ممتلكاتي
   ممتلكاتي: "My Holdings",
-  "ممتلكاتي | أورا للذهب": "My Holdings | Ora Gold",
+  "ممتلكاتي | زاد جولد": "My Holdings | Zad Gold",
   "سجّل ما تملكه من ذهب وفضة وتابع قيمته الحالية وأرباحه بالسعر اللحظي.":
     "Log the gold and silver you own and track its current value and gains at live prices.",
   "تقييم لحظي لما تملكه من ذهب وفضة.": "Live valuation of the gold and silver you own.",
@@ -1079,10 +1078,10 @@ export const en: Record<string, string> = {
   "لا عناصر في هذا التصنيف.": "No items in this category.",
   "القيمة الحالية": "Current value",
   "السعر الحالي": "Current price",
-  "القطع التي اشتريتها من أورا ولم تُلغَ أوامرها، بسعر شرائها وسعرها الحالي بسعر إعادة البيع اللحظي.":
-    "The pieces you bought from ORA whose orders were not cancelled, with what you paid and what they are worth now at the live resale price.",
-  "لا تملك قطعًا بعد — كل قطعة تشتريها من أورا تظهر هنا فور تأكيد طلبها.":
-    "You don't own any pieces yet — every piece you buy from ORA shows up here as soon as its order is confirmed.",
+  "القطع التي اشتريتها من زاد جولد ولم تُلغَ أوامرها، بسعر شرائها وسعرها الحالي بسعر إعادة البيع اللحظي.":
+    "The pieces you bought from Zad Gold whose orders were not cancelled, with what you paid and what they are worth now at the live resale price.",
+  "لا تملك قطعًا بعد — كل قطعة تشتريها من زاد جولد تظهر هنا فور تأكيد طلبها.":
+    "You don't own any pieces yet — every piece you buy from Zad Gold shows up here as soon as its order is confirmed.",
   "إضافة قطعة": "Add a piece",
   الاسم: "Name",
   "النوع والعيار": "Type and karat",

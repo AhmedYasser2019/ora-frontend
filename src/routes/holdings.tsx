@@ -12,12 +12,12 @@ import { useAuth } from "@/lib/use-auth";
 export const Route = createFileRoute("/holdings")({
   head: () => ({
     meta: [
-      { title: tr("ممتلكاتي | أورا للذهب") },
+      { title: tr("ممتلكاتي | زاد جولد") },
       {
         name: "description",
-        content: tr("القطع التي اشتريتها من أورا، بتكلفتها وقيمتها الحالية بسعر البيع اللحظي."),
+        content: tr("القطع التي اشتريتها من زاد جولد، بتكلفتها وقيمتها الحالية بسعر البيع اللحظي."),
       },
-      { property: "og:title", content: tr("ممتلكاتي | أورا للذهب") },
+      { property: "og:title", content: tr("ممتلكاتي | زاد جولد") },
       { property: "og:description", content: tr("تقييم لحظي لما تملكه من ذهب وفضة.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -68,7 +68,7 @@ function HoldingsPage() {
   return (
     <PageShell
       title="ممتلكاتي"
-      subtitle="القطع التي اشتريتها من أورا ولم تُلغَ أوامرها، بسعر شرائها وسعرها الحالي بسعر إعادة البيع اللحظي."
+      subtitle="القطع التي اشتريتها من زاد جولد ولم تُلغَ أوامرها، بسعر شرائها وسعرها الحالي بسعر إعادة البيع اللحظي."
     >
       <div className="space-y-6">
         <div className="rounded-2xl border border-gold/40 bg-gradient-green p-6 text-primary-foreground">
@@ -163,7 +163,7 @@ function HoldingsPage() {
             <p className="mt-4 text-sm text-muted-foreground">
               {t(
                 items.length === 0
-                  ? "لا تملك قطعًا بعد — كل قطعة تشتريها من أورا تظهر هنا فور تأكيد طلبها."
+                  ? "لا تملك قطعًا بعد — كل قطعة تشتريها من زاد جولد تظهر هنا فور تأكيد طلبها."
                   : "لا عناصر في هذا التصنيف.",
               )}
             </p>

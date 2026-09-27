@@ -23,13 +23,13 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/wallet")({
   head: () => ({
     meta: [
-      { title: tr("محفظتي | أورا للذهب") },
+      { title: tr("محفظتي | زاد جولد") },
       {
         name: "description",
         content: tr("رصيدك النقدي ورصيد الذهب بالجرام، مع شحن الرصيد والشراء بالسعر اللحظي."),
       },
-      { property: "og:title", content: tr("محفظتي | أورا للذهب") },
-      { property: "og:description", content: tr("محفظة أورا للادخار في الذهب.") },
+      { property: "og:title", content: tr("محفظتي | زاد جولد") },
+      { property: "og:description", content: tr("محفظة زاد جولد للادخار في الذهب.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

@@ -13,7 +13,7 @@ export function SiteFooter() {
     <footer className="bg-gradient-green text-primary-foreground">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-3xl tracking-[0.25em] text-gold">ORA</p>
+          <p className="font-display text-3xl tracking-[0.25em] text-gold">ZAD</p>
           <p className="mt-1 text-[10px] tracking-[0.35em] text-gold/70">GOLD JEWELRY</p>
           {settings?.general.tagline && (
             <p className="mt-4 text-sm text-primary-foreground/75">{settings.general.tagline}</p>
@@ -67,7 +67,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-primary-foreground/10 py-4 text-center text-xs text-primary-foreground/60">
-        {t("جميع الحقوق محفوظة © أورا للذهب 2026")}
+        {t("جميع الحقوق محفوظة © زاد جولد 2026")}
       </div>
     </footer>
   );

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/reports_/$id")({
   head: ({ loaderData }) => {
     const r = loaderData?.report;
     if (!r) return {};
-    const title = `${r.title} | ${tr("أورا للذهب")}`;
+    const title = `${r.title} | ${tr("زاد جولد")}`;
     return {
       meta: [
         { title },

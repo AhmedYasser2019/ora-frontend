@@ -18,7 +18,7 @@ export const Route = createFileRoute("/news_/$id")({
   head: ({ loaderData }) => {
     const a = loaderData?.article;
     if (!a) return {};
-    const title = `${a.title} | ${tr("أورا للذهب")}`;
+    const title = `${a.title} | ${tr("زاد جولد")}`;
     return {
       meta: [
         { title },

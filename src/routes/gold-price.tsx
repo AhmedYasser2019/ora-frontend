@@ -13,14 +13,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/gold-price")({
   head: () => ({
     meta: [
-      { title: tr("سعر الذهب اليوم لحظة بلحظة في مصر | أورا") },
+      { title: tr("سعر الذهب اليوم لحظة بلحظة في مصر | زاد جولد") },
       {
         name: "description",
         content: tr(
           "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و22 و21 و18 وسعر الفضة والأوقية والدولار، بتحديث مباشر كل ثوانٍ.",
         ),
       },
-      { property: "og:title", content: tr("سعر الذهب اليوم لحظة بلحظة | أورا") },
+      { property: "og:title", content: tr("سعر الذهب اليوم لحظة بلحظة | زاد جولد") },
       {
         property: "og:description",
         content: tr("أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات."),

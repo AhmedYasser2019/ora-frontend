@@ -13,14 +13,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/silver-price")({
   head: () => ({
     meta: [
-      { title: tr("سعر الفضة اليوم لحظة بلحظة في مصر | أورا") },
+      { title: tr("سعر الفضة اليوم لحظة بلحظة في مصر | زاد جولد") },
       {
         name: "description",
         content: tr(
           "سعر الفضة اليوم في مصر لحظيًا للجرام والأوقية، بسعر شراء وسعر بيع معلنين وتحديث مباشر كل ثوانٍ.",
         ),
       },
-      { property: "og:title", content: tr("سعر الفضة اليوم لحظة بلحظة | أورا") },
+      { property: "og:title", content: tr("سعر الفضة اليوم لحظة بلحظة | زاد جولد") },
       {
         property: "og:description",
         content: tr("أسعار الفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات."),

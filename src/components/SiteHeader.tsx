@@ -53,7 +53,7 @@ export function SiteHeader() {
             </button>
             <Link to="/" className="text-center">
               <p className="font-display text-3xl leading-none tracking-[0.25em] text-primary">
-                ORA
+                ZAD
               </p>
               <p className="mt-1 text-[10px] tracking-[0.35em] text-gold-deep">GOLD JEWELRY</p>
             </Link>

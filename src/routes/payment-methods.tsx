@@ -12,15 +12,15 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/payment-methods")({
   head: () => ({
     meta: [
-      { title: tr("طرق الدفع | أورا للذهب") },
+      { title: tr("طرق الدفع | زاد جولد") },
       {
         name: "description",
         content: tr(
           "ادفع عبر InstaPay أو التحويل البنكي أو رصيد المحفظة أو نقدًا في الفرع — بدون رسوم خدمة.",
         ),
       },
-      { property: "og:title", content: tr("طرق الدفع | أورا للذهب") },
-      { property: "og:description", content: tr("طرق الدفع المتاحة في أورا للذهب.") },
+      { property: "og:title", content: tr("طرق الدفع | زاد جولد") },
+      { property: "og:description", content: tr("طرق الدفع المتاحة في زاد جولد.") },
     ],
   }),
   component: PaymentMethodsPage,

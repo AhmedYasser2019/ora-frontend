@@ -6,10 +6,10 @@ import { en } from "./i18n.en";
 
 export type Lang = "ar" | "en";
 
-const COOKIE = "ora-lang";
+const COOKIE = "zadgold-lang";
 
 const parse = (raw: string | null | undefined): Lang =>
-  raw && /(?:^|;\s*)ora-lang=en(?:;|$)/.test(raw) ? "en" : "ar";
+  raw && /(?:^|;\s*)zadgold-lang=en(?:;|$)/.test(raw) ? "en" : "ar";
 
 /** يقرأ اللغة من الكوكي على السيرفر والكلاينت، فلا يحدث اختلاف بين SSR والهيدريشن. */
 export const readLang = createIsomorphicFn()

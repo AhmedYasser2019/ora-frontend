@@ -13,14 +13,14 @@ import { tr } from "@/lib/i18n";
 export const Route = createFileRoute("/silver")({
   head: () => ({
     meta: [
-      { title: tr("سبائك الفضة وسعر الفضة اليوم | أورا") },
+      { title: tr("سبائك الفضة وسعر الفضة اليوم | زاد جولد") },
       {
         name: "description",
         content: tr(
           "سبائك فضة 999 بأوزان مختلفة مع سعر الفضة اللحظي للجرام في مصر وشهادة أصل لكل سبيكة.",
         ),
       },
-      { property: "og:title", content: tr("سبائك الفضة | أورا") },
+      { property: "og:title", content: tr("سبائك الفضة | زاد جولد") },
       { property: "og:description", content: tr("سعر الفضة اللحظي وسبائك فضة 999 معتمدة.") },
     ],
   }),
