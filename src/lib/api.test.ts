@@ -7,7 +7,10 @@ assert.deepEqual(fieldErrors({ msg: "…", data: { phone: ["رقم غير صحي
 });
 
 // رفض تجاري: `data` فيه سبب نصّي لا خريطة حقول، فلا يُقرأ كخطأ حقل.
-assert.deepEqual(fieldErrors({ msg: "مرفوض", data: { reason: "zadgold.order.rejected.halted" } }), {});
+assert.deepEqual(
+  fieldErrors({ msg: "مرفوض", data: { reason: "zadgold.order.rejected.halted" } }),
+  {},
+);
 
 // `errors` لو عاد الغلاف يومًا لوضعها هناك.
 assert.deepEqual(fieldErrors({ msg: "", errors: { email: ["مستخدم"] } }), { email: ["مستخدم"] });

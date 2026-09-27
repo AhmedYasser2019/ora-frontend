@@ -901,7 +901,8 @@ export const en: Record<string, string> = {
     "Jewellery worn in customary amounts, without extravagance, carries no zakat; zakat is due on what is saved or hoarded. This result is indicative and follows the fatwas of Egypt's Dar al-Ifta.",
 
   // صفحة الأخبار
-  "الأخبار المالية وتحليلات سوق الذهب | زاد جولد": "Financial news and gold market analysis | Zad Gold",
+  "الأخبار المالية وتحليلات سوق الذهب | زاد جولد":
+    "Financial news and gold market analysis | Zad Gold",
   "تحليلات وأخبار عالمية ومحلية عن سوق الذهب والفضة في مصر والعالم، وتأثير السياسات النقدية على أسعار المعادن الثمينة.":
     "Global and local news and analysis on the gold and silver market in Egypt and worldwide, and how monetary policy moves precious-metal prices.",
   "الأخبار المالية | زاد جولد": "Financial news | Zad Gold",
