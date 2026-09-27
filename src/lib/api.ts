@@ -64,6 +64,15 @@ export const leaveDemo = () => {
   setToken(real);
 };
 
+/** ديمو مفتوح من حساب حقيقي له طريق رجوع؛ حساب ديمو مستقل لا. */
+export const hasRealToken = () => {
+  try {
+    return !!localStorage.getItem(REAL_TOKEN_KEY);
+  } catch {
+    return false;
+  }
+};
+
 export class ApiError extends Error {
   constructor(
     public status: number,
