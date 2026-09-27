@@ -682,8 +682,8 @@ export const en: Record<string, string> = {
     "Use a strong password you don't reuse elsewhere, never share your sign-in details, and review your transaction log regularly.",
   الدعم: "Support",
   "كيف أتواصل مع زاد جولد؟": "How do I contact Zad Gold?",
-  "على الرقم الموحد 17608 يوميًا خلال ساعات العمل، أو عبر support@zadgold-gold.com، أو من نموذج صفحة اتصل بنا.":
-    "On 17608 daily during business hours, at support@zadgold-gold.com, or through the form on the contact page.",
+  "على الرقم الموحد 17608 يوميًا خلال ساعات العمل، أو عبر support@zadgold.com، أو من نموذج صفحة اتصل بنا.":
+    "On 17608 daily during business hours, at support@zadgold.com, or through the form on the contact page.",
   "ما البيانات المطلوبة عند التواصل؟": "What details should I have ready?",
   "رقم الطلب أو المعاملة، والبريد المسجّل بالحساب، ووصف مختصر للمشكلة. هذا يختصر وقت الرد كثيرًا.":
     "The order or transaction number, the email registered to the account, and a short description of the problem. It speeds up the reply a lot.",
