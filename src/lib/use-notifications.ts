@@ -41,6 +41,8 @@ export function useNotifications() {
     queryFn: () => api<Page>("/notifications"),
     enabled: !!user,
     staleTime: 30_000,
+    // بديل لو Reverb واقع أو مش متظبط: العدّاد على الجرس ميفضلش قديم.
+    refetchInterval: 60_000,
   });
 
   useEffect(() => {
