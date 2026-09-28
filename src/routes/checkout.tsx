@@ -56,9 +56,10 @@ function CheckoutPage() {
   const t = useT();
   const branches = useSiteSettings()?.branches ?? [];
 
+  // null = لم يلمسه الزائر بعد، فيُعرض ما في حسابه. تفريغ الحقل عمدًا يبقى فارغًا.
   const [form, setForm] = useState({
-    name: "",
-    phone: "",
+    name: null as string | null,
+    phone: null as string | null,
     fulfilment: "delivery" as "delivery" | "pickup",
     governorate: GOVERNORATES[0] as string,
     address: "",
@@ -78,6 +79,8 @@ function CheckoutPage() {
    * الزائر بنفسه يكون الفرع الأول هو المعروض، وهو نفسه ما يُرسَل.
    */
   const branch = form.branch || branches[0]?.name || "";
+  const name = form.name ?? user?.name ?? "";
+  const phone = form.phone ?? user?.phone ?? "";
 
   // سعر الخادم فقط، وهو تقديري للعرض: السعر المُلزِم هو الذي يثبّته العرض عند التأكيد.
   const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
@@ -90,7 +93,7 @@ function CheckoutPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (!form.name.trim() || !/^01\d{9}$/.test(form.phone.trim())) {
+    if (!name.trim() || !/^01\d{9}$/.test(phone.trim())) {
       toast.error(t("راجع البيانات"), {
         description: t("أدخل الاسم ورقم موبايل مصري صحيح (01xxxxxxxxx)."),
       });
@@ -114,8 +117,8 @@ function CheckoutPage() {
     try {
       const orders = await placeOrder(items, {
         fulfilment: form.fulfilment,
-        contact_name: form.name.trim(),
-        contact_phone: form.phone.trim(),
+        contact_name: name.trim(),
+        contact_phone: phone.trim(),
         payment_method: form.payment,
         // المفاتيح غير المعنيّة تُحذف ولا تُرسل فارغة — الخادم يتحقق من وجودها لا من قيمتها.
         ...(form.fulfilment === "delivery"
@@ -224,7 +227,8 @@ function CheckoutPage() {
                 <input
                   id="name"
                   className={input}
-                  value={form.name}
+                  value={name}
+                  autoComplete="name"
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder={t("مثال: أحمد محمد")}
                   required
@@ -238,7 +242,8 @@ function CheckoutPage() {
                   id="phone"
                   dir="ltr"
                   className={input}
-                  value={form.phone}
+                  value={phone}
+                  autoComplete="tel"
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder="01xxxxxxxxx"
                   inputMode="numeric"
