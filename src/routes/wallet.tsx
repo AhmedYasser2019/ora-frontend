@@ -249,6 +249,16 @@ function WalletPage() {
                 <p className="mt-3 font-display text-2xl text-primary">
                   {egp(cash)} {t("ج.م")}
                 </p>
+                {/* تقدير للعرض فقط من السعر الحي، فيتغيّر مع كل سعر ينشره المكتب. الشراء نفسه بعرض سعر من الخادم. */}
+                {cash > 0 &&
+                  ([21, 24] as const).map((k) => {
+                    const price = prices?.gram[`k${k}`] ?? 0;
+                    return price > 0 ? (
+                      <p key={k} className="mt-1 text-xs text-muted-foreground">
+                        ≈ {grams(cash / price)} {t("جرام")} {t(`عيار ${k}`)}
+                      </p>
+                    ) : null;
+                  })}
               </div>
               <div className="rounded-2xl border border-border bg-card p-5">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground">
