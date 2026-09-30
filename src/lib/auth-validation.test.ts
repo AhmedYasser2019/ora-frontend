@@ -3,8 +3,6 @@ import { latin, schemas } from "./auth-validation";
 
 // أرقام عربية تُقبل وتُرسل لاتينية.
 assert.equal(latin(" ٠١٠١٢٣٤٥٦٧٨ "), "01012345678");
-assert.deepEqual(schemas.resetPhone.parse({ phone: "٠١٠١٢٣٤٥٦٧٨" }), { phone: "01012345678" });
-assert.equal(schemas.resetPhone.safeParse({ phone: "0101234567" }).success, false);
 
 const ok = {
   name: "أحمد",
@@ -13,6 +11,10 @@ const ok = {
   password: "12345678",
   confirm: "12345678",
 };
+assert.equal(schemas.signup.parse({ ...ok, phone: "٠١٠١٢٣٤٥٦٧٨" }).phone, "01012345678");
+assert.equal(schemas.signup.safeParse({ ...ok, phone: "0101234567" }).success, false);
+assert.deepEqual(schemas.resetEmail.parse({ email: " a@b.co " }), { email: "a@b.co" });
+assert.equal(schemas.resetEmail.safeParse({ email: "a@" }).success, false);
 assert.equal(schemas.signup.safeParse(ok).success, true);
 assert.equal(schemas.demo.safeParse({ ...ok, phone: undefined }).success, true);
 

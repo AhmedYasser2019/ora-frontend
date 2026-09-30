@@ -220,16 +220,13 @@ function StepRail({ step }: { step: number }) {
   );
 }
 
-/**
- * نسيت كلمة المرور: رقم الموبايل ← الرمز ← كلمة مرور جديدة. ولحد ما بوابة SMS تتظبط الرمز
- * في لوج الخادم فقط.
- */
+/** نسيت كلمة المرور: البريد الإلكتروني ← الرمز اللي وصل عليه ← كلمة مرور جديدة. */
 function ForgotPassword({ onDone }: { onDone: () => void }) {
   const t = useT();
-  const [step, setStep] = useState<"phone" | "code" | "password">("phone");
+  const [step, setStep] = useState<"email" | "code" | "password">("email");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
-  const [phoneNo, setPhoneNo] = useState("");
+  const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [resetToken, setResetToken] = useState("");
   const [password, setPassword] = useState("");
@@ -247,7 +244,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
       await fn();
     } catch (err) {
       setErrors(fromServer(err));
-      if (err instanceof ApiError && err.errors["reset_token"]) setStep("phone");
+      if (err instanceof ApiError && err.errors["reset_token"]) setStep("email");
       toast.error(err instanceof ApiError ? err.firstMessage : t("حاول مرة أخرى"));
     } finally {
       setBusy(false);
@@ -256,18 +253,14 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
 
   const send = (e: React.FormEvent) => {
     e.preventDefault();
-    const v = check(schemas.resetPhone, { phone: phoneNo }, setErrors);
+    const v = check(schemas.resetEmail, { email }, setErrors);
     if (!v) return;
-    setPhoneNo(v.phone);
+    setEmail(v.email);
     run(async () => {
-      // `code` بيرجع من الخادم في وضع debug بس — للتجربة.
-      const res = await api<{ code?: string }>("/auth/otp", {
-        method: "POST",
-        body: { phone: v.phone },
-      });
-      setCode(res.code ?? "");
+      await api("/auth/otp", { method: "POST", body: { email: v.email } });
+      setCode("");
       setStep("code");
-      toast.success(t("لو الرقم مسجَّل هيوصلك رمز التحقق"));
+      toast.success(t("بعتنالك رمز التحقق على بريدك الإلكتروني"));
     });
   };
 
@@ -278,7 +271,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
     run(async () => {
       const { reset_token } = await api<{ reset_token: string }>("/auth/otp/verify", {
         method: "POST",
-        body: { phone: phoneNo, code: v.code },
+        body: { email, code: v.code },
       });
       setResetToken(reset_token);
       setStep("password");
@@ -293,7 +286,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
       await api("/auth/password", {
         method: "POST",
         body: {
-          phone: phoneNo,
+          email,
           reset_token: resetToken,
           password: v.password,
           password_confirmation: v.confirm,
@@ -323,23 +316,23 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
         {t("نسيت كلمة المرور")}
       </h3>
 
-      {step === "phone" && (
+      {step === "email" && (
         <form onSubmit={send} noValidate className="grid gap-4">
           <p className="text-xs text-muted-foreground">
-            {t("اكتب رقم الموبايل المسجَّل في حسابك وهنبعتلك رمز تحقق.")}
+            {t("اكتب البريد الإلكتروني المسجَّل في حسابك وهنبعتلك رمز تحقق.")}
           </p>
           <Field
-            id="reset-phone"
-            label="رقم الموبايل"
-            icon={Phone}
-            type="tel"
+            id="reset-email"
+            label="البريد الإلكتروني"
+            icon={Mail}
+            type="email"
             dir="ltr"
             required
-            autoComplete="tel"
-            value={phoneNo}
-            onChange={edit(setPhoneNo, "phone")}
-            error={errors.phone}
-            placeholder="01xxxxxxxxx"
+            autoComplete="email"
+            value={email}
+            onChange={edit(setEmail, "email")}
+            error={errors.email}
+            placeholder="you@example.com"
           />
           {submitBtn("إرسال الرمز")}
         </form>
@@ -363,7 +356,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
           {submitBtn("تأكيد")}
           <button
             type="button"
-            onClick={() => setStep("phone")}
+            onClick={() => setStep("email")}
             className="text-xs font-semibold text-muted-foreground underline"
           >
             {t("إعادة إرسال الرمز")}

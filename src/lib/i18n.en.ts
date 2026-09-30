@@ -282,10 +282,10 @@ export const en: Record<string, string> = {
   "كلمة المرور يجب ألا تقل عن 8 أحرف": "Your password must be at least 8 characters",
   "نسيت كلمة المرور؟": "Forgot your password?",
   "نسيت كلمة المرور": "Forgot password",
-  "اكتب رقم الموبايل المسجَّل في حسابك وهنبعتلك رمز تحقق.":
-    "Enter the mobile number on your account and we'll send you a verification code.",
+  "اكتب البريد الإلكتروني المسجَّل في حسابك وهنبعتلك رمز تحقق.":
+    "Enter the email on your account and we'll send you a verification code.",
   "إرسال الرمز": "Send code",
-  "لو الرقم مسجَّل هيوصلك رمز التحقق": "If this number is registered, you'll receive a code",
+  "بعتنالك رمز التحقق على بريدك الإلكتروني": "We've emailed you a verification code",
   "رمز التحقق": "Verification code",
   "إعادة إرسال الرمز": "Resend code",
   "كلمة المرور الجديدة": "New password",
