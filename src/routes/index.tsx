@@ -26,6 +26,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useSiteSettings } from "@/lib/settings.queries";
+import { useAuth } from "@/lib/use-auth";
+import { hasRealToken } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
   head: () => {
@@ -90,6 +92,7 @@ function Home() {
   const products = (catalog ?? []).slice(0, FEATURED_COUNT);
   const t = useT();
   const app = useSiteSettings()?.app;
+  const { user } = useAuth();
 
   const gramRows = [
     { key: "k24" as const, k: t("عيار 24"), v: data?.gram.k24, u: t("جنيه / جرام") },
@@ -108,6 +111,19 @@ function Home() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+
+      {user?.is_demo && (
+        <div className="mx-auto max-w-6xl px-4 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-gold/60 bg-cream px-4 py-3 text-sm">
+            <span className="font-semibold text-gold-deep">{t("وضع الديمو — فلوس تجريبية")}</span>
+            {hasRealToken() && (
+              <Link to="/account" className="text-xs font-semibold text-primary underline">
+                {t("رجوع لحسابي الحقيقي")}
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-4 pt-6">
