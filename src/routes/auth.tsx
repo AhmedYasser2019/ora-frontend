@@ -761,14 +761,14 @@ function AuthPage() {
                 error={errors.password}
                 placeholder="••••••••"
               />
-              {submitBtn("دخول")}
               <button
                 type="button"
                 onClick={() => switchMode("forgot")}
-                className="text-xs font-semibold text-muted-foreground underline"
+                className="-mt-2 justify-self-end text-xs font-semibold text-primary underline"
               >
                 {t("نسيت كلمة المرور؟")}
               </button>
+              {submitBtn("دخول")}
             </form>
           </div>
         ) : mode === "forgot" ? (
