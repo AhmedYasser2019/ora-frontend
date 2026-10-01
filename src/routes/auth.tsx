@@ -160,13 +160,20 @@ function ImageDrop({
       <input
         ref={ref}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png"
         hidden
-        onChange={(e) => onPick(e.target.files?.[0] ?? null)}
+        onChange={(e) => {
+          onPick(e.target.files?.[0] ?? null);
+          e.target.value = "";
+        }}
       />
     </div>
   );
 }
+
+/** الـ accept مجرد اقتراح لنافذة الاختيار — "كل الملفات" يتخطاه، فنتحقق من النوع بأنفسنا. */
+const BAD_IMAGE = "صيغة الملف غير مدعومة. الرجاء رفع صورة بصيغة JPG أو PNG";
+const isIdImage = (f: File) => f.type === "image/jpeg" || f.type === "image/png";
 
 const STEPS = [
   { n: 1, title: "بيانات الحساب", icon: User },
@@ -441,6 +448,12 @@ function AuthPage() {
 
   /** الكتابة في حقل تمسح خطأه — الرسالة تخص القيمة القديمة. */
   const clear = (key: keyof Errors) => setErrors((x) => ({ ...x, [key]: undefined }));
+  // ملف غير JPG/PNG لا يُحفظ أصلًا، فلا يمكن تجاوز الخطوة به.
+  const pickDoc = (set: (f: File | null) => void, key: keyof Errors) => (f: File | null) => {
+    const ok = !f || isIdImage(f);
+    set(ok ? f : null);
+    setErrors((x) => ({ ...x, [key]: ok ? undefined : [BAD_IMAGE] }));
+  };
   const edit = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [key]: e.target.value });
     clear(key);
@@ -867,20 +880,14 @@ function AuthPage() {
                     <ImageDrop
                       label={kyc.docType === "id" ? "الوجه الأمامي للبطاقة" : "صفحة بيانات الجواز"}
                       file={docFront}
-                      onPick={(f) => {
-                        setDocFront(f);
-                        clear("docFront");
-                      }}
+                      onPick={pickDoc(setDocFront, "docFront")}
                       error={errors.docFront}
                     />
                     {kyc.docType === "id" && (
                       <ImageDrop
                         label="الوجه الخلفي للبطاقة"
                         file={docBack}
-                        onPick={(f) => {
-                          setDocBack(f);
-                          clear("docBack");
-                        }}
+                        onPick={pickDoc(setDocBack, "docBack")}
                         error={errors.docBack}
                       />
                     )}

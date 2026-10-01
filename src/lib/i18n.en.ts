@@ -308,6 +308,8 @@ export const en: Record<string, string> = {
   "رقم جواز غير صحيح": "Invalid passport number",
   "ارفع صورة الوجه الأمامي للهوية": "Upload the front of your ID",
   "ارفع صورة الوجه الخلفي للهوية": "Upload the back of your ID",
+  "صيغة الملف غير مدعومة. الرجاء رفع صورة بصيغة JPG أو PNG":
+    "Unsupported file format. Please upload a JPG or PNG image.",
   "تم إنشاء حسابك": "Your account was created",
   "أكد بريدك الإلكتروني ثم سجّل الدخول.": "Confirm your email, then sign in.",
   "تعذر إنشاء الحساب": "Couldn't create your account",
