@@ -508,9 +508,23 @@ function AuthPage() {
     }
   };
 
-  const submitAccount = (e: React.FormEvent) => {
+  /** بريد أو موبايل مستعمل يظهر هنا، قبل أن يرفع المستخدم صور هويته — لا في آخر خطوة. */
+  const submitAccount = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (check(schemas.signup, form, setErrors)) setStep(2);
+    const v = check(schemas.signup, form, setErrors);
+    if (!v) return;
+    setBusy(true);
+    try {
+      await api("/auth/register/check", {
+        method: "POST",
+        body: { phone: v.phone, email: v.email },
+      });
+      setStep(2);
+    } catch (err) {
+      fail(err, "تعذر إنشاء الحساب");
+    } finally {
+      setBusy(false);
+    }
   };
 
   // ponytail: صور الهوية تُرفع فعلًا إلى /kyc/documents عند إنهاء التسجيل، لكن رقم الوثيقة
