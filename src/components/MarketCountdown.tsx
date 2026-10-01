@@ -1,16 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { api } from "@/lib/api";
 import { useT } from "@/lib/i18n";
-import { secondsToNext, splitDuration, type Market } from "@/lib/market-hours";
+import { marketQuery, secondsToNext, splitDuration } from "@/lib/market-hours";
 
 export function MarketCountdown() {
   // من المتصفح لا من الخادم: عدّاد محسوب وقت الـ SSR يكون قديمًا لحظة وصول الصفحة.
-  const { data, dataUpdatedAt, refetch } = useQuery({
-    queryKey: ["market"],
-    queryFn: () => api<Market>("/market"),
-  });
+  const { data, dataUpdatedAt, refetch } = useQuery(marketQuery);
   const [now, setNow] = useState(Date.now);
   const t = useT();
 

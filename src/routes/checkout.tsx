@@ -20,6 +20,7 @@ import { orderErrorMessage, placeOrder } from "@/lib/orders";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
 import { GOVERNORATES } from "@/lib/site";
+import { marketQuery } from "@/lib/market-hours";
 import { useSiteSettings } from "@/lib/settings.queries";
 
 import { tr } from "@/lib/i18n";
@@ -56,6 +57,9 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const t = useT();
   const branches = useSiteSettings()?.branches ?? [];
+  // الخادم يرفض الطلب والسوق مغلق على أي حال؛ هنا يُعرف ذلك قبل ملء النموذج. كل دقيقة،
+  // فصفحة مفتوحة وقت الافتتاح لا تبقى مقفولة.
+  const closed = useQuery({ ...marketQuery, refetchInterval: 60_000 }).data?.open === false;
 
   // null = لم يلمسه الزائر بعد، فيُعرض ما في حسابه. تفريغ الحقل عمدًا يبقى فارغًا.
   const [form, setForm] = useState({
@@ -251,6 +255,14 @@ function CheckoutPage() {
       title="إتمام الطلب"
       subtitle="أدخل بياناتك واختر طريقة الاستلام والدفع. يُثبَّت السعر النهائي لحظة تأكيد الطلب."
     >
+      {closed && (
+        <div
+          role="alert"
+          className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/5 p-5 text-sm text-destructive"
+        >
+          {t("السوق مغلق حاليًا. لا يمكن إتمام الطلبات.")}
+        </div>
+      )}
       {short.length > 0 && (
         <div
           role="alert"
@@ -412,7 +424,7 @@ function CheckoutPage() {
 
           <button
             type="submit"
-            disabled={submitting || short.length > 0}
+            disabled={submitting || closed || short.length > 0}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
             {submitting ? (

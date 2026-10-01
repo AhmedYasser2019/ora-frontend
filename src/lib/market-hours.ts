@@ -3,6 +3,8 @@
  * الأيام والساعات تُضبط هناك فقط — الموقع لا يعرفها، يعدّ تنازليًا للحظة التي أعطاها الخادم.
  */
 
+import { api } from "./api";
+
 const DAY = 86400;
 
 /** ما يعيده MarketController::show — واحد فقط من `opens_at` / `closes_at` له قيمة. */
@@ -11,6 +13,12 @@ export type Market = {
   server_time: string;
   opens_at: string | null;
   closes_at: string | null;
+};
+
+/** نفس المفتاح في الصفحة الرئيسية وصفحة الدفع: رد واحد للاثنين. */
+export const marketQuery = {
+  queryKey: ["market"],
+  queryFn: () => api<Market>("/market"),
 };
 
 /**
