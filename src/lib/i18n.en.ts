@@ -499,6 +499,10 @@ export const en: Record<string, string> = {
   "العنوان بالتفصيل": "Full address",
   "الشارع، رقم العقار، الدور، الشقة، علامة مميزة": "Street, building number, floor, flat, landmark",
   الفرع: "Branch",
+  "اختر الفرع": "Choose a branch",
+  "اختر فرع الاستلام": "Choose a pickup branch",
+  "اختر الفرع الذي ستستلم منه، أو اختر التوصيل.":
+    "Choose the branch you'll collect from, or choose delivery.",
   "طريقة الدفع": "Payment method",
   "سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة.":
     "The amount will be deducted from your wallet immediately and the order confirmed right away.",

@@ -79,11 +79,8 @@ function CheckoutPage() {
     if (!loading && !user) navigate({ to: "/auth", search: { next: "/checkout" } });
   }, [loading, user, navigate]);
 
-  /**
-   * الفرع المختار. الفروع تأتي من الداشبورد بعد أوّل رسم، فالقائمة فارغة لحظةً — وحتى يختار
-   * الزائر بنفسه يكون الفرع الأول هو المعروض، وهو نفسه ما يُرسَل.
-   */
-  const branch = form.branch || branches[0]?.name || "";
+  // لا فرع افتراضي: الاستلام اختيار صريح من الزائر، ومن لا يريده يختار التوصيل.
+  const branch = form.branch;
   const name = form.name ?? user?.name ?? "";
   const phone = form.phone ?? user?.phone ?? "";
 
@@ -121,7 +118,7 @@ function CheckoutPage() {
     }
     if (form.fulfilment === "pickup" && !branch) {
       toast.error(t("اختر فرع الاستلام"), {
-        description: t("قائمة الفروع لم تُحمّل بعد. حدّث الصفحة أو اختر التوصيل."),
+        description: t("اختر الفرع الذي ستستلم منه، أو اختر التوصيل."),
       });
       return;
     }
@@ -392,7 +389,11 @@ function CheckoutPage() {
                   className={input}
                   value={branch}
                   onChange={(e) => setForm({ ...form, branch: e.target.value })}
+                  required
                 >
+                  <option value="" disabled>
+                    {t("اختر الفرع")}
+                  </option>
                   {branches.map((b) => (
                     <option key={b.name} value={b.name}>
                       {t(b.name)}
