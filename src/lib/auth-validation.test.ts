@@ -13,6 +13,7 @@ const ok = {
 };
 assert.equal(schemas.signup.parse({ ...ok, phone: "٠١٠١٢٣٤٥٦٧٨" }).phone, "01012345678");
 assert.equal(schemas.signup.safeParse({ ...ok, phone: "0101234567" }).success, false);
+assert.equal(schemas.signup.safeParse({ ...ok, phone: "01608977574" }).success, false);
 assert.deepEqual(schemas.resetEmail.parse({ email: " a@b.co " }), { email: "a@b.co" });
 assert.equal(schemas.resetEmail.safeParse({ email: "a@" }).success, false);
 assert.equal(schemas.signup.safeParse(ok).success, true);

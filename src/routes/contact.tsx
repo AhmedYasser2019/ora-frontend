@@ -118,7 +118,7 @@ function ContactPage() {
     e.preventDefault();
     if (
       !form.name.trim() ||
-      !/^01\d{9}$/.test(form.phone.trim()) ||
+      !/^01[0125]\d{8}$/.test(form.phone.trim()) ||
       form.message.trim().length < 10
     ) {
       toast.error(t("راجع البيانات"), {

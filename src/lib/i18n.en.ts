@@ -316,7 +316,8 @@ export const en: Record<string, string> = {
     "Play money at real market prices — try buying and selling without paying anything. No phone number or ID needed.",
   "تأكيد كلمة المرور": "Confirm password",
   "كلمتا المرور غير متطابقتين": "Passwords don't match",
-  "رقم موبايل غير صحيح — مثال: 01012345678": "Invalid mobile number — e.g. 01012345678",
+  "رقم الموبايل غير صحيح. يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015":
+    "Invalid mobile number. It must start with 010, 011, 012 or 015.",
   "اكتب البريد الإلكتروني": "Enter your email",
   "بريد إلكتروني غير صحيح": "Invalid email address",
   "اكتب كلمة المرور": "Enter your password",

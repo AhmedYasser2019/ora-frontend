@@ -21,7 +21,14 @@ export const latin = (s: string) =>
 const phone = z
   .string()
   .transform(latin)
-  .pipe(z.string().regex(/^01[0-9]{9}$/, "رقم موبايل غير صحيح — مثال: 01012345678"));
+  .pipe(
+    z
+      .string()
+      .regex(
+        /^01[0125][0-9]{8}$/,
+        "رقم الموبايل غير صحيح. يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015",
+      ),
+  );
 const email = z.string().trim().min(1, "اكتب البريد الإلكتروني").email("بريد إلكتروني غير صحيح");
 const newPassword = z.string().min(8, "كلمة المرور يجب ألا تقل عن 8 أحرف");
 const same = (d: { password: string; confirm: string }) => d.password === d.confirm;

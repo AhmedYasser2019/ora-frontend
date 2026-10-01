@@ -93,7 +93,7 @@ function CheckoutPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (!name.trim() || !/^01\d{9}$/.test(phone.trim())) {
+    if (!name.trim() || !/^01[0125]\d{8}$/.test(phone.trim())) {
       toast.error(t("راجع البيانات"), {
         description: t("أدخل الاسم ورقم موبايل مصري صحيح (01xxxxxxxxx)."),
       });
