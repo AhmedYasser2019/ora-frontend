@@ -469,8 +469,10 @@ export const en: Record<string, string> = {
   "قيمة الطلب غير صحيحة": "The order total is invalid",
   "رصيد محفظتك لا يكفي لإتمام الطلب": "Your wallet balance isn't enough for this order",
   "راجع البيانات": "Check your details",
-  "أدخل الاسم ورقم موبايل مصري صحيح (01xxxxxxxxx).":
-    "Enter your name and a valid Egyptian mobile number (01xxxxxxxxx).",
+  "أدخل رقم موبايل مصري صحيح (01xxxxxxxxx).": "Enter a valid Egyptian mobile number (01xxxxxxxxx).",
+  "راجع الاسم": "Check your name",
+  "الاسم يجب أن يحتوي على حروف فقط، بدون أرقام أو رموز.":
+    "Your name can only contain letters — no numbers or symbols.",
   "أدخل عنوان التوصيل بالتفصيل": "Enter your full delivery address",
   "الشارع ورقم العقار والدور — 10 أحرف على الأقل.":
     "Street, building number and floor — at least 10 characters.",

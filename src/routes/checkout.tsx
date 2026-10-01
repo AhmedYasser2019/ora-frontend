@@ -100,9 +100,16 @@ function CheckoutPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (!name.trim() || !/^01[0125]\d{8}$/.test(phone.trim())) {
+    // نفس قاعدة الخادم: حروف بأي لغة ومسافات و . ' - فقط
+    if (!/^\p{L}[\p{L}\p{M} .'-]+$/u.test(name.trim())) {
+      toast.error(t("راجع الاسم"), {
+        description: t("الاسم يجب أن يحتوي على حروف فقط، بدون أرقام أو رموز."),
+      });
+      return;
+    }
+    if (!/^01[0125]\d{8}$/.test(phone.trim())) {
       toast.error(t("راجع البيانات"), {
-        description: t("أدخل الاسم ورقم موبايل مصري صحيح (01xxxxxxxxx)."),
+        description: t("أدخل رقم موبايل مصري صحيح (01xxxxxxxxx)."),
       });
       return;
     }
