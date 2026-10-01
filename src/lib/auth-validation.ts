@@ -30,7 +30,15 @@ const phone = z
       ),
   );
 const email = z.string().trim().min(1, "اكتب البريد الإلكتروني").email("بريد إلكتروني غير صحيح");
-const newPassword = z.string().min(8, "كلمة المرور يجب ألا تقل عن 8 أحرف");
+const weak = "كلمة المرور ضعيفة. يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص";
+// نفس Password::defaults في AppServiceProvider.
+const newPassword = z
+  .string()
+  .min(8, "كلمة المرور يجب ألا تقل عن 8 أحرف")
+  .regex(/\p{Lu}/u, weak)
+  .regex(/\p{Ll}/u, weak)
+  .regex(/\p{N}/u, weak)
+  .regex(/[\p{P}\p{S}]/u, weak);
 const same = (d: { password: string; confirm: string }) => d.password === d.confirm;
 const mismatch = { message: "كلمتا المرور غير متطابقتين", path: ["confirm"] };
 

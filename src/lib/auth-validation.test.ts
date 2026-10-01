@@ -8,8 +8,8 @@ const ok = {
   name: "أحمد",
   phone: "01012345678",
   email: "a@b.co",
-  password: "12345678",
-  confirm: "12345678",
+  password: "Mohamed@1",
+  confirm: "Mohamed@1",
 };
 assert.equal(schemas.signup.parse({ ...ok, phone: "٠١٠١٢٣٤٥٦٧٨" }).phone, "01012345678");
 assert.equal(schemas.signup.safeParse({ ...ok, phone: "0101234567" }).success, false);
@@ -29,6 +29,9 @@ assert.equal(
   schemas.signup.safeParse({ ...ok, password: "1234567", confirm: "1234567" }).success,
   false,
 );
+// حروف صغيرة فقط، أو ناقصة رقم/رمز/حرف كبير: ضعيفة.
+for (const weak of ["mohamedali", "Mohamedali", "Mohamed1", "mohamed@1"])
+  assert.equal(schemas.signup.safeParse({ ...ok, password: weak, confirm: weak }).success, false, weak);
 assert.equal(schemas.resetCode.safeParse({ code: "١٢٣٤" }).success, true);
 assert.equal(schemas.resetCode.safeParse({ code: "123" }).success, false);
 console.log("auth-validation ok");

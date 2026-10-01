@@ -280,6 +280,8 @@ export const en: Record<string, string> = {
   "مرحبًا بعودتك": "Welcome back",
   "تعذر تسجيل الدخول": "Couldn't sign you in",
   "كلمة المرور يجب ألا تقل عن 8 أحرف": "Your password must be at least 8 characters",
+  "كلمة المرور ضعيفة. يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص":
+    "Password is too weak. It must contain an uppercase letter, a lowercase letter, a number and a symbol",
   "نسيت كلمة المرور؟": "Forgot your password?",
   "نسيت كلمة المرور": "Forgot password",
   "اكتب البريد الإلكتروني المسجَّل في حسابك وهنبعتلك رمز تحقق.":
