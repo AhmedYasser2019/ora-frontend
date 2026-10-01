@@ -13,7 +13,9 @@ import type { CartItem } from "./cart";
  * يُستكمل لاحقًا: القطعة المادية تخرج من الخزنة كشيء واحد، وربط ثلاث قطع بقيد واحد يجعل
  * إلغاء واحدة منها قيدًا عكسيًا جزئيًا.
  *
- * لكل أمر مفتاح تكرار خاص به، وإلا عُدّ الثاني إعادة إرسال للأول وأُعيد نفس الأمر.
+ * لكن السلة كلها تُرسل في طلب واحد (`POST /checkout`) وتُنفَّذ كلها أو لا شيء: قطعة زائدة
+ * عن المخزون أو رصيد لا يكفي يرفض السلة كاملة، فلا تبقى أوامر وحجوزات خلف رسالة خطأ.
+ * مفتاح تكرار واحد للسلة، والخادم يشتق منه مفتاح كل أمر.
  */
 
 export type Destination = {
@@ -40,25 +42,22 @@ export async function placeOrder(
   items: CartItem[],
   destination: Destination,
 ): Promise<PlacedOrder[]> {
-  const placed: PlacedOrder[] = [];
+  const quoteIds: string[] = [];
 
   for (const item of items) {
     for (let n = 0; n < item.qty; n++) {
       const quote = await api<Quote>(`/products/${encodeURIComponent(item.slug)}/quote`, {
         method: "POST",
       });
-
-      placed.push(
-        await api<PlacedOrder>("/orders", {
-          method: "POST",
-          body: { quote_id: quote.quote_id, ...destination },
-          idempotencyKey: crypto.randomUUID(),
-        }),
-      );
+      quoteIds.push(quote.quote_id);
     }
   }
 
-  return placed;
+  return api<PlacedOrder[]>("/checkout", {
+    method: "POST",
+    body: { quote_ids: quoteIds, ...destination },
+    idempotencyKey: crypto.randomUUID(),
+  });
 }
 
 /** رسالة يفهمها العميل من رفض الخادم. */

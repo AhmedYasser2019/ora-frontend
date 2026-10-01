@@ -118,8 +118,8 @@ function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      // المخزون لحظة التأكيد لا لحظة فتح الصفحة: كل قطعة أمر مستقل، فنقص يُكتشف في منتصف
-      // السلة يترك ما قبله منفَّذًا.
+      // المخزون لحظة التأكيد لا لحظة فتح الصفحة — رسالة مبكرة فقط؛ الخادم يرفض السلة كاملة
+      // إن نقصت قطعة بين هذا الفحص والتنفيذ.
       const fresh = await qc.fetchQuery({ ...productsQuery, staleTime: 0 });
       const gone = shortLines(items, fresh);
       if (gone.length > 0) {
@@ -145,6 +145,8 @@ function CheckoutPage() {
       clear();
     } catch (e) {
       toast.error(t(orderErrorMessage(e)));
+      // لم يُنفَّذ شيء؛ المخزون الحالي يُظهر أيّ سطر يحتاج تعديل الكمية.
+      qc.invalidateQueries({ queryKey: productsQuery.queryKey });
     } finally {
       setSubmitting(false);
     }
