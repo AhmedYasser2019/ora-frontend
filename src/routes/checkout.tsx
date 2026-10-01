@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { useCart } from "@/lib/cart";
+import { shortLines, shortMessage, useCart } from "@/lib/cart";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { orderErrorMessage, placeOrder } from "@/lib/orders";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
@@ -51,6 +51,7 @@ const PAYMENTS = [
 function CheckoutPage() {
   const { data: catalog } = useQuery(productsQuery);
   const { items, clear } = useCart();
+  const qc = useQueryClient();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const t = useT();
@@ -89,6 +90,8 @@ function CheckoutPage() {
   // بالقيد المزدوج رقم لا تستطيع الدفاتر تفسيره. انظر migration add_delivery_to_orders.
   const delivery = 0;
   const total = subtotal + delivery;
+  // كمية تتجاوز المخزون تُوقف الطلب هنا، قبل أي خطوة — لا عند التأكيد بعد اختيار الدفع.
+  const short = shortLines(items, catalog);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +118,15 @@ function CheckoutPage() {
 
     setSubmitting(true);
     try {
+      // المخزون لحظة التأكيد لا لحظة فتح الصفحة: كل قطعة أمر مستقل، فنقص يُكتشف في منتصف
+      // السلة يترك ما قبله منفَّذًا.
+      const fresh = await qc.fetchQuery({ ...productsQuery, staleTime: 0 });
+      const gone = shortLines(items, fresh);
+      if (gone.length > 0) {
+        gone.forEach((l) => toast.error(shortMessage(t, l.product)));
+        return;
+      }
+
       const orders = await placeOrder(items, {
         fulfilment: form.fulfilment,
         contact_name: name.trim(),
@@ -215,6 +227,21 @@ function CheckoutPage() {
       title="إتمام الطلب"
       subtitle="أدخل بياناتك واختر طريقة الاستلام والدفع. يُثبَّت السعر النهائي لحظة تأكيد الطلب."
     >
+      {short.length > 0 && (
+        <div
+          role="alert"
+          className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/5 p-5 text-sm text-destructive"
+        >
+          <ul className="space-y-1">
+            {short.map((l) => (
+              <li key={l.slug}>{shortMessage(t, l.product)}</li>
+            ))}
+          </ul>
+          <Link to="/cart" className="mt-3 inline-block font-semibold underline underline-offset-4">
+            {t("عدّل الكميات قبل إتمام الطلب")}
+          </Link>
+        </div>
+      )}
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <form onSubmit={submit} className="space-y-6">
           <fieldset className="space-y-4 rounded-2xl border border-border bg-card p-6">
@@ -361,7 +388,7 @@ function CheckoutPage() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || short.length > 0}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
             {submitting ? (

@@ -3,7 +3,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, type ReactN
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
-import { api } from "./api";
+import { api, ApiError } from "./api";
+import { bySlug } from "./catalog.queries";
+import type { Product } from "./catalog.server";
 import { useT } from "./i18n";
 import { useAuth } from "./use-auth";
 
@@ -44,6 +46,20 @@ export const upsert = (prev: Line[], slug: string, qty: number): Line[] =>
     ? prev.map((l) => (l.product.sku === slug ? { ...l, quantity: qty } : l))
     : [{ product: { sku: slug }, quantity: qty }, ...prev];
 
+/**
+ * الأسطر التي تطلب أكثر مما على الرف الآن. الخادم يرفض الكمية الزائدة عند الإضافة، لكن سلة
+ * قديمة قد تسبق نفاد المخزون — فتُعرض هنا قبل الدفع لا عند آخر خطوة.
+ */
+export const shortLines = (items: CartItem[], catalog: Product[] | undefined) =>
+  items.flatMap((i) => {
+    const p = bySlug(catalog, i.slug);
+    return p && i.qty > p.stock ? [{ ...i, product: p }] : [];
+  });
+
+/** نفس صياغة الخادم: أيّ قطعة، وكم المتاح منها. */
+export const shortMessage = (t: (s: string) => string, p: Product) =>
+  `${t(p.t)} ${t("غير متوفرة بالكمية المطلوبة")} (${t("المتاح")}: ${p.stock})`;
+
 const lines = (qc: QueryClient) => qc.getQueryData<ServerCart>(KEY)?.items ?? [];
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -82,8 +98,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (p: Promise<ServerCart>) =>
       p
         .then((cart) => qc.setQueryData(KEY, cart))
-        .catch(() => qc.invalidateQueries({ queryKey: KEY })),
-    [qc],
+        .catch((e) => {
+          // الكمية الزائدة عن المخزون تُرفض هنا، والرسالة تسمّي القطعة والمتاح منها.
+          if (e instanceof ApiError) toast.error(t(e.firstMessage));
+          return qc.invalidateQueries({ queryKey: KEY });
+        }),
+    [qc, t],
   );
 
   // POST يضبط الكمية ولا يزيدها، فسطر الزيادة يحسب الكمية الجديدة هنا.

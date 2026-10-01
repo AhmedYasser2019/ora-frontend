@@ -163,9 +163,10 @@ function ProductPage() {
                 </button>
                 <span className="w-6 text-center text-sm font-semibold text-primary">{qty}</span>
                 <button
-                  onClick={() => setQty((q) => Math.min(99, q + 1))}
+                  onClick={() => setQty((q) => Math.min(99, p.stock, q + 1))}
                   aria-label={t("زيادة الكمية")}
-                  className="text-primary"
+                  className="text-primary disabled:opacity-40"
+                  disabled={qty >= p.stock}
                 >
                   <Plus className="h-4 w-4" />
                 </button>

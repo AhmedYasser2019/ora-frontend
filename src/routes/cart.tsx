@@ -5,7 +5,7 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
-import { DELIVERY_FEE, FREE_DELIVERY_OVER, useCart } from "@/lib/cart";
+import { DELIVERY_FEE, FREE_DELIVERY_OVER, shortLines, shortMessage, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { productImage } from "@/lib/product-image";
@@ -41,6 +41,7 @@ function CartPage() {
   const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
   const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
   const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_OVER ? 0 : DELIVERY_FEE;
+  const short = shortLines(items, catalog);
 
   return (
     <PageShell
@@ -111,8 +112,9 @@ function CartPage() {
                         </span>
                         <button
                           onClick={() => setQty(i.slug, i.qty + 1)}
+                          disabled={i.qty >= p.stock}
                           aria-label={t("زيادة الكمية")}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-primary hover:bg-secondary"
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-primary hover:bg-secondary disabled:opacity-40"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
@@ -121,6 +123,11 @@ function CartPage() {
                         {egp(unit * i.qty)} {t("ج.م")}
                       </span>
                     </div>
+                    {i.qty > p.stock && (
+                      <p role="alert" className="mt-2 text-xs text-destructive">
+                        {shortMessage(t, p)}
+                      </p>
+                    )}
                   </div>
                 </div>
               );
@@ -156,12 +163,18 @@ function CartPage() {
                 </dd>
               </div>
             </dl>
-            <Link
-              to="/checkout"
-              className="mt-6 block rounded-full bg-primary py-3 text-center text-sm font-semibold text-primary-foreground"
-            >
-              {t("إتمام الطلب")}
-            </Link>
+            {short.length > 0 ? (
+              <p className="mt-6 rounded-full bg-secondary py-3 text-center text-sm font-semibold text-destructive">
+                {t("عدّل الكميات قبل إتمام الطلب")}
+              </p>
+            ) : (
+              <Link
+                to="/checkout"
+                className="mt-6 block rounded-full bg-primary py-3 text-center text-sm font-semibold text-primary-foreground"
+              >
+                {t("إتمام الطلب")}
+              </Link>
+            )}
             <Link to="/collection" className="mt-3 block text-center text-xs text-gold-deep">
               {t("متابعة التسوق")}
             </Link>

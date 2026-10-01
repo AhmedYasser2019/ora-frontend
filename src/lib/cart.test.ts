@@ -1,5 +1,6 @@
 import assert from "node:assert";
-import { upsert, type Line } from "./cart";
+import { shortLines, upsert, type Line } from "./cart";
+import type { Product } from "./catalog.server";
 
 const line = (sku: string, quantity: number): Line => ({ product: { sku }, quantity });
 
@@ -13,3 +14,20 @@ assert.deepEqual(upsert([line("A", 1), line("B", 3)], "A", 7), [line("A", 7), li
 const before = [line("A", 1)];
 upsert(before, "A", 9);
 assert.deepEqual(before, [line("A", 1)]);
+
+// سطر يطلب أكثر من المتاح يُعلَّم، وما يساويه لا يُعلَّم، والقطعة الغائبة من الكتالوج تُترك.
+const shelf = [
+  { slug: "A", stock: 10 },
+  { slug: "B", stock: 3 },
+] as Product[];
+assert.deepEqual(
+  shortLines(
+    [
+      { slug: "A", qty: 40 },
+      { slug: "B", qty: 3 },
+      { slug: "C", qty: 5 },
+    ],
+    shelf,
+  ).map((l) => [l.slug, l.product.stock]),
+  [["A", 10]],
+);
