@@ -197,7 +197,7 @@ export const en: Record<string, string> = {
   "كل سبيكة معتمدة بشهادة ضمان.": "Every bar is certified and comes with a warranty.",
   "سبائك وعملات ذهب على قماش أخضر": "Gold bars and coins on green fabric",
   "استثمار موثوق": "Trusted investing",
-  "الذهب اللي": "Gold that",
+  "أمان واستثمار": "A secure investment that",
   "يحفظ قيمته": "holds its value",
   "سبائك وعملات ذهبية معتمدة بشهادات أصل، وأسعار لحظية شفافة، وتسليم آمن في أي وقت.":
     "Certified gold bars and coins with certificates of authenticity, transparent live prices and secure delivery any time.",

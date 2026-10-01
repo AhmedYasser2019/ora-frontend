@@ -138,7 +138,7 @@ function Home() {
           <div className="relative bg-gradient-to-l from-transparent via-primary/70 to-primary p-8 sm:p-14">
             <p className="text-xs tracking-[0.3em] text-gold">{t("استثمار موثوق")}</p>
             <h1 className="mt-4 max-w-md text-4xl leading-tight text-primary-foreground sm:text-5xl">
-              {t("الذهب اللي")}
+              {t("أمان واستثمار")}
               <span className="block text-gradient-gold">{t("يحفظ قيمته")}</span>
             </h1>
             <p className="mt-4 max-w-sm text-sm text-primary-foreground/80">
