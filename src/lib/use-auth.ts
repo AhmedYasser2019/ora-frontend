@@ -10,6 +10,7 @@ export type User = {
   email: string;
   phone: string;
   is_demo?: boolean;
+  kyc_status?: "unverified" | "pending" | "approved" | "rejected";
   [key: string]: unknown;
 };
 

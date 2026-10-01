@@ -205,6 +205,28 @@ function CheckoutPage() {
     );
   }
 
+  // الخادم يرفض الشراء على أي حال؛ هنا لا تُعرض الخطوات أصلًا بدل رفض بعد ملئها.
+  if (user.kyc_status === "rejected") {
+    return (
+      <PageShell title="إتمام الطلب">
+        <div
+          role="alert"
+          className="rounded-2xl border border-destructive/40 bg-destructive/5 p-12 text-center"
+        >
+          <p className="text-lg text-destructive">
+            {t("حسابك مرفوض. لا يمكنك إتمام عملية الشراء. يرجى التواصل مع الدعم.")}
+          </p>
+          <Link
+            to="/contact"
+            className="mt-6 inline-block rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+          >
+            {t("تواصل معنا")}
+          </Link>
+        </div>
+      </PageShell>
+    );
+  }
+
   if (items.length === 0) {
     return (
       <PageShell title="إتمام الطلب">

@@ -127,6 +127,8 @@ export const en: Record<string, string> = {
   "روابط سريعة": "Quick links",
   "مركز المساعدة": "Help centre",
   "تواصل معنا": "Contact us",
+  "حسابك مرفوض. لا يمكنك إتمام عملية الشراء. يرجى التواصل مع الدعم.":
+    "Your account is rejected. You cannot complete the purchase. Please contact support.",
   "سموحة، الإسكندرية، مصر": "Smouha, Alexandria, Egypt",
   "جميع الحقوق محفوظة © زاد جولد 2026": "All rights reserved © Zad Gold 2026",
   "توصيل آمن ومؤمّن لكل محافظات مصر": "Safe, insured delivery to every governorate in Egypt",
