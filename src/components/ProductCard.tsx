@@ -66,8 +66,8 @@ export function ProductCard({ p }: { p: Product }) {
             {t("سعر الجرام")}: {egp(p.gramPrice)} {t("ج.م")}
           </p>
         )}
-        <div className="mt-3 flex flex-1 items-end justify-between gap-2">
-          <span className="font-display text-lg text-gold-deep">
+        <div className="mt-3 flex flex-1 flex-wrap content-end items-end justify-between gap-2">
+          <span className="whitespace-nowrap font-display text-lg text-gold-deep">
             {price ? `${egp(price)} ${t("ج.م")}` : t("جاري التحديث…")}
           </span>
           <button
