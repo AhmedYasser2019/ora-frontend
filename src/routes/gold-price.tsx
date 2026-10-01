@@ -17,13 +17,13 @@ export const Route = createFileRoute("/gold-price")({
       {
         name: "description",
         content: tr(
-          "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و22 و21 و18 وسعر الفضة والأوقية والدولار، بتحديث مباشر كل ثوانٍ.",
+          "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و21 والأوقية، بتحديث مباشر كل ثوانٍ.",
         ),
       },
       { property: "og:title", content: tr("سعر الذهب اليوم لحظة بلحظة | زاد جولد") },
       {
         property: "og:description",
-        content: tr("أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات."),
+        content: tr("أسعار الذهب اللحظية بالجنيه المصري مع بث مباشر للتحديثات."),
       },
     ],
   }),
@@ -68,19 +68,11 @@ function GoldPricePage() {
         <PriceHistoryChart metal="gold" />
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">{t("أوقية الذهب (عيار 24)")}</p>
-          <p className="mt-1 font-display text-2xl text-primary">
-            {data?.gram.k24 ? egp(data.gram.k24 * 31.1035) : "—"}
-          </p>
-        </div>
-        <div className="rounded-2xl bg-cream p-5 text-center">
-          <p className="text-xs text-muted-foreground">{t("أوقية الفضة")}</p>
-          <p className="mt-1 font-display text-2xl text-primary">
-            {data?.gram.silver ? egp(data.gram.silver * 31.1035) : "—"}
-          </p>
-        </div>
+      <div className="mt-6 rounded-2xl bg-cream p-5 text-center">
+        <p className="text-xs text-muted-foreground">{t("أوقية الذهب (عيار 24)")}</p>
+        <p className="mt-1 font-display text-2xl text-primary">
+          {data?.gram.k24 ? egp(data.gram.k24 * 31.1035) : "—"}
+        </p>
       </div>
     </PageShell>
   );

@@ -720,11 +720,11 @@ export const en: Record<string, string> = {
 
   // صفحات أسعار الذهب والفضة
   "سعر الذهب اليوم لحظة بلحظة في مصر | زاد جولد": "Today's live gold price in Egypt | Zad Gold",
-  "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و22 و21 و18 وسعر الفضة والأوقية والدولار، بتحديث مباشر كل ثوانٍ.":
-    "Today's live gold price in Egypt for 24K, 22K, 21K and 18K, plus silver, the ounce and the dollar, updated live every few seconds.",
+  "سعر الذهب اليوم في مصر لحظيًا لعيار 24 و21 والأوقية، بتحديث مباشر كل ثوانٍ.":
+    "Today's live gold price in Egypt for 24K, 21K and the ounce, updated live every few seconds.",
   "سعر الذهب اليوم لحظة بلحظة | زاد جولد": "Today's live gold price | Zad Gold",
-  "أسعار الذهب والفضة اللحظية بالجنيه المصري مع بث مباشر للتحديثات.":
-    "Live gold and silver prices in Egyptian pounds with a live update feed.",
+  "أسعار الذهب اللحظية بالجنيه المصري مع بث مباشر للتحديثات.":
+    "Live gold prices in Egyptian pounds with a live update feed.",
   "سعر الجرام كما ينشره مكتب التسعير بالجنيه المصري، لعيار 21 وعيار 24، ويصلك لحظة تغيّره.":
     "The gram price as published by our price desk in Egyptian pounds, for 21k and 24k, reaching you the moment it changes.",
   "الدولار / الجنيه": "USD / EGP",
