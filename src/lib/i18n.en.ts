@@ -225,16 +225,16 @@ export const en: Record<string, string> = {
   "من نحن | زاد جولد": "About us | Zad Gold",
   "قصة زاد جولد وقيمنا في الاستثمار الآمن في المعادن النفيسة.":
     "Zad Gold's story and our values around safe investing in precious metals.",
-  "كل قطعة مصحوبة بشهادة أصل ووزن معتمد.":
-    "Every piece comes with a certificate of authenticity and a certified weight.",
+  "كل قطعة مرفق بها شهادة ضمان تثبت عيارها ووزنها.":
+    "Every piece comes with a guarantee certificate confirming its purity and weight.",
   "شفافية السعر": "Price transparency",
   "أسعارنا مرتبطة بسعر السوق اللحظي بدون مبالغة.":
     "Our prices track the live market with no mark-up games.",
   "إعادة شراء مضمونة": "Guaranteed buy-back",
-  "نشتري منك ما اشتريته بأفضل سعر في السوق.":
+  "نعيد شراء مشترياتك منّا بأفضل سعر في السوق.":
     "We buy back what you bought from us at the best price in the market.",
   "توصيل مؤمّن": "Insured delivery",
-  "شحن آمن ومؤمّن لكل محافظات مصر.": "Safe, insured shipping to every governorate in Egypt.",
+  "شحن مؤمّن عليه بالكامل لجميع محافظات مصر.": "Fully insured shipping to every governorate in Egypt.",
   "زاد جولد للذهب والسبائك — بيت خبرة في المعادن النفيسة يجمع بين الأمان والشفافية وسهولة الاستثمار.":
     "Zad Gold & Bullion — a house of expertise in precious metals combining safety, transparency and easy investing.",
   "سبائك وعملات ذهب زاد جولد": "Zad Gold bars and coins",
