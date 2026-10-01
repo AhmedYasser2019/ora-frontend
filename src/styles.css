@@ -161,6 +161,12 @@
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
   }
+
+  /* علامة الحقل الإلزامي من خاصية required نفسها، فلا تختلف العلامة عن التحقق. */
+  label:has(+ :required, + * :required)::after {
+    content: " *";
+    color: var(--color-destructive);
+  }
 }
 
 @utility text-gradient-gold {

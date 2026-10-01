@@ -90,6 +90,11 @@ function Field({
     <div>
       <label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-primary">
         {t(label)}
+        {props.required && (
+          <span className="ms-0.5 text-destructive" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <div className="relative">
         <Icon className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

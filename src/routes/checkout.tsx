@@ -239,7 +239,7 @@ function CheckoutPage() {
     return (
       <PageShell title="إتمام الطلب">
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
-          <p className="text-lg text-primary">{t("سلتك فاضية")}</p>
+          <p className="text-lg text-primary">{t("سلتك فارغة")}</p>
           <button
             onClick={() => navigate({ to: "/collection" })}
             className="mt-6 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
@@ -357,6 +357,7 @@ function CheckoutPage() {
                     className={input}
                     value={form.governorate}
                     onChange={(e) => setForm({ ...form, governorate: e.target.value })}
+                    required
                   >
                     {GOVERNORATES.map((g) => (
                       <option key={g} value={g}>

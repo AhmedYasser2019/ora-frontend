@@ -53,7 +53,7 @@ function CartPage() {
       ) : items.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
           <ShoppingBag className="mx-auto h-10 w-10 text-gold-deep" />
-          <p className="mt-4 text-lg text-primary">{t("سلتك فاضية")}</p>
+          <p className="mt-4 text-lg text-primary">{t("سلتك فارغة")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {t("ابدأ من مجموعتنا واختار السبيكة أو العملة المناسبة لك.")}
           </p>

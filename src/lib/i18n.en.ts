@@ -441,7 +441,7 @@ export const en: Record<string, string> = {
   "الأسعار في السلة محدثة لحظيًا مع سعر الذهب، ويتم تثبيت السعر النهائي عند تأكيد الطلب.":
     "Cart prices update live with the gold price; the final price is locked when you confirm the order.",
   "جاري تحميل السلة…": "Loading your cart…",
-  "سلتك فاضية": "Your cart is empty",
+  "سلتك فارغة": "Your cart is empty",
   "ابدأ من مجموعتنا واختار السبيكة أو العملة المناسبة لك.":
     "Start from our collection and pick the bar or coin that suits you.",
   "ابدأ من مجموعتنا واختر السبيكة أو العملة المناسبة لك.":

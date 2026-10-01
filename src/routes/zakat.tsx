@@ -35,9 +35,12 @@ const karats = [
 function ZakatPage() {
   const { data } = useLivePrices();
   const t = useT();
-  const [grams, setGrams] = useState(100);
+  // Raw input text, so clearing a field leaves it empty instead of snapping to 0.
+  const [gramsText, setGramsText] = useState("100");
   const [karat, setKarat] = useState(1); // عيار 21
-  const [silverGrams, setSilverGrams] = useState(0);
+  const [silverText, setSilverText] = useState("");
+  const grams = Math.max(0, Number(gramsText) || 0);
+  const silverGrams = Math.max(0, Number(silverText) || 0);
 
   const gram = data?.gram;
   const goldValue = (gram?.[karats[karat]!.key] ?? 0) * grams;
@@ -59,8 +62,9 @@ function ZakatPage() {
           <input
             type="number"
             min={0}
-            value={grams}
-            onChange={(e) => setGrams(Math.max(0, Number(e.target.value)))}
+            placeholder="0"
+            value={gramsText}
+            onChange={(e) => setGramsText(e.target.value)}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-primary outline-none focus:border-gold"
           />
 
@@ -85,8 +89,9 @@ function ZakatPage() {
           <input
             type="number"
             min={0}
-            value={silverGrams}
-            onChange={(e) => setSilverGrams(Math.max(0, Number(e.target.value)))}
+            placeholder="0"
+            value={silverText}
+            onChange={(e) => setSilverText(e.target.value)}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-primary outline-none focus:border-gold"
           />
         </div>
