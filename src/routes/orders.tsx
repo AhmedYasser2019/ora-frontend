@@ -170,9 +170,11 @@ function OrdersPage() {
                       key={line.product?.sku ?? o.order_id}
                       className="flex justify-between gap-3 text-sm"
                     >
-                      <span className="text-primary">
-                        {t(line.product?.name ?? "")}
-                        {line.quantity > 1 && <span dir="ltr"> ×{line.quantity}</span>}
+                      <span className="flex flex-col items-start gap-1">
+                        <span className="text-primary">{t(line.product?.name ?? "")}</span>
+                        <span className="rounded-md bg-secondary px-2 py-0.5 text-[11px] text-muted-foreground">
+                          {t("الكمية")}: {line.quantity}
+                        </span>
                       </span>
                       <span className="shrink-0 text-muted-foreground">
                         {t("سعر الشراء")}: {egp(line.gross_piasters / 100)} {t("ج.م")}
