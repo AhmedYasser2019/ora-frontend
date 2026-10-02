@@ -71,8 +71,7 @@ function CheckoutPage() {
     branch: "",
     payment: "instapay" as (typeof PAYMENTS)[number]["key"],
   });
-  // الأمر الواحد قطعة واحدة، فسلة بكمية 3 تنتج ثلاثة أرقام لا رقمًا واحدًا.
-  const [placed, setPlaced] = useState<{ refs: string[]; total: number } | null>(null);
+  const [placed, setPlaced] = useState<{ ref: string; total: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -135,7 +134,7 @@ function CheckoutPage() {
         return;
       }
 
-      const orders = await placeOrder(items, {
+      const order = await placeOrder(items, {
         fulfilment: form.fulfilment,
         contact_name: name.trim(),
         contact_phone: phone.trim(),
@@ -147,9 +146,7 @@ function CheckoutPage() {
       });
 
       // المجموع من الخادم: ما خُصم فعلًا، لا ما عرضته الشاشة قبل تثبيت السعر.
-      const charged = orders.reduce((s, o) => s + o.gross_piasters, 0) / 100;
-
-      setPlaced({ refs: orders.map((o) => o.order_id), total: charged });
+      setPlaced({ ref: order.order_id, total: order.gross_piasters / 100 });
       clear();
     } catch (e) {
       toast.error(t(orderErrorMessage(e)));
@@ -175,15 +172,10 @@ function CheckoutPage() {
       <PageShell title="تم استلام طلبك" subtitle="شكرًا لثقتك في زاد جولد.">
         <div className="mx-auto max-w-lg rounded-2xl border border-border bg-card p-10 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-gold-deep" />
-          <p className="mt-4 text-xl text-primary">
-            {placed.refs.length === 1 ? t("طلبك رقم") : `${t("عدد الطلبات")} ${placed.refs.length}`}
+          <p className="mt-4 text-xl text-primary">{t("طلبك رقم")}</p>
+          <p dir="ltr" className="mt-1 text-xs text-muted-foreground">
+            {placed.ref}
           </p>
-          {/* كل قطعة طلب مستقل: سعره مثبَّت وحده، ويُتابَع ويُلغى وحده. */}
-          <ul dir="ltr" className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-            {placed.refs.map((ref) => (
-              <li key={ref}>{ref}</li>
-            ))}
-          </ul>
           <p className="mt-1 font-display text-2xl text-gold-deep">
             {egp(placed.total)} {t("ج.م")}
           </p>

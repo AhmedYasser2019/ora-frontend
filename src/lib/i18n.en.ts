@@ -482,7 +482,6 @@ export const en: Record<string, string> = {
   "تم استلام طلبك": "We've received your order",
   "شكرًا لثقتك في زاد جولد.": "Thank you for trusting Zad Gold.",
   "طلبك رقم": "Order",
-  "عدد الطلبات": "Orders placed:",
   "تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم.":
     "The amount was deducted from your wallet and the order is confirmed. Our team will contact you to arrange delivery.",
   "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.":

@@ -8,14 +8,12 @@ import type { CartItem } from "./cart";
  * يرسله المتصفح يُصدَّق كسعر)، ثم أمر يحمل رقم العرض فقط. السعر الذي يُنفَّذ عليه هو الذي
  * كتبه الخادم في صفّ العرض، لا الذي عرضته الشاشة.
  *
- * **الأمر الواحد قطعة واحدة، عن قصد.** فسطر بكمية 3 يصير ثلاثة أوامر، لكل واحد سعره
- * المثبَّت وقيده في الدفتر وحالته الخاصة — يُوافَق عليه ويُسلَّم ويُلغى وحده. هذا ليس نقصًا
- * يُستكمل لاحقًا: القطعة المادية تخرج من الخزنة كشيء واحد، وربط ثلاث قطع بقيد واحد يجعل
- * إلغاء واحدة منها قيدًا عكسيًا جزئيًا.
+ * لكل قطعة عرضها وسعرها المثبَّت وقيدها في الدفتر، لكن السلة كلها **طلب واحد**: رقم واحد
+ * وحالة واحدة، يُوافَق عليه ويُسلَّم ويُلغى كاملًا. `items` يحمل سطور الطلب.
  *
- * لكن السلة كلها تُرسل في طلب واحد (`POST /checkout`) وتُنفَّذ كلها أو لا شيء: قطعة زائدة
- * عن المخزون أو رصيد لا يكفي يرفض السلة كاملة، فلا تبقى أوامر وحجوزات خلف رسالة خطأ.
- * مفتاح تكرار واحد للسلة، والخادم يشتق منه مفتاح كل أمر.
+ * والسلة كلها تُرسل في طلب واحد (`POST /checkout`) وتُنفَّذ كلها أو لا شيء: قطعة زائدة
+ * عن المخزون أو رصيد لا يكفي يرفض السلة كاملة، فلا يبقى طلب وحجوزات خلف رسالة خطأ.
+ * مفتاح تكرار واحد للسلة، والخادم يشتق منه مفتاح كل قطعة.
  */
 
 export type Destination = {
@@ -41,7 +39,7 @@ type Quote = { quote_id: string; amount_piasters: number; expires_at: string };
 export async function placeOrder(
   items: CartItem[],
   destination: Destination,
-): Promise<PlacedOrder[]> {
+): Promise<PlacedOrder> {
   const quoteIds: string[] = [];
 
   for (const item of items) {
@@ -53,7 +51,7 @@ export async function placeOrder(
     }
   }
 
-  return api<PlacedOrder[]>("/checkout", {
+  return api<PlacedOrder>("/checkout", {
     method: "POST",
     body: { quote_ids: quoteIds, ...destination },
     idempotencyKey: crypto.randomUUID(),

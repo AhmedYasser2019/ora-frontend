@@ -41,6 +41,8 @@ type Order = {
   gain_piasters?: number | null;
   gain_pct?: number | null;
   product?: { sku: string; name: string };
+  /** سطور الطلب: سلة من ست قطع طلب واحد بسطر كميته 6. */
+  items?: { product: { sku: string; name: string }; quantity: number; gross_piasters: number }[];
   delivery?: {
     fulfilment: string | null;
     governorate: string | null;
@@ -159,16 +161,26 @@ function OrdersPage() {
                 </div>
 
                 <ul className="mt-5 space-y-2 border-y border-border py-4">
-                  <li className="flex justify-between gap-3 text-sm">
-                    <span className="text-primary">
-                      {t(o.product?.name ?? "")}{" "}
-                      <span className="text-muted-foreground">
-                        {o.grams} {t("جرام")}
+                  {(
+                    o.items ?? [
+                      { product: o.product, quantity: 1, gross_piasters: o.gross_piasters },
+                    ]
+                  ).map((line) => (
+                    <li
+                      key={line.product?.sku ?? o.order_id}
+                      className="flex justify-between gap-3 text-sm"
+                    >
+                      <span className="text-primary">
+                        {t(line.product?.name ?? "")}
+                        {line.quantity > 1 && <span dir="ltr"> ×{line.quantity}</span>}
                       </span>
-                    </span>
-                    <span className="shrink-0 text-muted-foreground">
-                      {t("سعر الشراء")}: {egp(o.gross_piasters / 100)} {t("ج.م")}
-                    </span>
+                      <span className="shrink-0 text-muted-foreground">
+                        {t("سعر الشراء")}: {egp(line.gross_piasters / 100)} {t("ج.م")}
+                      </span>
+                    </li>
+                  ))}
+                  <li className="text-xs text-muted-foreground">
+                    {o.grams} {t("جرام")}
                   </li>
                   {o.current_value_piasters != null && o.gain_pct != null && (
                     <li className="flex items-center justify-between gap-3 text-sm">
