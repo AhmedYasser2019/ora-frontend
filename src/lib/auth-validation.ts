@@ -18,17 +18,24 @@ export const latin = (s: string) =>
   s.trim().replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x660));
 
 // نفس قواعد الباك إند (AuthController) — الواجهة تسبقه برسالة تحت الحقل، وهو يبقى الحَكَم.
+// الطول والبادئة لكل منهما رسالته: رسالة واحدة كانت تطلب «يبدأ بـ 010» من رقم يبدأ بـ 010 وناقص رقم.
 const phone = z
   .string()
   .transform(latin)
-  .pipe(
-    z
-      .string()
-      .regex(
-        /^01[0125][0-9]{8}$/,
-        "رقم الموبايل غير صحيح. يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015",
-      ),
-  );
+  .superRefine((s, ctx) => {
+    const long = /^\d{11}$/.test(s);
+    const prefix = /^01[0125]/.test(s);
+    if (long && prefix) return;
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message:
+        !prefix && !long
+          ? "رقم الموبايل يجب أن يتكون من 11 رقم ويبدأ بـ 010 أو 011 أو 012 أو 015"
+          : long
+            ? "رقم الموبايل غير صحيح. يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015"
+            : "رقم الموبايل يجب أن يتكون من 11 رقم",
+    });
+  });
 const email = z.string().trim().min(1, "اكتب البريد الإلكتروني").email("بريد إلكتروني غير صحيح");
 const weak = "كلمة المرور ضعيفة. يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص";
 // نفس Password::defaults في AppServiceProvider.

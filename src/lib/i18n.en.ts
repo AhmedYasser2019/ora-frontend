@@ -328,6 +328,9 @@ export const en: Record<string, string> = {
   "كلمتا المرور غير متطابقتين": "Passwords don't match",
   "رقم الموبايل غير صحيح. يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015":
     "Invalid mobile number. It must start with 010, 011, 012 or 015.",
+  "رقم الموبايل يجب أن يتكون من 11 رقم": "Mobile number must be 11 digits.",
+  "رقم الموبايل يجب أن يتكون من 11 رقم ويبدأ بـ 010 أو 011 أو 012 أو 015":
+    "Mobile number must be 11 digits and start with 010, 011, 012 or 015.",
   "اكتب البريد الإلكتروني": "Enter your email",
   "بريد إلكتروني غير صحيح": "Invalid email address",
   "اكتب كلمة المرور": "Enter your password",
