@@ -61,9 +61,9 @@ function check<T>(
 /** أخطاء الخادم على حقول الشاشة. الاسم حقل واحد هنا وحقلان هناك. */
 function fromServer(err: unknown): Errors {
   if (!(err instanceof ApiError)) return {};
-  const { first_name, last_name, ...rest } = err.errors;
+  const { first_name, last_name, id_number, ...rest } = err.errors;
   const name = first_name ?? last_name;
-  return name ? { ...rest, name } : rest;
+  return { ...rest, ...(name && { name }), ...(id_number && { docNumber: id_number }) };
 }
 
 /** الباك إند يطلب اسمًا أخيرًا؛ اسم من كلمة واحدة يكرّرها بدل أن يُرفض التسجيل. */
@@ -433,6 +433,8 @@ function AuthPage() {
   const [errors, setErrors] = useState<Errors>({});
   const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", confirm: "" });
   const [kyc, setKyc] = useState({ docType: "id", docNumber: "" });
+  // الرقم الذي اجتاز فحص الخادم في الخطوة الثانية؛ التخطي يتركه null فلا يُرسل.
+  const [idNumber, setIdNumber] = useState<string | null>(null);
   const [docFront, setDocFront] = useState<File | null>(null);
   const [docBack, setDocBack] = useState<File | null>(null);
   const [experience, setExperience] = useState<string>(EXPERIENCE[0]);
@@ -545,9 +547,8 @@ function AuthPage() {
     }
   };
 
-  // ponytail: صور الهوية تُرفع فعلًا إلى /kyc/documents عند إنهاء التسجيل، لكن رقم الوثيقة
-  // ونوعها لا يوجد لهما حقل في الباك إند بعد، فيبقيان تحققًا في الواجهة فقط.
-  const submitKyc = (e: React.FormEvent) => {
+  /** رقم مسجّل بحساب آخر يُرفض هنا، قبل خطوة الخبرة — لا عند إنهاء التسجيل. */
+  const submitKyc = async (e: React.FormEvent) => {
     e.preventDefault();
     const num = latin(kyc.docNumber);
     const errs: Errors = {};
@@ -557,7 +558,17 @@ function AuthPage() {
     if (!docFront) errs.docFront = ["ارفع صورة الوجه الأمامي للهوية"];
     if (kyc.docType === "id" && !docBack) errs.docBack = ["ارفع صورة الوجه الخلفي للهوية"];
     setErrors(errs);
-    if (Object.keys(errs).length === 0) setStep(3);
+    if (Object.keys(errs).length > 0) return;
+    setBusy(true);
+    try {
+      await api("/auth/register/check", { method: "POST", body: { id_number: num } });
+      setIdNumber(num);
+      setStep(3);
+    } catch (err) {
+      fail(err, "تعذر التحقق من الهوية");
+    } finally {
+      setBusy(false);
+    }
   };
 
   /**
@@ -582,6 +593,7 @@ function AuthPage() {
           password_confirmation: v.confirm,
           accepted_terms: true,
           device_name: "web",
+          ...(idNumber && { id_number: idNumber }),
         },
       });
 
@@ -613,6 +625,7 @@ function AuthPage() {
       // بريد أو موبايل مستعمل مثلًا: الحقل في الخطوة الأولى، فنرجع له.
       const errs = fromServer(err);
       if (errs.name || errs.phone || errs.email || errs.password) setStep(1);
+      else if (errs.docNumber) setStep(2);
     } finally {
       setBusy(false);
     }

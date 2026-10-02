@@ -234,7 +234,8 @@ export const en: Record<string, string> = {
   "نعيد شراء مشترياتك منّا بأفضل سعر في السوق.":
     "We buy back what you bought from us at the best price in the market.",
   "توصيل مؤمّن": "Insured delivery",
-  "شحن مؤمّن عليه بالكامل لجميع محافظات مصر.": "Fully insured shipping to every governorate in Egypt.",
+  "شحن مؤمّن عليه بالكامل لجميع محافظات مصر.":
+    "Fully insured shipping to every governorate in Egypt.",
   "زاد جولد للذهب والسبائك — بيت خبرة في المعادن النفيسة يجمع بين الأمان والشفافية وسهولة الاستثمار.":
     "Zad Gold & Bullion — a house of expertise in precious metals combining safety, transparency and easy investing.",
   "سبائك وعملات ذهب زاد جولد": "Zad Gold bars and coins",
@@ -313,6 +314,7 @@ export const en: Record<string, string> = {
   "تم إنشاء حسابك": "Your account was created",
   "أكد بريدك الإلكتروني ثم سجّل الدخول.": "Confirm your email, then sign in.",
   "تعذر إنشاء الحساب": "Couldn't create your account",
+  "تعذر التحقق من الهوية": "Couldn't verify your ID",
   رجوع: "Back",
   "تخطي الآن وأكمل التوثيق من حسابي": "Skip for now — verify later from my account",
   "حساب ديمو": "Demo account",
