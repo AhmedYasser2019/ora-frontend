@@ -101,7 +101,8 @@ function CartPage() {
                     <div className="mt-auto flex items-center justify-between pt-3">
                       <div className="flex items-center gap-1 rounded-full border border-border">
                         <button
-                          onClick={() => setQty(i.slug, i.qty - 1)}
+                          // سطر نفد مخزونه بعد إضافته ينزل للمتاح مباشرة (صفر = حذف) بضغطة واحدة.
+                          onClick={() => setQty(i.slug, Math.min(i.qty - 1, p.stock))}
                           aria-label={t("إنقاص الكمية")}
                           className="flex h-8 w-8 items-center justify-center rounded-full text-primary hover:bg-secondary"
                         >
