@@ -60,6 +60,14 @@ function CheckoutPage() {
   // الخادم يرفض الطلب والسوق مغلق على أي حال؛ هنا يُعرف ذلك قبل ملء النموذج. كل دقيقة،
   // فصفحة مفتوحة وقت الافتتاح لا تبقى مقفولة.
   const closed = useQuery({ ...marketQuery, refetchInterval: 60_000 }).data?.open === false;
+  // والخادم يرفض الشراء قبل اعتماد الهوية؛ الحساب التجريبي لا يُسأل.
+  const kycWait = user?.is_demo
+    ? null
+    : user?.kyc_status === "pending"
+      ? "حسابك قيد المراجعة. يرجى انتظار الموافقة لإتمام عمليات الشراء."
+      : user?.kyc_status === "unverified"
+        ? "وثّق هويتك أولًا لإتمام عمليات الشراء."
+        : null;
 
   // null = لم يلمسه الزائر بعد، فيُعرض ما في حسابه. تفريغ الحقل عمدًا يبقى فارغًا.
   const [form, setForm] = useState({
@@ -259,6 +267,14 @@ function CheckoutPage() {
           {t("السوق مغلق حاليًا. لا يمكن إتمام الطلبات.")}
         </div>
       )}
+      {kycWait && (
+        <div
+          role="alert"
+          className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/5 p-5 text-sm text-destructive"
+        >
+          {t(kycWait)}
+        </div>
+      )}
       {short.length > 0 && (
         <div
           role="alert"
@@ -425,7 +441,7 @@ function CheckoutPage() {
 
           <button
             type="submit"
-            disabled={submitting || closed || short.length > 0}
+            disabled={submitting || closed || !!kycWait || short.length > 0}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
             {submitting ? (

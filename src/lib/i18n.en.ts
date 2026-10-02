@@ -131,6 +131,9 @@ export const en: Record<string, string> = {
   "تواصل معنا": "Contact us",
   "حسابك مرفوض. لا يمكنك إتمام عملية الشراء. يرجى التواصل مع الدعم.":
     "Your account is rejected. You cannot complete the purchase. Please contact support.",
+  "حسابك قيد المراجعة. يرجى انتظار الموافقة لإتمام عمليات الشراء.":
+    "Your account is under review. Please wait for approval to complete purchases.",
+  "وثّق هويتك أولًا لإتمام عمليات الشراء.": "Verify your identity first to complete purchases.",
   "سموحة، الإسكندرية، مصر": "Smouha, Alexandria, Egypt",
   "جميع الحقوق محفوظة © زاد جولد 2026": "All rights reserved © Zad Gold 2026",
   "توصيل آمن ومؤمّن لكل محافظات مصر": "Safe, insured delivery to every governorate in Egypt",
