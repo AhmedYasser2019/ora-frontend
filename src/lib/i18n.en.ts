@@ -481,6 +481,8 @@ export const en: Record<string, string> = {
   "راجع البيانات": "Check your details",
   "أدخل رقم موبايل مصري صحيح (01xxxxxxxxx).": "Enter a valid Egyptian mobile number (01xxxxxxxxx).",
   "راجع الاسم": "Check your name",
+  "الاسم يجب أن يحتوي على حروف فقط ولا يُسمح بالأرقام أو الرموز.":
+    "Name must contain letters only, numbers and symbols are not allowed",
   "الاسم يجب أن يحتوي على حروف فقط، بدون أرقام أو رموز.":
     "Your name can only contain letters — no numbers or symbols.",
   "أدخل عنوان التوصيل بالتفصيل": "Enter your full delivery address",

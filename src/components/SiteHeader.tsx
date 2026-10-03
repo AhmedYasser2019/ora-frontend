@@ -1,10 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Heart, Menu, Package, Phone, ShoppingBag, User, Wallet, X } from "lucide-react";
 import { useState } from "react";
 
 import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
 import { useLang } from "@/lib/i18n";
+import { useAuth } from "@/lib/use-auth";
 import { navLinks } from "@/lib/site";
 import { useSiteSettings } from "@/lib/settings.queries";
 
@@ -17,6 +18,8 @@ export function SiteHeader() {
   const favorites = useFavorites();
   const { lang, setLang, t } = useLang();
   const settings = useSiteSettings();
+  const { user } = useAuth();
+  const pathname = useLocation({ select: (l) => l.pathname });
 
   return (
     <>
@@ -66,8 +69,10 @@ export function SiteHeader() {
               >
                 <Package className="h-5 w-5" />
               </Link>
+              {/* زائر → صفحة الدخول ثم يرجع للصفحة اللي كان فيها، مش لحسابه */}
               <Link
-                to="/account"
+                to={user ? "/account" : "/auth"}
+                search={user ? {} : { next: pathname }}
                 aria-label={t("حسابي")}
                 className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
               >

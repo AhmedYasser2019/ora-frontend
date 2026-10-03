@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { api, ApiError, hasRealToken } from "@/lib/api";
+import { fullName } from "@/lib/auth-validation";
 import { useAuth } from "@/lib/use-auth";
 
 import { tr } from "@/lib/i18n";
@@ -84,12 +85,17 @@ function AccountPage() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    const name = fullName.safeParse(profile.full_name);
+    if (!name.success) {
+      toast.error(t(name.error.issues[0]?.message ?? ""));
+      return;
+    }
     setSaving(true);
     try {
       await api("/me", {
         method: "PATCH",
         body: {
-          name: profile.full_name.trim(),
+          name: name.data,
           ...(phoneChanged
             ? { phone: profile.phone.trim(), current_password: profile.current_password }
             : {}),

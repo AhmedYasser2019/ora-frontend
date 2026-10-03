@@ -49,8 +49,19 @@ const newPassword = z
 const same = (d: { password: string; confirm: string }) => d.password === d.confirm;
 const mismatch = { message: "كلمتا المرور غير متطابقتين", path: ["confirm"] };
 
+// نفس ProfileController::NAME_FORMAT: حروف بأي لغة، ثم حروف ومسافات و ' و - فقط.
+export const fullName = z
+  .string()
+  .trim()
+  .min(2, "اكتب اسمك")
+  .max(60, "الاسم طويل جدًا")
+  .regex(
+    /^\p{L}[\p{L}\p{M} '-]*$/u,
+    "الاسم يجب أن يحتوي على حروف فقط ولا يُسمح بالأرقام أو الرموز.",
+  );
+
 const account = z.object({
-  name: z.string().trim().min(2, "اكتب اسمك").max(60, "الاسم طويل جدًا"),
+  name: fullName,
   phone,
   email,
   password: newPassword,

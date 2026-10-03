@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { latin, schemas } from "./auth-validation";
+import { fullName, latin, schemas } from "./auth-validation";
 
 // أرقام عربية تُقبل وتُرسل لاتينية.
 assert.equal(latin(" ٠١٠١٢٣٤٥٦٧٨ "), "01012345678");
@@ -51,3 +51,10 @@ for (const weak of ["mohamedali", "Mohamedali", "Mohamed1", "mohamed@1"])
 assert.equal(schemas.resetCode.safeParse({ code: "١٢٣٤" }).success, true);
 assert.equal(schemas.resetCode.safeParse({ code: "123" }).success, false);
 console.log("auth-validation ok");
+
+// الاسم حروف فقط — في التسجيل والديمو وتعديل الحساب.
+for (const name of ["John123", "12345", "@@@", "!@#$%^&*"]) {
+  assert.equal(schemas.demo.safeParse({ ...ok, name, phone: undefined }).success, false, name);
+  assert.equal(fullName.safeParse(name).success, false, name);
+}
+for (const name of ["عبد الله", "Mary-Jane O'Neil"]) assert.equal(fullName.parse(name), name);
