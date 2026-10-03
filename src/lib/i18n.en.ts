@@ -12,6 +12,7 @@ export const en: Record<string, string> = {
   "جاري التحميل…": "Loading…",
   أسبوع: "Week",
   شهر: "Month",
+  "3 شهور": "3 months",
   سنة: "Year",
   "10 سنين": "10 years",
   "لا توجد بيانات لهذه الفترة بعد.": "No data for this period yet.",
