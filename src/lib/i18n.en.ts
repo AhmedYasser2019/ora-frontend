@@ -258,6 +258,8 @@ export const en: Record<string, string> = {
   "رقم الموبايل": "Mobile number",
   "حفظ البيانات": "Save details",
   "كلمة المرور الحالية": "Current password",
+  "إظهار كلمة المرور": "Show password",
+  "إخفاء كلمة المرور": "Hide password",
   "حساب موثّق بالبريد الإلكتروني": "Account verified by email",
   "تسجيل الخروج": "Sign out",
   "جرّب وضع الديمو": "Try demo mode",

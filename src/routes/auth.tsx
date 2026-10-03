@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   BadgeCheck,
   Check,
+  Eye,
+  EyeOff,
   FlaskConical,
   IdCard,
   Image as ImageIcon,
@@ -85,6 +87,8 @@ function Field({
   error?: string[] | undefined;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
   const t = useT();
+  const [shown, setShown] = useState(false);
+  const isPassword = props.type === "password";
 
   return (
     <div>
@@ -103,12 +107,25 @@ function Field({
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
           {...props}
-          className={`w-full rounded-xl border bg-background py-2.5 pe-3 ps-10 text-sm outline-none transition-colors focus:ring-1 ${
+          type={isPassword && shown ? "text" : props.type}
+          className={`w-full rounded-xl border bg-background py-2.5 ${isPassword ? "pe-10" : "pe-3"} ps-10 text-sm outline-none transition-colors focus:ring-1 ${
             error
               ? "border-destructive focus:border-destructive focus:ring-destructive"
               : "border-input focus:border-gold focus:ring-gold"
           }`}
         />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShown(!shown)}
+            aria-label={t(shown ? "إخفاء كلمة المرور" : "إظهار كلمة المرور")}
+            aria-pressed={shown}
+            aria-controls={id}
+            className="absolute end-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+          >
+            {shown ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        )}
       </div>
       {error && (
         <p id={`${id}-error`} className="mt-1 text-xs text-destructive">
