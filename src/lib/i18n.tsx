@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
@@ -30,14 +31,20 @@ const LangContext = createContext<Ctx | null>(null);
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const [value, setValue] = useState<Lang>(() => (current = readLang()));
+  const qc = useQueryClient();
 
-  const setLang = useCallback((l: Lang) => {
-    current = l;
-    document.cookie = `${COOKIE}=${l};path=/;max-age=31536000;samesite=lax`;
-    document.documentElement.lang = l;
-    document.documentElement.dir = l === "en" ? "ltr" : "rtl";
-    setValue(l);
-  }, []);
+  const setLang = useCallback(
+    (l: Lang) => {
+      current = l;
+      document.cookie = `${COOKIE}=${l};path=/;max-age=31536000;samesite=lax`;
+      document.documentElement.lang = l;
+      document.documentElement.dir = l === "en" ? "ltr" : "rtl";
+      setValue(l);
+      // نصوص الخادم (status_label، الأسئلة، الإعدادات...) مخزّنة بلغة الطلب الأول — نعيد جلبها باللغة الجديدة.
+      void qc.invalidateQueries();
+    },
+    [qc],
+  );
 
   const t = useCallback((ar: string) => (value === "en" ? (en[ar] ?? ar) : ar), [value]);
   current = value;
