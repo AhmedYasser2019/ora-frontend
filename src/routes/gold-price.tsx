@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { intlLocale, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
@@ -73,6 +73,16 @@ function GoldPricePage() {
         <p className="mt-1 font-display text-2xl text-primary">
           {data?.gram.k24 ? egp(data.gram.k24 * 31.1035) : "—"}
         </p>
+      </div>
+
+      <div className="mt-6 text-center">
+        <Link
+          to="/collection"
+          search={{ metal: "gold", cat: "gold-bars" }}
+          className="inline-block rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+        >
+          {t("تصفح سبائك الذهب")}
+        </Link>
       </div>
     </PageShell>
   );

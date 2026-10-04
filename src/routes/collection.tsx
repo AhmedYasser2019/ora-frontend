@@ -2,18 +2,31 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
+import { z } from "zod";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { ProductCard } from "@/components/ProductCard";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
-import { CATEGORIES, productsQuery, providersOf } from "@/lib/catalog.queries";
+import { CATEGORIES, CATEGORY_SLUGS, productsQuery, providersOf } from "@/lib/catalog.queries";
 import type { Category, Metal } from "@/lib/catalog.server";
 import { weightLabel } from "@/lib/site";
 
 import { tr } from "@/lib/i18n";
 
+// فلاتر مبدئية من الرابط (مثل زر «تصفح سبائك الفضة»)؛ القيمة غير المعروفة تُتجاهل بدل أن تكسر الصفحة.
+const searchSchema = z.object({
+  metal: z.enum(["gold", "silver"]).optional().catch(undefined),
+  cat: z
+    .enum(Object.keys(CATEGORY_SLUGS) as [keyof typeof CATEGORY_SLUGS])
+    .optional()
+    .catch(undefined),
+});
+
 export const Route = createFileRoute("/collection")({
+  validateSearch: (s) => searchSchema.parse(s),
+  // رابط بفلاتر مختلفة وأنت على الصفحة (مثل «مجموعتنا» في القائمة) يعيد ضبط الفلاتر.
+  remountDeps: ({ search }) => search,
   head: () => ({
     meta: [
       { title: tr("مجموعتنا | سبائك وعملات الذهب — زاد جولد") },
@@ -53,6 +66,8 @@ type Sort = (typeof SORTS)[number]["key"];
 function CollectionPage() {
   const { data: catalog } = useQuery(productsQuery);
   const t = useT();
+  const search = Route.useSearch();
+  const initialCat = search.cat && CATEGORY_SLUGS[search.cat];
 
   const all = catalog ?? [];
   const PROVIDERS = useMemo(() => providersOf(all), [catalog]);
@@ -68,8 +83,10 @@ function CollectionPage() {
     };
   }, [catalog]);
   const [open, setOpen] = useState(false);
-  const [metal, setMetal] = useState<Metal | "all">("all");
-  const [cats, setCats] = useState<Category[]>([]);
+  const [metal, setMetal] = useState<Metal | "all">(
+    search.metal ?? (initialCat ? (initialCat === "سبائك فضة" ? "silver" : "gold") : "all"),
+  );
+  const [cats, setCats] = useState<Category[]>(initialCat ? [initialCat] : []);
   const [provs, setProvs] = useState<string[]>([]);
   // undefined = لم يلمس المستخدم الشريط بعد، فالحدّ هو أقصى ما في الكتالوج مهما تغيّر.
   const [maxW, setMaxWState] = useState<number | undefined>(undefined);

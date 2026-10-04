@@ -30,7 +30,6 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ShippingPolicyRouteImport } from './routes/shipping-policy'
-import { Route as SilverRouteImport } from './routes/silver'
 import { Route as SilverPriceRouteImport } from './routes/silver-price'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WalletRouteImport } from './routes/wallet'
@@ -144,11 +143,6 @@ const ShippingPolicyRoute = ShippingPolicyRouteImport.update({
   path: '/shipping-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SilverRoute = SilverRouteImport.update({
-  id: '/silver',
-  path: '/silver',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SilverPriceRoute = SilverPriceRouteImport.update({
   id: '/silver-price',
   path: '/silver-price',
@@ -207,7 +201,6 @@ export interface FileRoutesByFullPath {
   '/refund-policy': typeof RefundPolicyRoute
   '/reports': typeof ReportsRoute
   '/shipping-policy': typeof ShippingPolicyRoute
-  '/silver': typeof SilverRoute
   '/silver-price': typeof SilverPriceRoute
   '/terms': typeof TermsRoute
   '/wallet': typeof WalletRoute
@@ -238,7 +231,6 @@ export interface FileRoutesByTo {
   '/refund-policy': typeof RefundPolicyRoute
   '/reports': typeof ReportsRoute
   '/shipping-policy': typeof ShippingPolicyRoute
-  '/silver': typeof SilverRoute
   '/silver-price': typeof SilverPriceRoute
   '/terms': typeof TermsRoute
   '/wallet': typeof WalletRoute
@@ -270,7 +262,6 @@ export interface FileRoutesById {
   '/refund-policy': typeof RefundPolicyRoute
   '/reports': typeof ReportsRoute
   '/shipping-policy': typeof ShippingPolicyRoute
-  '/silver': typeof SilverRoute
   '/silver-price': typeof SilverPriceRoute
   '/terms': typeof TermsRoute
   '/wallet': typeof WalletRoute
@@ -303,7 +294,6 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/reports'
     | '/shipping-policy'
-    | '/silver'
     | '/silver-price'
     | '/terms'
     | '/wallet'
@@ -334,7 +324,6 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/reports'
     | '/shipping-policy'
-    | '/silver'
     | '/silver-price'
     | '/terms'
     | '/wallet'
@@ -365,7 +354,6 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/reports'
     | '/shipping-policy'
-    | '/silver'
     | '/silver-price'
     | '/terms'
     | '/wallet'
@@ -397,7 +385,6 @@ export interface RootRouteChildren {
   RefundPolicyRoute: typeof RefundPolicyRoute
   ReportsRoute: typeof ReportsRoute
   ShippingPolicyRoute: typeof ShippingPolicyRoute
-  SilverRoute: typeof SilverRoute
   SilverPriceRoute: typeof SilverPriceRoute
   TermsRoute: typeof TermsRoute
   WalletRoute: typeof WalletRoute
@@ -556,13 +543,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShippingPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/silver': {
-      id: '/silver'
-      path: '/silver'
-      fullPath: '/silver'
-      preLoaderRoute: typeof SilverRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/silver-price': {
       id: '/silver-price'
       path: '/silver-price'
@@ -637,7 +617,6 @@ const rootRouteChildren: RootRouteChildren = {
   RefundPolicyRoute: RefundPolicyRoute,
   ReportsRoute: ReportsRoute,
   ShippingPolicyRoute: ShippingPolicyRoute,
-  SilverRoute: SilverRoute,
   SilverPriceRoute: SilverPriceRoute,
   TermsRoute: TermsRoute,
   WalletRoute: WalletRoute,

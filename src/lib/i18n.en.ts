@@ -758,18 +758,10 @@ export const en: Record<string, string> = {
   "الفضة مدخل منخفض التكلفة للاستثمار في المعادن النفيسة: سعر الجرام أقل بكثير من الذهب، مما يتيح بدء الادخار بمبالغ صغيرة وتنويع المحفظة. في المقابل تكون تقلباتها السعرية أعلى من الذهب، ونسبة المصنعية على السبائك الصغيرة أكبر — لذلك تكون السبائك الأثقل أفضل من حيث التكلفة لكل جرام.":
     "Silver is a low-cost way into precious metals: the gram price is far below gold, so you can start saving with small amounts and diversify your portfolio. In return it is more volatile than gold, and fabrication fees on small bars are proportionally higher — which makes heavier bars better value per gram.",
   "تصفح سبائك الفضة": "Browse silver bars",
-  "سبائك الفضة وسعر الفضة اليوم | زاد جولد": "Silver bars and today's silver price | Zad Gold",
-  "سبائك فضة 999 بأوزان مختلفة مع سعر الفضة اللحظي للجرام في مصر وشهادة أصل لكل سبيكة.":
-    "999 silver bars in a range of weights with the live silver gram price in Egypt and a certificate of authenticity for every bar.",
-  "سبائك الفضة | زاد جولد": "Silver bars | Zad Gold",
-  "سعر الفضة اللحظي وسبائك فضة 999 معتمدة.": "Live silver prices and certified 999 silver bars.",
-  "سبائك فضة نقية 999 بأوزان متعددة، بسعر الجرام المنشور لحظة بلحظة.":
-    "999 fine silver bars in a range of weights, at the published gram price, moment by moment.",
+  "تصفح سبائك الذهب": "Browse gold bars",
   "سعر جرام الفضة": "Silver price per gram",
   النقاء: "Purity",
-  "فضة نقية": "Pure silver",
   متاح: "Available",
-  "نشتري منك في أي وقت": "We buy back any time",
 
   // الطلبات
   "طلباتي | زاد جولد": "My orders | Zad Gold",

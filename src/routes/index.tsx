@@ -199,13 +199,14 @@ function Home() {
       <section className="mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { icon: Coins, label: "سبائك ذهب", to: "/collection" as const },
-            { icon: BadgeCheck, label: "عملات ذهبية", to: "/collection" as const },
-            { icon: ShieldCheck, label: "سبائك فضة", to: "/silver" as const },
-          ].map(({ icon: Icon, label, to }) => (
+            { icon: Coins, label: "سبائك ذهب", cat: "gold-bars" as const },
+            { icon: BadgeCheck, label: "عملات ذهبية", cat: "gold-coins" as const },
+            { icon: ShieldCheck, label: "سبائك فضة", cat: "silver-bars" as const },
+          ].map(({ icon: Icon, label, cat }) => (
             <Link
               key={label}
-              to={to}
+              to="/collection"
+              search={{ cat }}
               className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card py-6 transition-colors hover:border-gold"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/60 text-primary">

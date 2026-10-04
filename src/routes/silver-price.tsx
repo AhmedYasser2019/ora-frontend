@@ -99,7 +99,8 @@ function SilverPricePage() {
           )}
         </p>
         <Link
-          to="/silver"
+          to="/collection"
+          search={{ metal: "silver", cat: "silver-bars" }}
           className="mt-4 inline-block rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
         >
           {t("تصفح سبائك الفضة")}
