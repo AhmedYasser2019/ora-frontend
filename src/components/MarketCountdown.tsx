@@ -26,22 +26,22 @@ export function MarketCountdown() {
 
   const { days, hours, minutes, seconds } = splitDuration(left);
   const boxes = [
-    { v: seconds, l: t("ثانية") },
-    { v: minutes, l: t("دقيقة") },
-    { v: hours, l: t("ساعة") },
     { v: days, l: t("يوم") },
+    { v: hours, l: t("ساعة") },
+    { v: minutes, l: t("دقيقة") },
+    { v: seconds, l: t("ثانية") },
   ];
 
   return (
     <section className="mx-auto max-w-6xl px-4 pb-10">
       <div className="rounded-2xl border border-border bg-card p-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
           <span
             className={`h-5 w-5 shrink-0 rounded-full ${
               data.open ? "bg-primary" : "animate-pulse bg-destructive"
             }`}
           />
-          <div className="text-start">
+          <div>
             <p
               className={`text-lg font-semibold ${data.open ? "text-primary" : "text-destructive"}`}
             >
