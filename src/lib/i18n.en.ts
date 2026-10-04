@@ -1115,8 +1115,17 @@ export const en: Record<string, string> = {
   "سعر الشراء الإجمالي": "Total purchase price",
   "سجّله ليُحسب الربح أو الخسارة.": "Record it to see profit or loss.",
   "أضف إلى ممتلكاتي": "Add to my holdings",
-  "التقييم بسعر إعادة البيع اللحظي — أي ما ستقبضه لو بعت الآن، دون خصم المصنعية. بياناتك محفوظة على هذا المتصفح ولا تُرسل لأي خادم.":
-    "Valued at the live buy-back price — what you would receive if you sold now, before any fabrication deduction. Your data stays in this browser and is never sent to a server.",
+  "التقييم بسعر إعادة البيع اللحظي — أي ما يدفعه المكتب لو بعت الآن. رصيد الذهب في المحفظة له شاشته الخاصة ولا يُحتسب هنا.":
+    "Valued at the live buy-back price — what the office would pay if you sold now. Gold held in your wallet has its own screen and isn't counted here.",
+  "المجاميع لا تشمل أسطرًا تعذّر تسعيرها الآن": "Totals exclude items that couldn't be priced right now",
+  "الحد الأقصى للمصنعية": "Maximum fabrication fee",
+  "التداول متوقف": "Trading is paused",
+  "تم إنشاء حسابك، لكن تعذر رفع صورة الهوية": "Your account was created, but the ID photo couldn't be uploaded",
+  "أعد المحاولة من صفحة حسابك.": "Try again from your account page.",
+  "لا توجد أخبار منشورة حاليًا. تابعنا قريبًا.": "No news published yet. Check back soon.",
+  "جارٍ قراءة حالة التوثيق…": "Checking verification status…",
+  "تعذّر إرسال الرسالة": "Couldn't send the message",
+  "راجع اتصالك وحاول مرة أخرى.": "Check your connection and try again.",
   // بيانات المتجر القادمة من الداشبورد
   واتساب: "WhatsApp",
   فيسبوك: "Facebook",
