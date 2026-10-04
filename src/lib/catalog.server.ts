@@ -6,7 +6,7 @@
  * الأسماء التي تستعملها الواجهة، لا أكثر.
  */
 
-import { readLang } from "./i18n";
+import { readLang, tr } from "./i18n";
 
 import { API_URL, backend } from "./backend.server";
 
@@ -78,7 +78,7 @@ function toProduct(p: ApiProduct): Product {
     slug: p.sku,
     img: p.image_url,
     t: p.name,
-    s: p.subtitle ?? `${p.metal === "silver" ? "نقاء" : "عيار"} ${p.karat} – ${p.purity}`,
+    s: p.subtitle ?? `${tr(p.metal === "silver" ? "نقاء" : "عيار")} ${p.karat} – ${p.purity}`,
     desc: p.description ?? "",
     metal: p.metal,
     cat: categoryOf(p),

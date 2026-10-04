@@ -52,6 +52,7 @@ export const en: Record<string, string> = {
   "عيار 14": "14K",
   "عيار 12": "12K",
   عيار: "Karat",
+  نقاء: "Purity",
   "فضة 999": "999 Silver",
   "السعر الرئيسي": "Headline price",
   "سعر الشراء": "Buy price",
