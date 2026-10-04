@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { api, ApiError } from "./api";
-import { bySlug } from "./catalog.queries";
+import { bySlug, productsQuery } from "./catalog.queries";
 import type { Product } from "./catalog.server";
 import { useT } from "./i18n";
 import { useAuth } from "./use-auth";
@@ -27,7 +27,7 @@ type CartContextValue = {
   items: CartItem[];
   count: number;
   ready: boolean;
-  /** ترجع false لو المستخدم غير مسجّل الدخول (ويتم تحويله لصفحة الدخول) */
+  /** ترجع false لو المستخدم غير مسجّل الدخول (ويتم تحويله لصفحة الدخول) أو تتخطى الكمية المتاح */
   add: (slug: string, qty?: number) => boolean;
   setQty: (slug: string, qty: number) => void;
   remove: (slug: string) => void;
@@ -55,6 +55,10 @@ export const shortLines = (items: CartItem[], catalog: Product[] | undefined) =>
     const p = bySlug(catalog, i.slug);
     return p && i.qty > p.stock ? [{ ...i, product: p }] : [];
   });
+
+/** كم قطعة أخرى تقبلها السلة من هذا المنتج: المخزون ناقص ما فيها، وبحد السلة الأقصى. */
+export const room = (stock: number, inCart: number) =>
+  Math.max(0, Math.min(stock, MAX_QTY) - inCart);
 
 /** نفس صياغة الخادم: أيّ قطعة، وكم المتاح منها. */
 export const shortMessage = (t: (s: string) => string, p: Product) =>
@@ -127,6 +131,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
 
       const current = lines(qc).find((l) => l.product.sku === slug)?.quantity ?? 0;
+      // يُرفض هنا قبل الطلب، فلا يقفز السطر للكمية الزائدة ثم يرتدّ بعد رفض الخادم.
+      const p = bySlug(qc.getQueryData(productsQuery.queryKey), slug);
+      if (p && qty > room(p.stock, current)) {
+        toast.error(shortMessage(t, p));
+        return false;
+      }
       put(slug, Math.min(current + qty, MAX_QTY));
       return true;
     },

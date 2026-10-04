@@ -8,7 +8,7 @@ import { tr, useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ProductCard } from "@/components/ProductCard";
-import { useCart } from "@/lib/cart";
+import { room, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { productImage } from "@/lib/product-image";
@@ -65,10 +65,13 @@ function ProductPage() {
   const { data: catalog } = useQuery(productsQuery);
   const p = bySlug(catalog, loaded.slug) ?? loaded;
   const related = (catalog ?? []).filter((x) => x.cat === p.cat && x.slug !== p.slug).slice(0, 4);
-  const { add } = useCart();
+  const { add, items } = useCart();
   const navigate = useNavigate();
   const t = useT();
-  const [qty, setQty] = useState(1);
+  const [picked, setQty] = useState(1);
+  // المحدِّد لا يتخطى ما تبقّى بعد ما في السلة، وينكمش معه لو امتلأت السلة.
+  const left = room(p.stock, items.find((i) => i.slug === p.slug)?.qty ?? 0);
+  const qty = Math.max(1, Math.min(picked, left));
 
   const price = p.price;
   const resale = p.resale;
@@ -76,7 +79,10 @@ function ProductPage() {
 
   const addToCart = () => {
     const ok = add(p.slug, qty);
-    if (ok) toast.success(t("تمت الإضافة للسلة"), { description: `${t(p.t)} × ${qty}` });
+    if (ok) {
+      toast.success(t("تمت الإضافة للسلة"), { description: `${t(p.t)} × ${qty}` });
+      setQty(1);
+    }
     return ok;
   };
 
@@ -154,7 +160,7 @@ function ProductPage() {
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-3 rounded-full border border-border px-3 py-2">
                 <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  onClick={() => setQty(Math.max(1, qty - 1))}
                   aria-label={t("تقليل الكمية")}
                   className="text-primary disabled:opacity-40"
                   disabled={qty <= 1}
@@ -163,10 +169,10 @@ function ProductPage() {
                 </button>
                 <span className="w-6 text-center text-sm font-semibold text-primary">{qty}</span>
                 <button
-                  onClick={() => setQty((q) => Math.min(99, p.stock, q + 1))}
+                  onClick={() => setQty(Math.min(left, qty + 1))}
                   aria-label={t("زيادة الكمية")}
                   className="text-primary disabled:opacity-40"
-                  disabled={qty >= p.stock}
+                  disabled={qty >= left}
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -174,18 +180,25 @@ function ProductPage() {
 
               <button
                 onClick={addToCart}
-                className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                disabled={left === 0}
+                className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
               >
                 {t("أضف للسلة")}
               </button>
               <button
                 onClick={() => addToCart() && navigate({ to: "/checkout" })}
-                className="rounded-full border border-gold px-6 py-3 text-sm font-semibold text-gold-deep transition-colors hover:bg-cream"
+                disabled={left === 0}
+                className="rounded-full border border-gold px-6 py-3 text-sm font-semibold text-gold-deep transition-colors hover:bg-cream disabled:opacity-40"
               >
                 {t("اشترِ الآن")}
               </button>
               <FavoriteButton slug={p.slug} title={p.t} className="h-11 w-11" />
             </div>
+            {p.stock > 0 && left === 0 && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {t("كل الكمية المتاحة في سلتك بالفعل")}
+              </p>
+            )}
           </div>
 
           {p.cashbackBps > 0 && (

@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { shortLines, upsert, type Line } from "./cart";
+import { room, shortLines, upsert, type Line } from "./cart";
 import type { Product } from "./catalog.server";
 
 const line = (sku: string, quantity: number): Line => ({ product: { sku }, quantity });
@@ -31,3 +31,9 @@ assert.deepEqual(
   ).map((l) => [l.slug, l.product.stock]),
   [["A", 10]],
 );
+
+// ما تقبله السلة بعد ما فيها: 30 على الرف و7 في السلة تترك 23، ولا سالب، وحد السلة 99.
+assert.equal(room(30, 7), 23);
+assert.equal(room(30, 30), 0);
+assert.equal(room(5, 9), 0);
+assert.equal(room(500, 0), 99);

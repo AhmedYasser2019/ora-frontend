@@ -435,6 +435,7 @@ export const en: Record<string, string> = {
   "سعر القطعة": "Unit price",
   الكمية: "Qty",
   "غير متوفرة بالكمية المطلوبة": "is not available in the quantity requested",
+  "كل الكمية المتاحة في سلتك بالفعل": "All available stock is already in your cart",
   المتاح: "available",
   "عدّل الكميات قبل إتمام الطلب": "Adjust the quantities before checking out",
   "إجمالي الوزن": "Total weight",
