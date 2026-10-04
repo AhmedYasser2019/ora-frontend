@@ -4,6 +4,8 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Coins,
+  Eye,
+  EyeOff,
   LoaderCircle,
   ShieldCheck,
   TrendingUp,
@@ -119,6 +121,8 @@ function WalletPage() {
   const [receipt, setReceipt] = useState<File | null>(null);
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const mask = (s: string) => (hidden ? "••••••" : s);
 
   // سعر واحد: سعر الشراء لعيار 21، وهو العيار الذي تُطلب به المحفظة أدناه.
   const buyGram = prices?.gram.k21 ?? 0;
@@ -247,10 +251,11 @@ function WalletPage() {
                   <WalletIcon className="h-4 w-4 text-gold-deep" /> {t("الرصيد النقدي")}
                 </span>
                 <p className="mt-3 font-display text-2xl text-primary">
-                  {egp(cash)} {t("ج.م")}
+                  {mask(`${egp(cash)} ${t("ج.م")}`)}
                 </p>
                 {/* تقدير للعرض فقط من السعر الحي، فيتغيّر مع كل سعر ينشره المكتب. الشراء نفسه بعرض سعر من الخادم. */}
                 {cash > 0 &&
+                  !hidden &&
                   ([21, 24] as const).map((k) => {
                     const price = prices?.gram[`k${k}`] ?? 0;
                     return price > 0 ? (
@@ -265,18 +270,28 @@ function WalletPage() {
                   <Coins className="h-4 w-4 text-gold-deep" /> {t("رصيد الذهب")}
                 </span>
                 <p className="mt-3 font-display text-2xl text-primary">
-                  {grams(gold)} {t("جرام")}
+                  {mask(`${grams(gold)} ${t("جرام")}`)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  ≈ {egp(goldValue)} {t("ج.م")} {t("بسعر اليوم")}
+                  ≈ {mask(`${egp(goldValue)} ${t("ج.م")}`)} {t("بسعر اليوم")}
                 </p>
               </div>
               <div className="rounded-2xl border border-gold/40 bg-gradient-green p-5 text-primary-foreground">
-                <span className="flex items-center gap-2 text-xs text-primary-foreground/70">
-                  <ShieldCheck className="h-4 w-4 text-gold" /> {t("إجمالي المحفظة")}
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs text-primary-foreground/70">
+                    <ShieldCheck className="h-4 w-4 text-gold" /> {t("إجمالي المحفظة")}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setHidden((v) => !v)}
+                    aria-label={t(hidden ? "إظهار القيم" : "إخفاء القيم")}
+                    className="-my-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/10 text-primary-foreground/80 hover:bg-primary-foreground/20"
+                  >
+                    {hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 <p className="mt-3 font-display text-2xl text-gold">
-                  {egp(cash + goldValue)} {t("ج.م")}
+                  {mask(`${egp(cash + goldValue)} ${t("ج.م")}`)}
                 </p>
               </div>
             </div>
@@ -322,10 +337,13 @@ function WalletPage() {
                         </div>
                         <div className="text-end">
                           <p className="text-sm font-semibold text-primary">
-                            {incoming ? "+" : ""}
-                            {isMetal
-                              ? `${grams(Number(txn.grams ?? 0))} ${t("جرام")}`
-                              : `${egp(txn.amount / 100)} ${t("ج.م")}`}
+                            {mask(
+                              `${incoming ? "+" : ""}${
+                                isMetal
+                                  ? `${grams(Number(txn.grams ?? 0))} ${t("جرام")}`
+                                  : `${egp(txn.amount / 100)} ${t("ج.م")}`
+                              }`,
+                            )}
                           </p>
                         </div>
                       </li>
@@ -345,7 +363,7 @@ function WalletPage() {
                     <li key={d.id} className="flex items-center gap-4 px-5 py-4">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-primary">
-                          {egp(Number(d.amount))} {t("ج.م")}{" "}
+                          {mask(`${egp(Number(d.amount))} ${t("ج.م")}`)}{" "}
                           <span className="text-xs font-normal text-muted-foreground" dir="ltr">
                             #{d.reference}
                           </span>
