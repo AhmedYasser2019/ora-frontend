@@ -87,7 +87,7 @@ const TXN_LABEL: Record<string, string> = {
   buy: "شراء",
   sell: "بيع",
   adjustment: "تسوية",
-  reversal: "قيد عكسي",
+  reversal: "استرداد أموال",
 };
 
 const ASSET_LABEL: Record<string, string> = {
