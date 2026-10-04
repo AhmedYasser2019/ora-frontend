@@ -86,45 +86,49 @@ function HoldingsPage() {
             </button>
           </div>
 
-          <p className="mt-5 font-display text-4xl text-gold">
-            {money(egpOf(totals.value_piasters))}
-          </p>
-          {totals.cost_piasters > 0 && totals.gain_pct !== null && (
-            <span
-              className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-                totals.gain_piasters < 0
-                  ? "bg-destructive/20 text-destructive-foreground"
-                  : "bg-gold/20 text-gold"
-              }`}
-            >
-              <Trend className="h-3.5 w-3.5" />
-              {pct(totals.gain_pct)} ·{" "}
-              {hidden ? "••••" : `${egp(totals.gain_piasters / 100)} ${t("ج.م")}`}
-            </span>
-          )}
+          <div className="mt-5 grid gap-6 md:grid-cols-2 md:items-center">
+            <div>
+              <p className="font-display text-4xl text-gold">
+                {money(egpOf(totals.value_piasters))}
+              </p>
+              {totals.cost_piasters > 0 && totals.gain_pct !== null && (
+                <span
+                  className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                    totals.gain_piasters < 0
+                      ? "bg-destructive/20 text-destructive-foreground"
+                      : "bg-gold/20 text-gold"
+                  }`}
+                >
+                  <Trend className="h-3.5 w-3.5" />
+                  {pct(totals.gain_pct)} ·{" "}
+                  {hidden ? "••••" : `${egp(totals.gain_piasters / 100)} ${t("ج.م")}`}
+                </span>
+              )}
+            </div>
 
-          <dl className="mt-6 grid grid-cols-3 gap-4 border-t border-primary-foreground/15 pt-5 text-center">
-            <div>
-              <dt className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/70">
-                <Gem className="h-3.5 w-3.5 text-gold" /> {t("ذهب")}
-              </dt>
-              <dd className="mt-2 text-sm font-semibold">
-                {money(egpOf(byMetal("gold")?.value_piasters ?? 0))}
-              </dd>
-            </div>
-            <div>
-              <dt className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/70">
-                <Coins className="h-3.5 w-3.5 text-gold" /> {t("فضة")}
-              </dt>
-              <dd className="mt-2 text-sm font-semibold">
-                {money(egpOf(byMetal("silver")?.value_piasters ?? 0))}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-primary-foreground/70">{t("قطع")}</dt>
-              <dd className="mt-2 text-sm font-semibold">{totals.items}</dd>
-            </div>
-          </dl>
+            <dl className="grid grid-cols-3 gap-4 border-t border-primary-foreground/15 pt-5 text-center md:border-s md:border-t-0 md:ps-6 md:pt-0">
+              <div>
+                <dt className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/70">
+                  <Gem className="h-3.5 w-3.5 text-gold" /> {t("ذهب")}
+                </dt>
+                <dd className="mt-2 text-sm font-semibold">
+                  {money(egpOf(byMetal("gold")?.value_piasters ?? 0))}
+                </dd>
+              </div>
+              <div>
+                <dt className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/70">
+                  <Coins className="h-3.5 w-3.5 text-gold" /> {t("فضة")}
+                </dt>
+                <dd className="mt-2 text-sm font-semibold">
+                  {money(egpOf(byMetal("silver")?.value_piasters ?? 0))}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-primary-foreground/70">{t("قطع")}</dt>
+                <dd className="mt-2 text-sm font-semibold">{totals.items}</dd>
+              </div>
+            </dl>
+          </div>
 
           {totals.unpriced > 0 && (
             <p className="mt-4 rounded-xl bg-primary-foreground/10 px-3 py-2 text-[11px] text-primary-foreground/80">

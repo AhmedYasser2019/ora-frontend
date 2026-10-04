@@ -842,6 +842,7 @@ export const en: Record<string, string> = {
   "السعر الحالي (محدَّث لحظيًا)": "Current price (updated live)",
   "الإجمالي لـ": "Total for",
   قطعة: "pcs",
+  قطع: "Pieces",
   "اشترِ الآن": "Buy now",
   "إعادة البيع والكاش باك": "Buy-back and cashback",
   "سعر إعادة البيع الآن": "Buy-back price now",
