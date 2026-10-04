@@ -448,7 +448,11 @@ function AuthPage() {
   const [step, setStep] = useState(1);
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
-  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", confirm: "" });
+  // كل تبويب له نموذجه — بريد مكتوب في «حساب جديد» لا يظهر في «تسجيل الدخول» أو «حساب ديمو».
+  const [forms, setForms] = useState(() => {
+    const blank = { name: "", phone: "", email: "", password: "", confirm: "" };
+    return { login: blank, signup: blank, demo: blank };
+  });
   const [kyc, setKyc] = useState({ docType: "id", docNumber: "" });
   // الرقم الذي اجتاز فحص الخادم في الخطوة الثانية؛ التخطي يتركه null فلا يُرسل.
   const [idNumber, setIdNumber] = useState<string | null>(null);
@@ -458,6 +462,8 @@ function AuthPage() {
 
   const target = safeNext(next);
   const wizard = mode === "signup" && step > 1;
+  const tab = mode === "forgot" ? "login" : mode;
+  const form = forms[tab];
 
   // لو المستخدم مسجّل بالفعل ومش وسط خطوات التسجيل → نوجهه لوجهته
   useEffect(() => {
@@ -479,7 +485,7 @@ function AuthPage() {
     setErrors((x) => ({ ...x, [key]: ok ? undefined : [BAD_IMAGE] }));
   };
   const edit = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [key]: e.target.value });
+    setForms({ ...forms, [tab]: { ...form, [key]: e.target.value } });
     clear(key);
   };
 
