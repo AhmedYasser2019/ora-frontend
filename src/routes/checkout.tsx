@@ -22,6 +22,7 @@ import { useAuth } from "@/lib/use-auth";
 import { GOVERNORATES } from "@/lib/site";
 import { marketQuery } from "@/lib/market-hours";
 import { useSiteSettings } from "@/lib/settings.queries";
+import { PaymentReference } from "@/components/PaymentReference";
 
 import { tr } from "@/lib/i18n";
 
@@ -194,6 +195,11 @@ function CheckoutPage() {
                   "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.",
                 )}
           </p>
+          {(form.payment === "instapay" || form.payment === "bank") && (
+            <div className="mt-6">
+              <PaymentReference orderId={placed.ref} initial={null} />
+            </div>
+          )}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               to="/orders"
@@ -435,7 +441,11 @@ function CheckoutPage() {
             <p className="text-xs leading-relaxed text-muted-foreground">
               {form.payment === "wallet"
                 ? t("سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة.")
-                : t("ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.")}
+                : form.payment === "instapay" || form.payment === "bank"
+                  ? t(
+                      "بعد تأكيد الطلب حوّل المبلغ (بياناته في صفحة طرق الدفع)، ثم أدخل رقم التحويل هنا أو في طلباتي ليطابقه فريقنا مع طلبك.",
+                    )
+                  : t("ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.")}
             </p>
           </fieldset>
 

@@ -523,6 +523,13 @@ export const en: Record<string, string> = {
     "The amount will be deducted from your wallet immediately and the order confirmed right away.",
   "ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.":
     "You'll find the transfer details on the payment methods page after confirming.",
+  "بعد تأكيد الطلب حوّل المبلغ (بياناته في صفحة طرق الدفع)، ثم أدخل رقم التحويل هنا أو في طلباتي ليطابقه فريقنا مع طلبك.":
+    "After confirming, transfer the amount (details on the payment methods page), then enter the transfer reference here or in My orders so our team can match it to your order.",
+  "بعد التحويل أدخل رقم العملية كما يظهر في الإيصال، ليطابقه فريقنا مع طلبك.":
+    "After transferring, enter the transaction number exactly as it appears on your receipt so our team can match it to your order.",
+  "تم حفظ رقم التحويل": "Transfer reference saved",
+  "تعذر حفظ رقم التحويل": "Couldn't save the transfer reference",
+  "تعديل الرقم": "Change",
   "تأكيد الطلب": "Confirm order",
   "الإجمالي الفرعي": "Subtotal",
   التوصيل: "Delivery",

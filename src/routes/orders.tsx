@@ -10,6 +10,7 @@ import { api, ApiError } from "@/lib/api";
 import { egp } from "@/lib/prices.queries";
 import { pct } from "@/lib/holdings";
 import { useAuth } from "@/lib/use-auth";
+import { PaymentReference } from "@/components/PaymentReference";
 
 import { tr } from "@/lib/i18n";
 
@@ -49,6 +50,8 @@ type Order = {
     address: string | null;
     branch: string | null;
     payment_method: string | null;
+    /** رقم التحويل الذي أرسله العميل — انظر PaymentReference. */
+    payment_reference: string | null;
   };
 };
 
@@ -224,6 +227,11 @@ function OrdersPage() {
                         {t("طريقة الدفع")}: {t(PAYMENT[d.payment_method] ?? d.payment_method)}
                       </p>
                     )}
+                    {d?.payment_reference && o.status !== "pending" && (
+                      <p>
+                        {t("رقم التحويل")}: <span dir="ltr">{d.payment_reference}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-4">
@@ -246,6 +254,17 @@ function OrdersPage() {
                     )}
                   </div>
                 </div>
+
+                {o.status === "pending" &&
+                  (d?.payment_method === "instapay" || d?.payment_method === "bank") && (
+                    <div className="mt-4 border-t border-border pt-4">
+                      <PaymentReference
+                        orderId={o.order_id}
+                        initial={d.payment_reference}
+                        onSaved={refresh}
+                      />
+                    </div>
+                  )}
               </article>
             );
           })}
