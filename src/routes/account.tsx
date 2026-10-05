@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  Eye,
+  EyeOff,
   FlaskConical,
   KeyRound,
   LoaderCircle,
@@ -213,14 +215,12 @@ function AccountPage() {
                   >
                     {t("كلمة المرور الحالية")}
                   </label>
-                  <input
+                  <PasswordInput
                     id="current_password"
-                    type="password"
                     autoComplete="current-password"
                     required
                     value={profile.current_password}
                     onChange={(e) => setProfile({ ...profile, current_password: e.target.value })}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
                   />
                 </div>
               )}
@@ -318,9 +318,6 @@ function ChangePassword() {
     }
   };
 
-  const box =
-    "w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold";
-
   return (
     <details className="mt-6 border-t border-border pt-5">
       <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-primary">
@@ -331,29 +328,25 @@ function ChangePassword() {
           <label htmlFor="cp_current" className="mb-1.5 block text-xs font-semibold text-primary">
             {t("كلمة المرور الحالية")}
           </label>
-          <input
+          <PasswordInput
             id="cp_current"
-            type="password"
             autoComplete="current-password"
             required
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
-            className={box}
           />
         </div>
         <div>
           <label htmlFor="cp_new" className="mb-1.5 block text-xs font-semibold text-primary">
             {t("كلمة المرور الجديدة")}
           </label>
-          <input
+          <PasswordInput
             id="cp_new"
-            type="password"
             autoComplete="new-password"
             required
             minLength={8}
             value={next}
             onChange={(e) => setNext(e.target.value)}
-            className={box}
           />
         </div>
         <button
@@ -366,6 +359,36 @@ function ChangePassword() {
         </button>
       </form>
     </details>
+  );
+}
+
+/** حقل كلمة مرور بزر إظهار/إخفاء، بنفس سلوك حقول صفحة الدخول. */
+function PasswordInput({
+  id,
+  ...props
+}: { id: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  const t = useT();
+  const [shown, setShown] = useState(false);
+
+  return (
+    <div className="relative">
+      <input
+        id={id}
+        {...props}
+        type={shown ? "text" : "password"}
+        className="w-full rounded-xl border border-input bg-background py-2.5 pe-10 ps-3 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+      />
+      <button
+        type="button"
+        onClick={() => setShown(!shown)}
+        aria-label={t(shown ? "إخفاء كلمة المرور" : "إظهار كلمة المرور")}
+        aria-pressed={shown}
+        aria-controls={id}
+        className="absolute end-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+      >
+        {shown ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
   );
 }
 
