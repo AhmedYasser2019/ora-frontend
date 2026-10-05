@@ -18,9 +18,33 @@ const when = (iso: string) =>
     new Date(iso),
   );
 
-/** أين يفتح النقر على تنبيه — طلب حاليًا فقط، انظر Order::record. */
-const actionTo = (action: AppNotification["action"]) =>
-  action?.type === "order" ? "/orders" : null;
+/**
+ * أين يفتح النقر على تنبيه: `action` إن وُجد (طلب، خبر، منتج، سلة — انظر صفحة الإعلانات)،
+ * وإلا نوع التنبيه نفسه (`deposit.approved` → المحفظة) كما يفعل التطبيق، انظر NotificationType.
+ */
+const linkFor = ({ action, type }: AppNotification) => {
+  const id = action?.id;
+  switch (action?.type ?? type.split(".")[0]) {
+    case "order":
+      return { to: "/orders" } as const;
+    case "news":
+      return id ? ({ to: "/news/$id", params: { id } } as const) : ({ to: "/news" } as const);
+    case "product":
+      return id
+        ? ({ to: "/products/$slug", params: { slug: id } } as const)
+        : ({ to: "/collection" } as const);
+    case "cart":
+      return { to: "/cart" } as const;
+    case "deposit":
+      return { to: "/wallet" } as const;
+    case "kyc":
+      return { to: "/account" } as const;
+    case "zakat":
+      return { to: "/zakat" } as const;
+    default:
+      return null;
+  }
+};
 
 export function NotificationBell() {
   const { user } = useAuth();
@@ -62,7 +86,7 @@ export function NotificationBell() {
           </p>
         ) : (
           notifications.map((n) => {
-            const to = actionTo(n.action);
+            const to = linkFor(n);
             const body = (
               <>
                 <p className={`text-sm ${n.read_at ? "text-muted-foreground" : "text-primary"}`}>
@@ -79,7 +103,7 @@ export function NotificationBell() {
                 asChild={!!to}
                 className="flex-col items-start gap-0 whitespace-normal py-2"
               >
-                {to ? <Link to={to}>{body}</Link> : <div>{body}</div>}
+                {to ? <Link {...to}>{body}</Link> : <div>{body}</div>}
               </DropdownMenuItem>
             );
           })

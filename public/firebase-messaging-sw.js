@@ -25,15 +25,28 @@ self.addEventListener("push", (event) => {
   );
 });
 
-/** نفس ما يفتحه النقر على التنبيه في الجرس. */
-const pathFor = ({ action_type: type, action_id: id } = {}) =>
-  type === "order"
-    ? "/orders"
-    : type === "cart"
-      ? "/cart"
-      : type === "news" && id
-        ? `/news/${id}`
-        : "/";
+/** نفس ما يفتحه النقر على التنبيه في الجرس — انظر linkFor في NotificationBell. */
+const pathFor = ({ type = "", action_type, action_id = "" } = {}) => {
+  const id = encodeURIComponent(action_id);
+  switch (action_type || type.split(".")[0]) {
+    case "order":
+      return "/orders";
+    case "news":
+      return id ? `/news/${id}` : "/news";
+    case "product":
+      return id ? `/products/${id}` : "/collection";
+    case "cart":
+      return "/cart";
+    case "deposit":
+      return "/wallet";
+    case "kyc":
+      return "/account";
+    case "zakat":
+      return "/zakat";
+    default:
+      return "/";
+  }
+};
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
