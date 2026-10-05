@@ -22,7 +22,6 @@ import { useAuth } from "@/lib/use-auth";
 import { GOVERNORATES } from "@/lib/site";
 import { marketQuery } from "@/lib/market-hours";
 import { useSiteSettings } from "@/lib/settings.queries";
-import { PaymentReference } from "@/components/PaymentReference";
 
 import { tr } from "@/lib/i18n";
 
@@ -57,7 +56,8 @@ function CheckoutPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const t = useT();
-  const branches = useSiteSettings()?.branches ?? [];
+  const settings = useSiteSettings();
+  const branches = settings?.branches ?? [];
   // الخادم يرفض الطلب والسوق مغلق على أي حال؛ هنا يُعرف ذلك قبل ملء النموذج. كل دقيقة،
   // فصفحة مفتوحة وقت الافتتاح لا تبقى مقفولة.
   const closed = useQuery({ ...marketQuery, refetchInterval: 60_000 }).data?.open === false;
@@ -79,7 +79,9 @@ function CheckoutPage() {
     address: "",
     branch: "",
     payment: "instapay" as (typeof PAYMENTS)[number]["key"],
+    reference: "",
   });
+  const [receipt, setReceipt] = useState<File | null>(null);
   const [placed, setPlaced] = useState<{ ref: string; total: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -101,6 +103,19 @@ function CheckoutPage() {
   const total = subtotal + delivery;
   // كمية تتجاوز المخزون تُوقف الطلب هنا، قبل أي خطوة — لا عند التأكيد بعد اختيار الدفع.
   const short = shortLines(items, catalog);
+  // يُحوَّل قبل التأكيد ويُرسل رقمه مع الطلب: طلب ينتظر تحويلًا لا يُنشأ، فلا يحجز قطعة.
+  const manual = form.payment === "instapay" || form.payment === "bank";
+  const pay = settings?.payment;
+  const transferTo = (
+    form.payment === "instapay"
+      ? [["عنوان الدفع", pay?.instapay]]
+      : [
+          ["البنك", pay?.bank_name],
+          ["اسم المستفيد", pay?.bank_beneficiary],
+          ["رقم الحساب", pay?.bank_account],
+          ["IBAN", pay?.bank_iban],
+        ]
+  ).filter((row): row is [string, string] => !!row[1]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,6 +145,12 @@ function CheckoutPage() {
       });
       return;
     }
+    if (manual && !form.reference.trim()) {
+      toast.error(t("أدخل رقم التحويل"), {
+        description: t("حوّل المبلغ أولًا، ثم أدخل رقم العملية كما يظهر في الإيصال."),
+      });
+      return;
+    }
     if (items.length === 0) return;
 
     setSubmitting(true);
@@ -143,16 +164,21 @@ function CheckoutPage() {
         return;
       }
 
-      const order = await placeOrder(items, {
-        fulfilment: form.fulfilment,
-        contact_name: name.trim(),
-        contact_phone: phone.trim(),
-        payment_method: form.payment,
-        // المفاتيح غير المعنيّة تُحذف ولا تُرسل فارغة — الخادم يتحقق من وجودها لا من قيمتها.
-        ...(form.fulfilment === "delivery"
-          ? { governorate: form.governorate, address: form.address.trim() }
-          : { branch }),
-      });
+      const order = await placeOrder(
+        items,
+        {
+          fulfilment: form.fulfilment,
+          contact_name: name.trim(),
+          contact_phone: phone.trim(),
+          payment_method: form.payment,
+          // المفاتيح غير المعنيّة تُحذف ولا تُرسل فارغة — الخادم يتحقق من وجودها لا من قيمتها.
+          ...(form.fulfilment === "delivery"
+            ? { governorate: form.governorate, address: form.address.trim() }
+            : { branch }),
+          ...(manual ? { payment_reference: form.reference.trim() } : {}),
+        },
+        manual ? receipt : null,
+      );
 
       // المجموع من الخادم: ما خُصم فعلًا، لا ما عرضته الشاشة قبل تثبيت السعر.
       setPlaced({ ref: order.order_id, total: order.gross_piasters / 100 });
@@ -191,15 +217,14 @@ function CheckoutPage() {
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             {form.payment === "wallet"
               ? t("تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم.")
-              : t(
-                  "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.",
-                )}
+              : manual
+                ? t(
+                    "طلبك في حالة (قيد التنفيذ). سيطابق فريقنا تحويلك مع الطلب ويؤكده خلال ساعات العمل.",
+                  )
+                : t(
+                    "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.",
+                  )}
           </p>
-          {(form.payment === "instapay" || form.payment === "bank") && (
-            <div className="mt-6">
-              <PaymentReference orderId={placed.ref} initial={null} />
-            </div>
-          )}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               to="/orders"
@@ -441,12 +466,70 @@ function CheckoutPage() {
             <p className="text-xs leading-relaxed text-muted-foreground">
               {form.payment === "wallet"
                 ? t("سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة.")
-                : form.payment === "instapay" || form.payment === "bank"
+                : manual
                   ? t(
-                      "بعد تأكيد الطلب حوّل المبلغ (بياناته في صفحة طرق الدفع)، ثم أدخل رقم التحويل هنا أو في طلباتي ليطابقه فريقنا مع طلبك.",
+                      "حوّل الإجمالي إلى البيانات أدناه، ثم أدخل رقم التحويل قبل تأكيد الطلب ليطابقه فريقنا مع طلبك.",
                     )
                   : t("ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.")}
             </p>
+            {manual && (
+              <div className="space-y-4">
+                {transferTo.length > 0 ? (
+                  <dl className="space-y-2 rounded-xl bg-secondary/60 p-3 text-xs">
+                    {transferTo.map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">{t(k)}</dt>
+                        <dd dir="ltr" className="select-all break-all font-semibold text-primary">
+                          {v}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <Link
+                    to="/payment-methods"
+                    className="inline-block text-xs font-semibold underline underline-offset-4"
+                  >
+                    {t("بيانات الدفع")}
+                  </Link>
+                )}
+                <div>
+                  <label
+                    htmlFor="reference"
+                    className="mb-1 block text-xs font-semibold text-primary"
+                  >
+                    {t("رقم التحويل")}
+                  </label>
+                  <input
+                    id="reference"
+                    dir="ltr"
+                    className={input}
+                    value={form.reference}
+                    onChange={(e) => setForm({ ...form, reference: e.target.value })}
+                    maxLength={64}
+                    required
+                  />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {t("بعد التحويل أدخل رقم العملية كما يظهر في الإيصال، ليطابقه فريقنا مع طلبك.")}
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="receipt"
+                    className="mb-1 block text-xs font-semibold text-primary"
+                  >
+                    {t("صورة الإيصال")} ({t("اختياري")} · JPG, PNG, PDF · 8MB)
+                  </label>
+                  <input
+                    id="receipt"
+                    type="file"
+                    accept="image/jpeg,image/png,application/pdf"
+                    className={input}
+                    onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
+                  />
+                </div>
+              </div>
+            )}
           </fieldset>
 
           <button

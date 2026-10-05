@@ -131,14 +131,18 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     accept: "application/json",
     "accept-language": lang(),
   };
-  if (options.body !== undefined) headers["content-type"] = "application/json";
+  // FormData يضع حدود multipart بنفسه — ملف يُرفع مع طلب يحتاج مفتاح تكرار.
+  const form = options.body instanceof FormData;
+  if (options.body !== undefined && !form) headers["content-type"] = "application/json";
   if (token) headers["authorization"] = `Bearer ${token}`;
   if (options.idempotencyKey) headers["idempotency-key"] = options.idempotencyKey;
 
   const res = await fetch(`${BASE}/api/v1${path}`, {
     method: options.method ?? "GET",
     headers,
-    ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
+    ...(options.body !== undefined
+      ? { body: form ? (options.body as FormData) : JSON.stringify(options.body) }
+      : {}),
   });
 
   const body = (await res.json().catch(() => null)) as Envelope<T> | null;

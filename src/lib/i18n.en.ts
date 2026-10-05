@@ -524,8 +524,13 @@ export const en: Record<string, string> = {
     "The amount will be deducted from your wallet immediately and the order confirmed right away.",
   "ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.":
     "You'll find the transfer details on the payment methods page after confirming.",
-  "بعد تأكيد الطلب حوّل المبلغ (بياناته في صفحة طرق الدفع)، ثم أدخل رقم التحويل هنا أو في طلباتي ليطابقه فريقنا مع طلبك.":
-    "After confirming, transfer the amount (details on the payment methods page), then enter the transfer reference here or in My orders so our team can match it to your order.",
+  "حوّل الإجمالي إلى البيانات أدناه، ثم أدخل رقم التحويل قبل تأكيد الطلب ليطابقه فريقنا مع طلبك.":
+    "Transfer the total to the details below, then enter the transfer reference before confirming so our team can match it to your order.",
+  "طلبك في حالة (قيد التنفيذ). سيطابق فريقنا تحويلك مع الطلب ويؤكده خلال ساعات العمل.":
+    "Your order is Processing. Our team will match your transfer to it and confirm it during business hours.",
+  "أدخل رقم التحويل": "Enter the transfer reference",
+  "حوّل المبلغ أولًا، ثم أدخل رقم العملية كما يظهر في الإيصال.":
+    "Transfer the amount first, then enter the transaction number exactly as it appears on your receipt.",
   "بعد التحويل أدخل رقم العملية كما يظهر في الإيصال، ليطابقه فريقنا مع طلبك.":
     "After transferring, enter the transaction number exactly as it appears on your receipt so our team can match it to your order.",
   "تم حفظ رقم التحويل": "Transfer reference saved",
@@ -1129,10 +1134,12 @@ export const en: Record<string, string> = {
   "أضف إلى ممتلكاتي": "Add to my holdings",
   "التقييم بسعر إعادة البيع اللحظي — أي ما يدفعه المكتب لو بعت الآن. رصيد الذهب في المحفظة له شاشته الخاصة ولا يُحتسب هنا.":
     "Valued at the live buy-back price — what the office would pay if you sold now. Gold held in your wallet has its own screen and isn't counted here.",
-  "المجاميع لا تشمل أسطرًا تعذّر تسعيرها الآن": "Totals exclude items that couldn't be priced right now",
+  "المجاميع لا تشمل أسطرًا تعذّر تسعيرها الآن":
+    "Totals exclude items that couldn't be priced right now",
   "الحد الأقصى للمصنعية": "Maximum fabrication fee",
   "التداول متوقف": "Trading is paused",
-  "تم إنشاء حسابك، لكن تعذر رفع صورة الهوية": "Your account was created, but the ID photo couldn't be uploaded",
+  "تم إنشاء حسابك، لكن تعذر رفع صورة الهوية":
+    "Your account was created, but the ID photo couldn't be uploaded",
   "أعد المحاولة من صفحة حسابك.": "Try again from your account page.",
   "لا توجد أخبار منشورة حاليًا. تابعنا قريبًا.": "No news published yet. Check back soon.",
   "جارٍ قراءة حالة التوثيق…": "Checking verification status…",

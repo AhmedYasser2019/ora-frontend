@@ -21,6 +21,8 @@ export type Destination = {
   contact_name: string;
   contact_phone: string;
   payment_method: string;
+  /** إلزامي لـ InstaPay والتحويل البنكي: الطلب يُنشأ بتحويله، فلا يحجز قطعة لتحويل لم يأتِ. */
+  payment_reference?: string;
   governorate?: string;
   address?: string;
   branch?: string;
@@ -39,6 +41,7 @@ type Quote = { quote_id: string; amount_piasters: number; expires_at: string };
 export async function placeOrder(
   items: CartItem[],
   destination: Destination,
+  receipt?: File | null,
 ): Promise<PlacedOrder> {
   const quoteIds: string[] = [];
 
@@ -51,9 +54,19 @@ export async function placeOrder(
     }
   }
 
+  let body: unknown = { quote_ids: quoteIds, ...destination };
+  // صورة الإيصال ملف، فالطلب كله multipart حين تُرفق.
+  if (receipt) {
+    const form = new FormData();
+    quoteIds.forEach((id) => form.append("quote_ids[]", id));
+    Object.entries(destination).forEach(([k, v]) => v !== undefined && form.append(k, v));
+    form.append("payment_receipt", receipt);
+    body = form;
+  }
+
   return api<PlacedOrder>("/checkout", {
     method: "POST",
-    body: { quote_ids: quoteIds, ...destination },
+    body,
     idempotencyKey: crypto.randomUUID(),
   });
 }
