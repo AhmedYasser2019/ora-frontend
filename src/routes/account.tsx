@@ -222,12 +222,14 @@ function AccountPage() {
                   >
                     {t("كلمة المرور الحالية")}
                   </label>
-                  <PasswordInput
+                  <input
                     id="current_password"
+                    type="password"
                     autoComplete="current-password"
                     required
                     value={profile.current_password}
                     onChange={(e) => setProfile({ ...profile, current_password: e.target.value })}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
                   />
                 </div>
               )}
@@ -337,12 +339,14 @@ function ChangePassword() {
           <label htmlFor="cp_current" className="mb-1.5 block text-xs font-semibold text-primary">
             {t("كلمة المرور الحالية")}
           </label>
-          <PasswordInput
+          <input
             id="cp_current"
+            type="password"
             autoComplete="current-password"
             required
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
+            className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
           />
         </div>
         <div>
@@ -371,7 +375,10 @@ function ChangePassword() {
   );
 }
 
-/** حقل كلمة مرور بزر إظهار/إخفاء، بنفس سلوك حقول صفحة الدخول. */
+/**
+ * حقل كلمة مرور بزر إظهار/إخفاء — لكلمة المرور الجديدة فقط. حقل الحالية يملؤه مدير كلمات المرور
+ * تلقائيًا، فزر الإظهار عليه يكشف الكلمة المحفوظة لأي أحد ينظر للشاشة.
+ */
 function PasswordInput({
   id,
   ...props
