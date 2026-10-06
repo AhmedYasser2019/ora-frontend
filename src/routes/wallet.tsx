@@ -85,11 +85,15 @@ const ACTIONS: { key: Action; label: string; unit: string; cta: string }[] = [
   { key: "buy_silver", label: "شراء فضة", unit: "جرام", cta: "اشترِ الفضة" },
 ];
 
-// كل معدن يُطلب بعيار محفظته — العيار الذي يحتفظ به الخادم الرصيد (Metal::anchorKarat).
+// الذهب يُشترى بعيار 21 أو 24 (Metal::karats)، والخادم يحوّل الوزن لعيار المحفظة (21)
+// قبل القيد — فرصيد الذهب وخزينة العملاء بوحدة واحدة دائمًا.
 const TRADES = {
-  buy_gold: { metal: "gold", karat: 21, price: "k21", priceLabel: "سعر الجرام / عيار 21" },
-  buy_silver: { metal: "silver", karat: 999, price: "silver", priceLabel: "سعر الجرام / فضة 999" },
+  21: { metal: "gold", karat: 21, price: "k21", priceLabel: "سعر الجرام / عيار 21" },
+  24: { metal: "gold", karat: 24, price: "k24", priceLabel: "سعر الجرام / عيار 24" },
+  999: { metal: "silver", karat: 999, price: "silver", priceLabel: "سعر الجرام / فضة 999" },
 } as const;
+const GOLD_KARATS = [21, 24] as const;
+const WALLET_KARAT = 21;
 
 /** أنواع القيود في الدفتر — انظر JournalEntryType. */
 const TXN_LABEL: Record<string, string> = {
@@ -123,6 +127,7 @@ function WalletPage() {
   const [txns, setTxns] = useState<Txn[]>([]);
   const [fetching, setFetching] = useState(true);
   const [action, setAction] = useState<Action>("deposit");
+  const [goldKarat, setGoldKarat] = useState<(typeof GOLD_KARATS)[number]>(21);
   const [amount, setAmount] = useState("");
   const [reference, setReference] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
@@ -135,7 +140,7 @@ function WalletPage() {
   const buyGram = prices?.gram.k21 ?? 0;
   const silverGram = prices?.gram.silver ?? 0;
   const active = ACTIONS.find((a) => a.key === action)!;
-  const trade = action === "deposit" ? null : TRADES[action];
+  const trade = action === "deposit" ? null : TRADES[action === "buy_gold" ? goldKarat : 999];
   const gramPrice = trade ? (prices?.gram[trade.price] ?? 0) : 0;
   const parsed = Number(amount);
   const valid = Number.isFinite(parsed) && parsed > 0;
@@ -277,7 +282,8 @@ function WalletPage() {
               </div>
               <div className="rounded-2xl border border-border bg-card p-5">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Coins className="h-4 w-4 text-gold-deep" /> {t("رصيد الذهب")}
+                  <Coins className="h-4 w-4 text-gold-deep" /> {t("رصيد الذهب")} ·{" "}
+                  {t(`عيار ${WALLET_KARAT}`)}
                 </span>
                 <p className="mt-3 font-display text-2xl text-primary">
                   {mask(`${grams(gold)} ${t("جرام")}`)}
@@ -427,6 +433,26 @@ function WalletPage() {
               </div>
 
               <form onSubmit={submit} className="mt-5 space-y-4">
+                {action === "buy_gold" && (
+                  <div className="grid grid-cols-2 gap-2" role="group" aria-label={t("العيار")}>
+                    {GOLD_KARATS.map((k) => (
+                      <button
+                        key={k}
+                        type="button"
+                        aria-pressed={goldKarat === k}
+                        onClick={() => setGoldKarat(k)}
+                        className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                          goldKarat === k
+                            ? "border-gold bg-gold/15 text-gold-deep"
+                            : "border-border text-primary hover:bg-secondary/70"
+                        }`}
+                      >
+                        {t(`عيار ${k}`)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 <div>
                   <label htmlFor="amount" className="mb-1 block text-xs font-semibold text-primary">
                     {t("المبلغ")} ({t(active.unit)})
@@ -508,6 +534,17 @@ function WalletPage() {
                         {egp(cost)} {t("ج.م")}
                       </dd>
                     </div>
+                    {/* تقدير للعرض: الخادم يقرّب لأسفل عند التحويل (PricingService::toAnchorEquivalent). */}
+                    {trade.metal === "gold" && trade.karat !== WALLET_KARAT && valid && (
+                      <div className="flex justify-between">
+                        <dt className="text-muted-foreground">
+                          {t("يُضاف لرصيدك بما يعادل عيار 21")}
+                        </dt>
+                        <dd className="font-semibold text-primary">
+                          {grams((parsed * trade.karat) / WALLET_KARAT)} {t("جرام")}
+                        </dd>
+                      </div>
+                    )}
                   </dl>
                 )}
 

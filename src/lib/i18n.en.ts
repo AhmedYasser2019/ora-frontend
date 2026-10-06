@@ -916,6 +916,8 @@ export const en: Record<string, string> = {
   "سعر الشراء / جرام 24": "Buy price / 24K gram",
   "سعر البيع / جرام 24": "Sell price / 24K gram",
   "سعر الجرام / عيار 21": "Price / 21K gram",
+  "سعر الجرام / عيار 24": "Price / 24K gram",
+  "يُضاف لرصيدك بما يعادل عيار 21": "Credited as 21K equivalent",
   "سيُخصم من رصيدك": "Will be deducted from your balance",
   "الذهب المشترى من المحفظة محفوظ باسمك في خزائن مؤمّنة، ويمكنك استلامه سبائك من":
     "Gold bought through the wallet is held in your name in secure vaults, and you can take delivery of it as bars at",
