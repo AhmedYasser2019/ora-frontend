@@ -1143,6 +1143,18 @@ export const en: Record<string, string> = {
   "أعد المحاولة من صفحة حسابك.": "Try again from your account page.",
   "لا توجد أخبار منشورة حاليًا. تابعنا قريبًا.": "No news published yet. Check back soon.",
   "جارٍ قراءة حالة التوثيق…": "Checking verification status…",
+  "التحقق من الهوية": "Identity verification",
+  "صورة شخصية": "Selfie",
+  "لم يُذكر سبب. تواصل معنا لو محتاج توضيح.": "No reason given. Contact us if you need details.",
+  "وثائقك قيد المراجعة. هنبلغك أول ما تتراجع.":
+    "Your documents are under review. We'll notify you once they're checked.",
+  "أعد رفع صور واضحة لوثيقتك.": "Upload clear photos of your document again.",
+  "إرسال للمراجعة": "Submit for review",
+  "تم إرسال وثائقك للمراجعة": "Your documents were sent for review",
+  "تعذر رفع الصورة": "Couldn't upload the image",
+  "حسابك مرفوض. أعد رفع وثيقة هويتك من صفحة حسابك.":
+    "Your verification was rejected. Re-upload your ID from your account page.",
+  "أعد رفع الهوية": "Re-upload ID",
   "تعذّر إرسال الرسالة": "Couldn't send the message",
   "راجع اتصالك وحاول مرة أخرى.": "Check your connection and try again.",
   // بيانات المتجر القادمة من الداشبورد

@@ -253,13 +253,13 @@ function CheckoutPage() {
           className="rounded-2xl border border-destructive/40 bg-destructive/5 p-12 text-center"
         >
           <p className="text-lg text-destructive">
-            {t("حسابك مرفوض. لا يمكنك إتمام عملية الشراء. يرجى التواصل مع الدعم.")}
+            {t("حسابك مرفوض. أعد رفع وثيقة هويتك من صفحة حسابك.")}
           </p>
           <Link
-            to="/contact"
+            to="/account"
             className="mt-6 inline-block rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
           >
-            {t("تواصل معنا")}
+            {t("أعد رفع الهوية")}
           </Link>
         </div>
       </PageShell>

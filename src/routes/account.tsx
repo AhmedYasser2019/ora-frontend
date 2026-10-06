@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -12,13 +12,15 @@ import {
   ShieldAlert,
   ShieldCheck,
   ShieldQuestion,
+  Upload,
   User,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
+import { BAD_IMAGE, ImageDrop, isIdImage } from "@/components/ImageDrop";
 import { PageShell } from "@/components/PageShell";
-import { api, ApiError, hasRealToken } from "@/lib/api";
+import { api, ApiError, hasRealToken, upload } from "@/lib/api";
 import { fullName } from "@/lib/auth-validation";
 import { useAuth } from "@/lib/use-auth";
 
@@ -42,7 +44,19 @@ export const Route = createFileRoute("/account")({
  * حالة التوثيق كما يراها الخادم — `GET /kyc`. الشاشة كانت تكتب "حساب موثّق" لكل زائر،
  * وهي جملة عن حالة لا تعرفها: الوثائق تُرفع عند التسجيل وتُراجَع بعده، فالحالة تُقرأ ولا تُفترض.
  */
-type Kyc = { status: "unverified" | "pending" | "approved" | "rejected"; status_label: string };
+type KycStatus = "unverified" | "pending" | "approved" | "rejected";
+type Kyc = {
+  status: KycStatus;
+  status_label: string;
+  /** الأحدث أولًا. `note` سبب الرفض كما كتبه المراجع. */
+  documents: { id: number; type: string; status: KycStatus; note: string | null }[];
+};
+
+const SIDE_LABEL: Record<string, string> = {
+  national_id_front: "الوجه الأمامي للبطاقة",
+  national_id_back: "الوجه الخلفي للبطاقة",
+  selfie: "صورة شخصية",
+};
 
 /** الأيقونة ولونها لكل حالة. النص نفسه يأتي مترجمًا من الخادم في status_label. */
 const KYC_LOOK = {
@@ -60,13 +74,6 @@ function AccountPage() {
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [switching, setSwitching] = useState(false);
-
-  const { data: kyc } = useQuery({
-    queryKey: ["kyc"],
-    queryFn: () => api<Kyc>("/kyc"),
-    // لا نداء قبل تسجيل الدخول — المسار محميّ بالرمز.
-    enabled: !!user,
-  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -239,6 +246,9 @@ function AccountPage() {
             </form>
           )}
 
+          {/* الديمو لا يُوثَّق: فلوسه تجريبية. */}
+          {!user.is_demo && <KycSection />}
+
           {/* حساب الديمو كلمة مروره عشوائية لا يعرفها أحد. */}
           {!user.is_demo && <ChangePassword />}
 
@@ -264,8 +274,7 @@ function AccountPage() {
             )}
           </div>
 
-          <div className="mt-5 flex items-center justify-between border-t border-border pt-5">
-            <KycBadge kyc={kyc} />
+          <div className="mt-5 flex justify-end border-t border-border pt-5">
             <button
               onClick={logout}
               className="flex items-center gap-1.5 text-xs font-semibold text-destructive hover:underline"
@@ -392,19 +401,164 @@ function PasswordInput({
   );
 }
 
-/** شارة التوثيق. قبل وصول الردّ لا تُعرض جملة عن الحالة أصلًا. */
-function KycBadge({ kyc }: { kyc: Kyc | undefined }) {
+/**
+ * حالة التوثيق ورفع الوثائق. من تخطّى الرفع عند التسجيل أو رُفضت وثيقته يكمل من هنا —
+ * بدونها لا شراء. كل رفع صفّ جديد عند الخادم، فالرفض القديم يبقى سجلًا ولا يُمحى.
+ */
+function KycSection() {
   const t = useT();
+  const qc = useQueryClient();
+  const [docType, setDocType] = useState<"id" | "passport">("id");
+  const [front, setFront] = useState<File | null>(null);
+  const [back, setBack] = useState<File | null>(null);
+  const [errors, setErrors] = useState<{ front?: string[]; back?: string[] }>({});
+  const [busy, setBusy] = useState(false);
+
+  const { data: kyc } = useQuery({ queryKey: ["kyc"], queryFn: () => api<Kyc>("/kyc") });
 
   if (!kyc) {
-    return <span className="text-xs text-muted-foreground">{t("جارٍ قراءة حالة التوثيق…")}</span>;
+    return (
+      <p className="mt-6 border-t border-border pt-5 text-xs text-muted-foreground">
+        {t("جارٍ قراءة حالة التوثيق…")}
+      </p>
+    );
   }
 
   const { Icon, tone } = KYC_LOOK[kyc.status];
+  // الأحدث من كل نوع هو ما يُحتسب — نفس قاعدة الخادم.
+  const latest = kyc.documents.filter((d, i, all) => all.findIndex((x) => x.type === d.type) === i);
+  const refused = latest.filter((d) => d.status === "rejected");
+  const canUpload = kyc.status === "unverified" || kyc.status === "rejected";
+
+  const pick = (set: (f: File | null) => void, key: "front" | "back") => (f: File | null) => {
+    const ok = !f || isIdImage(f);
+    set(ok ? f : null);
+    setErrors((x) => ({ ...x, [key]: ok ? undefined : [BAD_IMAGE] }));
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs: typeof errors = {};
+    if (!front) errs.front = ["ارفع صورة الوجه الأمامي للهوية"];
+    if (docType === "id" && !back) errs.back = ["ارفع صورة الوجه الخلفي للهوية"];
+    setErrors(errs);
+    if (errs.front || errs.back) return;
+
+    const sides: [File | null, string][] = [
+      [front, "national_id_front"],
+      [docType === "id" ? back : null, "national_id_back"],
+    ];
+    setBusy(true);
+    try {
+      for (const [file, type] of sides) {
+        if (!file) continue;
+        const body = new FormData();
+        body.append("type", type);
+        body.append("file", file);
+        qc.setQueryData(["kyc"], await upload<Kyc>("/kyc/documents", body));
+      }
+      setFront(null);
+      setBack(null);
+      toast.success(t("تم إرسال وثائقك للمراجعة"));
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر رفع الصورة"));
+    } finally {
+      setBusy(false);
+      // الدفع يقرأ الحالة من /me.
+      void qc.invalidateQueries({ queryKey: ["me"] });
+    }
+  };
 
   return (
-    <span className="flex items-center gap-2 text-xs text-muted-foreground">
-      <Icon className={`h-4 w-4 ${tone}`} /> {kyc.status_label}
-    </span>
+    <section className="mt-6 border-t border-border pt-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-xs font-semibold text-primary">{t("التحقق من الهوية")}</h2>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Icon className={`h-4 w-4 ${tone}`} /> {kyc.status_label}
+        </span>
+      </div>
+
+      {refused.length > 0 && (
+        <ul
+          role="alert"
+          className="mt-3 grid gap-1 rounded-2xl border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive"
+        >
+          {refused.map((d) => (
+            <li key={d.id}>
+              <span className="font-semibold">{t(SIDE_LABEL[d.type] ?? d.type)}:</span>{" "}
+              {d.note || t("لم يُذكر سبب. تواصل معنا لو محتاج توضيح.")}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {kyc.status === "pending" && (
+        <p className="mt-3 text-xs text-muted-foreground">
+          {t("وثائقك قيد المراجعة. هنبلغك أول ما تتراجع.")}
+        </p>
+      )}
+
+      {canUpload && (
+        <form onSubmit={submit} noValidate className="mt-4 grid gap-4">
+          <p className="text-xs text-muted-foreground">
+            {t(
+              kyc.status === "rejected"
+                ? "أعد رفع صور واضحة لوثيقتك."
+                : "وثّق هويتك أولًا لإتمام عمليات الشراء.",
+            )}
+          </p>
+          <div className="flex flex-wrap gap-6 text-sm text-primary">
+            {(
+              [
+                ["id", "بطاقة الرقم القومي"],
+                ["passport", "جواز السفر"],
+              ] as const
+            ).map(([v, label]) => (
+              <label key={v} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="kycDocType"
+                  checked={docType === v}
+                  onChange={() => {
+                    setDocType(v);
+                    setErrors({});
+                  }}
+                  className="accent-gold"
+                />
+                {t(label)}
+              </label>
+            ))}
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ImageDrop
+              label={docType === "id" ? "الوجه الأمامي للبطاقة" : "صفحة بيانات الجواز"}
+              file={front}
+              onPick={pick(setFront, "front")}
+              error={errors.front}
+            />
+            {docType === "id" && (
+              <ImageDrop
+                label="الوجه الخلفي للبطاقة"
+                file={back}
+                onPick={pick(setBack, "back")}
+                error={errors.back}
+              />
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={busy}
+            className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+          >
+            {busy ? (
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
+            {t("إرسال للمراجعة")}
+          </button>
+        </form>
+      )}
+    </section>
   );
 }
