@@ -75,14 +75,21 @@ const DEPOSIT_TONE: Record<Deposit["status"], string> = {
   rejected: "bg-destructive/10 text-destructive",
 };
 
-type Action = "deposit" | "buy_gold";
+type Action = "deposit" | "buy_gold" | "buy_silver";
 
 // الشحن طلب إيداع: العميل يحوّل ويرفع الإيصال، ومكتب الحسابات يضيف الرصيد بعد التأكد.
 // البيع والسحب موقوفان بطلب الإدارة.
 const ACTIONS: { key: Action; label: string; unit: string; cta: string }[] = [
   { key: "deposit", label: "شحن رصيد", unit: "جنيه", cta: "اشحن الرصيد" },
   { key: "buy_gold", label: "شراء ذهب", unit: "جرام", cta: "اشترِ الذهب" },
+  { key: "buy_silver", label: "شراء فضة", unit: "جرام", cta: "اشترِ الفضة" },
 ];
+
+// كل معدن يُطلب بعيار محفظته — العيار الذي يحتفظ به الخادم الرصيد (Metal::anchorKarat).
+const TRADES = {
+  buy_gold: { metal: "gold", karat: 21, price: "k21", priceLabel: "سعر الجرام / عيار 21" },
+  buy_silver: { metal: "silver", karat: 999, price: "silver", priceLabel: "سعر الجرام / فضة 999" },
+} as const;
 
 /** أنواع القيود في الدفتر — انظر JournalEntryType. */
 const TXN_LABEL: Record<string, string> = {
@@ -124,11 +131,12 @@ function WalletPage() {
   const [hidden, setHidden] = useState(false);
   const mask = (s: string) => (hidden ? "••••••" : s);
 
-  // سعر واحد: سعر الشراء لعيار 21، وهو العيار الذي تُطلب به المحفظة أدناه.
+  // سعر الشراء لعيار كل معدن في المحفظة، وهو العيار الذي يُطلب به أدناه.
   const buyGram = prices?.gram.k21 ?? 0;
+  const silverGram = prices?.gram.silver ?? 0;
   const active = ACTIONS.find((a) => a.key === action)!;
-  const isGold = action === "buy_gold";
-  const gramPrice = buyGram;
+  const trade = action === "deposit" ? null : TRADES[action];
+  const gramPrice = trade ? (prices?.gram[trade.price] ?? 0) : 0;
   const parsed = Number(amount);
   const valid = Number.isFinite(parsed) && parsed > 0;
 
@@ -163,7 +171,7 @@ function WalletPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !valid) return;
-    if (!isGold) {
+    if (!trade) {
       if (!receipt) return;
       setSubmitting(true);
       try {
@@ -196,7 +204,7 @@ function WalletPage() {
       // عرض سعر مثبَّت ثم أمر يحمل رقمه. لا سعر يغادر المتصفح: الخادم يسعّر ويكتب الصفّ.
       const quote = await api<{ quote_id: string }>("/quotes", {
         method: "POST",
-        body: { metal: "gold", karat: 21, side: "buy", grams: parsed.toFixed(6) },
+        body: { metal: trade.metal, karat: trade.karat, side: "buy", grams: parsed.toFixed(6) },
       });
 
       await api("/orders", {
@@ -228,7 +236,9 @@ function WalletPage() {
   const cash = (wallet?.find((b) => b.asset === "EGP")?.piasters ?? 0) / 100;
   const gold = Number(wallet?.find((b) => b.asset === "GOLD")?.grams ?? 0);
   const goldValue = gold * buyGram;
-  const cost = isGold && valid ? parsed * gramPrice : 0;
+  const silver = Number(wallet?.find((b) => b.asset === "SILVER")?.grams ?? 0);
+  const silverValue = silver * silverGram;
+  const cost = trade && valid ? parsed * gramPrice : 0;
 
   const input =
     "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-primary outline-none focus:border-gold";
@@ -245,7 +255,7 @@ function WalletPage() {
       ) : (
         <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
           <div className="space-y-8">
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-2xl border border-border bg-card p-5">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground">
                   <WalletIcon className="h-4 w-4 text-gold-deep" /> {t("الرصيد النقدي")}
@@ -276,6 +286,17 @@ function WalletPage() {
                   ≈ {mask(`${egp(goldValue)} ${t("ج.م")}`)} {t("بسعر اليوم")}
                 </p>
               </div>
+              <div className="rounded-2xl border border-border bg-card p-5">
+                <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Coins className="h-4 w-4 text-muted-foreground" /> {t("رصيد الفضة")}
+                </span>
+                <p className="mt-3 font-display text-2xl text-primary">
+                  {mask(`${grams(silver)} ${t("جرام")}`)}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  ≈ {mask(`${egp(silverValue)} ${t("ج.م")}`)} {t("بسعر اليوم")}
+                </p>
+              </div>
               <div className="rounded-2xl border border-gold/40 bg-gradient-green p-5 text-primary-foreground">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-xs text-primary-foreground/70">
@@ -291,7 +312,7 @@ function WalletPage() {
                   </button>
                 </div>
                 <p className="mt-3 font-display text-2xl text-gold">
-                  {mask(`${egp(cash + goldValue)} ${t("ج.م")}`)}
+                  {mask(`${egp(cash + goldValue + silverValue)} ${t("ج.م")}`)}
                 </p>
               </div>
             </div>
@@ -385,7 +406,7 @@ function WalletPage() {
 
           <aside className="space-y-4">
             <div className="rounded-2xl border border-border bg-card p-5">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {ACTIONS.map((a) => (
                   <button
                     key={a.key}
@@ -419,8 +440,8 @@ function WalletPage() {
                     inputMode="decimal"
                     type="number"
                     min="0"
-                    step={isGold ? "0.001" : "1"}
-                    placeholder={isGold ? "1.5" : "5000"}
+                    step={trade ? "0.001" : "1"}
+                    placeholder={trade ? "1.5" : "5000"}
                     required
                   />
                 </div>
@@ -473,12 +494,12 @@ function WalletPage() {
                   </>
                 )}
 
-                {isGold && (
+                {trade && (
                   <dl className="space-y-2 rounded-xl bg-secondary/60 p-3 text-xs">
                     <div className="flex justify-between">
-                      <dt className="text-muted-foreground">{t("سعر الجرام / عيار 21")}</dt>
+                      <dt className="text-muted-foreground">{t(trade.priceLabel)}</dt>
                       <dd className="font-semibold text-primary">
-                        {egp(buyGram)} {t("ج.م")}
+                        {egp(gramPrice)} {t("ج.م")}
                       </dd>
                     </div>
                     <div className="flex justify-between">
@@ -497,7 +518,7 @@ function WalletPage() {
                 >
                   {submitting ? (
                     <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : action === "buy_gold" ? (
+                  ) : trade ? (
                     <TrendingUp className="h-4 w-4" />
                   ) : (
                     <WalletIcon className="h-4 w-4" />
