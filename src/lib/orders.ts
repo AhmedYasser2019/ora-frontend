@@ -33,6 +33,8 @@ export type PlacedOrder = {
   status: string;
   status_label: string;
   gross_piasters: number;
+  /** طلب دُفع بجرامات المحفظة (`metal`): ما خرج فعلًا من الرصيدين. */
+  paid_from_balance?: { grams: string; piasters: number };
   product?: { sku: string; name: string };
 };
 

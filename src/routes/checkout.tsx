@@ -5,6 +5,7 @@ import {
   Building2,
   Banknote,
   CheckCircle2,
+  Coins,
   LoaderCircle,
   Smartphone,
   Truck,
@@ -46,6 +47,7 @@ const PAYMENTS = [
   { key: "instapay", label: "InstaPay", icon: Smartphone },
   { key: "bank", label: "تحويل بنكي", icon: Building2 },
   { key: "wallet", label: "رصيد المحفظة", icon: Wallet },
+  { key: "metal", label: "من رصيد الذهب/الفضة", icon: Coins },
   { key: "cash", label: "نقدًا في الفرع", icon: Banknote },
 ] as const;
 
@@ -82,7 +84,7 @@ function CheckoutPage() {
     reference: "",
   });
   const [receipt, setReceipt] = useState<File | null>(null);
-  const [placed, setPlaced] = useState<{ ref: string; total: number } | null>(null);
+  const [placed, setPlaced] = useState<{ ref: string; total: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -101,6 +103,24 @@ function CheckoutPage() {
   // بالقيد المزدوج رقم لا تستطيع الدفاتر تفسيره. انظر migration add_delivery_to_orders.
   const delivery = 0;
   const total = subtotal + delivery;
+  // الدفع من رصيد المعدن: وزن القطعة بعيار المحفظة (21 للذهب، 999 للفضة) والمصنعية بالجنيه.
+  // تقدير للعرض؛ الخادم يحسبه ويقرّبه لصالح الخزينة.
+  const inWallet = (metal: "gold" | "silver") =>
+    items.reduce((s, i) => {
+      const p = bySlug(catalog, i.slug);
+      return p?.metal === metal
+        ? s + ((p.weightG * p.karat) / (metal === "gold" ? 21 : 999)) * i.qty
+        : s;
+    }, 0);
+  const making = items.reduce((s, i) => s + (bySlug(catalog, i.slug)?.premium ?? 0) * i.qty, 0);
+  const metalTotal = [
+    inWallet("gold") > 0 && `${inWallet("gold").toFixed(3)} ${t("جرام ذهب عيار 21")}`,
+    inWallet("silver") > 0 && `${inWallet("silver").toFixed(3)} ${t("جرام فضة")}`,
+    `${egp(making)} ${t("ج.م")} ${t("مصنعية")}`,
+  ]
+    .filter(Boolean)
+    .join(" + ");
+  const shownTotal = form.payment === "metal" ? metalTotal : `${egp(total)} ${t("ج.م")}`;
   // كمية تتجاوز المخزون تُوقف الطلب هنا، قبل أي خطوة — لا عند التأكيد بعد اختيار الدفع.
   const short = shortLines(items, catalog);
   // يُحوَّل قبل التأكيد ويُرسل رقمه مع الطلب: طلب ينتظر تحويلًا لا يُنشأ، فلا يحجز قطعة.
@@ -181,7 +201,13 @@ function CheckoutPage() {
       );
 
       // المجموع من الخادم: ما خُصم فعلًا، لا ما عرضته الشاشة قبل تثبيت السعر.
-      setPlaced({ ref: order.order_id, total: order.gross_piasters / 100 });
+      const paid = order.paid_from_balance;
+      setPlaced({
+        ref: order.order_id,
+        total: paid
+          ? `${paid.grams} ${t("جرام")} + ${egp(paid.piasters / 100)} ${t("ج.م")}`
+          : `${egp(order.gross_piasters / 100)} ${t("ج.م")}`,
+      });
       clear();
     } catch (e) {
       toast.error(t(orderErrorMessage(e)));
@@ -211,19 +237,19 @@ function CheckoutPage() {
           <p dir="ltr" className="mt-1 text-xs text-muted-foreground">
             {placed.ref}
           </p>
-          <p className="mt-1 font-display text-2xl text-gold-deep">
-            {egp(placed.total)} {t("ج.م")}
-          </p>
+          <p className="mt-1 font-display text-2xl text-gold-deep">{placed.total}</p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             {form.payment === "wallet"
               ? t("تم خصم المبلغ من محفظتك وتأكيد الطلب. سيتواصل معك فريقنا لترتيب التسليم.")
-              : manual
-                ? t(
-                    "طلبك في حالة (قيد التنفيذ). سيطابق فريقنا تحويلك مع الطلب ويؤكده خلال ساعات العمل.",
-                  )
-                : t(
-                    "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.",
-                  )}
+              : form.payment === "metal"
+                ? t("تم خصم الجرامات والمصنعية من محفظتك. سيتواصل معك فريقنا لترتيب تسليم السبيكة.")
+                : manual
+                  ? t(
+                      "طلبك في حالة (قيد التنفيذ). سيطابق فريقنا تحويلك مع الطلب ويؤكده خلال ساعات العمل.",
+                    )
+                  : t(
+                      "طلبك في حالة (قيد التنفيذ). حوّل المبلغ بالطريقة التي اخترتها وسيؤكده فريقنا خلال ساعات العمل.",
+                    )}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
@@ -466,11 +492,15 @@ function CheckoutPage() {
             <p className="text-xs leading-relaxed text-muted-foreground">
               {form.payment === "wallet"
                 ? t("سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة.")
-                : manual
+                : form.payment === "metal"
                   ? t(
-                      "حوّل الإجمالي إلى البيانات أدناه، ثم أدخل رقم التحويل قبل تأكيد الطلب ليطابقه فريقنا مع طلبك.",
+                      "يُخصم وزن القطعة من رصيد الذهب أو الفضة بمحفظتك (بما يعادله بعيار المحفظة)، والمصنعية من رصيدك بالجنيه. يُرد الاثنان إن ألغيت الطلب قبل الاستلام.",
                     )
-                  : t("ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.")}
+                  : manual
+                    ? t(
+                        "حوّل الإجمالي إلى البيانات أدناه، ثم أدخل رقم التحويل قبل تأكيد الطلب ليطابقه فريقنا مع طلبك.",
+                      )
+                    : t("ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.")}
             </p>
             {manual && (
               <div className="space-y-4">
@@ -542,7 +572,7 @@ function CheckoutPage() {
             ) : (
               <Truck className="h-4 w-4" />
             )}
-            {t("تأكيد الطلب")} · {egp(total)} {t("ج.م")}
+            {t("تأكيد الطلب")} · {shownTotal}
           </button>
         </form>
 
@@ -576,9 +606,7 @@ function CheckoutPage() {
             </div>
             <div className="flex justify-between border-t border-border pt-2 font-display text-lg">
               <dt className="text-primary">{t("الإجمالي")}</dt>
-              <dd className="text-gold-deep">
-                {egp(total)} {t("ج.م")}
-              </dd>
+              <dd className="text-end text-gold-deep">{shownTotal}</dd>
             </div>
           </dl>
         </aside>

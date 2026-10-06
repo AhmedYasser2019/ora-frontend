@@ -101,6 +101,7 @@ const TXN_LABEL: Record<string, string> = {
   sell: "بيع",
   adjustment: "تسوية",
   reversal: "استرداد أموال",
+  redemption: "استلام سبيكة",
 };
 
 const ASSET_LABEL: Record<string, string> = {
@@ -291,6 +292,15 @@ function WalletPage() {
                 <p className="mt-1 text-xs text-muted-foreground">
                   ≈ {mask(`${egp(goldValue)} ${t("ج.م")}`)} {t("بسعر اليوم")}
                 </p>
+                {/* الاستلام سبيكةً طلب عادي من المجموعة، يُدفع عند إتمامه من رصيد الذهب. */}
+                {gold > 0 && (
+                  <Link
+                    to="/collection"
+                    className="mt-2 inline-block text-xs font-semibold text-gold-deep underline underline-offset-4"
+                  >
+                    {t("استلم ذهبك سبيكة")}
+                  </Link>
+                )}
               </div>
               <div className="rounded-2xl border border-border bg-card p-5">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -520,6 +520,17 @@ export const en: Record<string, string> = {
   "اختر الفرع الذي ستستلم منه، أو اختر التوصيل.":
     "Choose the branch you'll collect from, or choose delivery.",
   "طريقة الدفع": "Payment method",
+  "من رصيد الذهب/الفضة": "From gold/silver balance",
+  "جرام ذهب عيار 21": "g of 21k gold",
+  "جرام فضة": "g of silver",
+  مصنعية: "making charge",
+  "خُصم من رصيدك": "Paid from your balance",
+  "استلام سبيكة": "Bar collected",
+  "استلم ذهبك سبيكة": "Collect your gold as a bar",
+  "تم خصم الجرامات والمصنعية من محفظتك. سيتواصل معك فريقنا لترتيب تسليم السبيكة.":
+    "The grams and the making charge were taken from your wallet. Our team will contact you to arrange handing over the bar.",
+  "يُخصم وزن القطعة من رصيد الذهب أو الفضة بمحفظتك (بما يعادله بعيار المحفظة)، والمصنعية من رصيدك بالجنيه. يُرد الاثنان إن ألغيت الطلب قبل الاستلام.":
+    "The piece's weight comes off your wallet's gold or silver balance (converted to the wallet karat), and the making charge off your EGP balance. Both are returned if you cancel before collection.",
   "سيُخصم المبلغ من رصيد محفظتك فورًا ويتأكد الطلب مباشرة.":
     "The amount will be deducted from your wallet immediately and the order confirmed right away.",
   "ستجد بيانات التحويل في صفحة طرق الدفع بعد تأكيد الطلب.":

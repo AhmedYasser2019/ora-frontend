@@ -53,6 +53,8 @@ type Order = {
     /** رقم التحويل الذي أرسله العميل — انظر PaymentReference. */
     payment_reference: string | null;
   };
+  /** طلب دُفع بجرامات المحفظة: ما خرج فعلًا من الرصيدين. */
+  paid_from_balance?: { grams: string; piasters: number };
 };
 
 const STATUS_CLASS: Record<Status, string> = {
@@ -71,6 +73,7 @@ const PAYMENT: Record<string, string> = {
   instapay: "InstaPay",
   bank: "تحويل بنكي",
   wallet: "رصيد المحفظة",
+  metal: "من رصيد الذهب/الفضة",
   cash: "نقدًا في الفرع",
 };
 
@@ -225,6 +228,12 @@ function OrdersPage() {
                     {d?.payment_method && (
                       <p>
                         {t("طريقة الدفع")}: {t(PAYMENT[d.payment_method] ?? d.payment_method)}
+                      </p>
+                    )}
+                    {o.paid_from_balance && (
+                      <p>
+                        {t("خُصم من رصيدك")}: {o.paid_from_balance.grams} {t("جرام")} +{" "}
+                        {egp(o.paid_from_balance.piasters / 100)} {t("ج.م")} {t("مصنعية")}
                       </p>
                     )}
                     {d?.payment_reference && o.status !== "pending" && (
