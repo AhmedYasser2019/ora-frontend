@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { room, shortLines, upsert, type Line } from "./cart";
+import { deliveryFee, room, shortLines, upsert, type Line } from "./cart";
 import type { Product } from "./catalog.server";
 
 const line = (sku: string, quantity: number): Line => ({ product: { sku }, quantity });
@@ -37,3 +37,10 @@ assert.equal(room(30, 7), 23);
 assert.equal(room(30, 30), 0);
 assert.equal(room(5, 9), 0);
 assert.equal(room(500, 0), 99);
+
+// التوصيل بقاعدة الخادم: رسم تحت حدّ الإعفاء، ولا شيء عنده أو لسلة فارغة أو بلا قاعدة.
+const rule = { fee_piasters: 15_000, free_over_piasters: 5_000_000 };
+assert.equal(deliveryFee(8_515, rule), 150);
+assert.equal(deliveryFee(50_000, rule), 0);
+assert.equal(deliveryFee(0, rule), 0);
+assert.equal(deliveryFee(8_515, undefined), 0);

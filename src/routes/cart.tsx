@@ -5,7 +5,8 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
-import { DELIVERY_FEE, FREE_DELIVERY_OVER, shortLines, shortMessage, useCart } from "@/lib/cart";
+import { useSiteSettings } from "@/lib/settings.queries";
+import { deliveryFee, shortLines, shortMessage, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { productImage } from "@/lib/product-image";
@@ -40,7 +41,8 @@ function CartPage() {
   // سعر الخادم فقط. القطعة التي لا سعر لها الآن (معدن موقوف) تُحتسب بصفر ولا تُخترع لها قيمة.
   const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
   const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
-  const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_OVER ? 0 : DELIVERY_FEE;
+  // التوصيل للمنزل هو اختيار الإتمام الافتراضي؛ الاستلام من الفرع هناك يُسقطه.
+  const delivery = deliveryFee(subtotal, useSiteSettings()?.delivery);
   const short = shortLines(items, catalog);
 
   return (

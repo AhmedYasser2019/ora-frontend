@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
-import { shortLines, shortMessage, useCart } from "@/lib/cart";
+import { deliveryFee, shortLines, shortMessage, useCart } from "@/lib/cart";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { orderErrorMessage, placeOrder } from "@/lib/orders";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
@@ -99,9 +99,8 @@ function CheckoutPage() {
   // سعر الخادم فقط، وهو تقديري للعرض: السعر المُلزِم هو الذي يثبّته العرض عند التأكيد.
   const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
   const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
-  // ponytail: التوصيل مجاني حتى يقرّر التاجر رسمًا ويصير له سطر في الدفتر — رسم لا يمرّ
-  // بالقيد المزدوج رقم لا تستطيع الدفاتر تفسيره. انظر migration add_delivery_to_orders.
-  const delivery = 0;
+  // الاستلام من الفرع مجاني؛ التوصيل بقاعدة الخادم، وهو ما يُحتسب على الطلب فعلًا.
+  const delivery = form.fulfilment === "delivery" ? deliveryFee(subtotal, settings?.delivery) : 0;
   const total = subtotal + delivery;
   // الدفع من رصيد المعدن: وزن القطعة بعيار المحفظة (21 للذهب، 999 للفضة) والمصنعية بالجنيه.
   // تقدير للعرض؛ الخادم يحسبه ويقرّبه لصالح الخزينة.
@@ -117,6 +116,7 @@ function CheckoutPage() {
     inWallet("gold") > 0 && `${inWallet("gold").toFixed(3)} ${t("جرام ذهب عيار 21")}`,
     inWallet("silver") > 0 && `${inWallet("silver").toFixed(3)} ${t("جرام فضة")}`,
     `${egp(making)} ${t("ج.م")} ${t("مصنعية")}`,
+    delivery > 0 && `${egp(delivery)} ${t("ج.م")} ${t("التوصيل")}`,
   ]
     .filter(Boolean)
     .join(" + ");
@@ -202,11 +202,12 @@ function CheckoutPage() {
 
       // المجموع من الخادم: ما خُصم فعلًا، لا ما عرضته الشاشة قبل تثبيت السعر.
       const paid = order.paid_from_balance;
+      const fee = order.delivery_fee_piasters ?? 0;
       setPlaced({
         ref: order.order_id,
         total: paid
-          ? `${paid.grams} ${t("جرام")} + ${egp(paid.piasters / 100)} ${t("ج.م")}`
-          : `${egp(order.gross_piasters / 100)} ${t("ج.م")}`,
+          ? `${paid.grams} ${t("جرام")} + ${egp((paid.piasters + fee) / 100)} ${t("ج.م")}`
+          : `${egp((order.gross_piasters + fee) / 100)} ${t("ج.م")}`,
       });
       clear();
     } catch (e) {

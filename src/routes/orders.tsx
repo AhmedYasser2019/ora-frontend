@@ -36,6 +36,8 @@ type Order = {
   status_label: string;
   grams: string;
   gross_piasters: number;
+  /** رسم التوصيل فوق سعر القطع، وصفر حين لا يُحتسب. */
+  delivery_fee_piasters?: number;
   executed_at: string;
   /** قيمة القطعة اليوم بسعر إعادة البيع — للطلب القائم فقط، ولا قيمة حين يتعذّر التسعير. */
   current_value_piasters?: number | null;
@@ -187,6 +189,14 @@ function OrdersPage() {
                       </span>
                     </li>
                   ))}
+                  {!!o.delivery_fee_piasters && (
+                    <li className="flex justify-between gap-3 text-sm text-muted-foreground">
+                      <span>{t("التوصيل")}</span>
+                      <span>
+                        {egp(o.delivery_fee_piasters / 100)} {t("ج.م")}
+                      </span>
+                    </li>
+                  )}
                   <li className="text-xs text-muted-foreground">
                     {o.grams} {t("جرام")}
                   </li>
@@ -245,7 +255,7 @@ function OrdersPage() {
 
                   <div className="flex items-center gap-4">
                     <p className="font-display text-2xl text-gold-deep">
-                      {egp(o.gross_piasters / 100)} {t("ج.م")}
+                      {egp((o.gross_piasters + (o.delivery_fee_piasters ?? 0)) / 100)} {t("ج.م")}
                     </p>
                     {cancellable && (
                       <button

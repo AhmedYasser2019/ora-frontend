@@ -7,6 +7,7 @@ import { api, ApiError } from "./api";
 import { bySlug, productsQuery } from "./catalog.queries";
 import type { Product } from "./catalog.server";
 import { useT } from "./i18n";
+import type { SiteSettings } from "./settings.server";
 import { useAuth } from "./use-auth";
 
 /**
@@ -180,11 +181,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
+/**
+ * رسم التوصيل للمنزل بالجنيه، بقاعدة الخادم نفسها (GET /settings → delivery): مجاني حين تبلغ
+ * القطع حدّ الإعفاء. تقدير للعرض — الطلب هو ما يحتسبه فعلًا، على سعر القطع المثبّت.
+ */
+export function deliveryFee(subtotal: number, rule?: SiteSettings["delivery"]) {
+  if (!rule || subtotal === 0 || subtotal * 100 >= rule.free_over_piasters) return 0;
+  return rule.fee_piasters / 100;
+}
+
 export function useCart() {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error("useCart must be used inside CartProvider");
   return ctx;
 }
-
-export const DELIVERY_FEE = 150;
-export const FREE_DELIVERY_OVER = 50_000;

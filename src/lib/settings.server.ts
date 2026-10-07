@@ -44,6 +44,11 @@ export type SiteSettings = {
     android: string | null;
     ios: string | null;
   };
+  /** رسم التوصيل للمنزل كما يحتسبه الخادم على الطلب. الاستلام من الفرع مجاني دائمًا. */
+  delivery: {
+    fee_piasters: number;
+    free_over_piasters: number;
+  };
   branches: Branch[];
 };
 
