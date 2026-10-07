@@ -4,8 +4,8 @@ import type { CartItem } from "./cart";
 /**
  * تنفيذ طلب من السلة.
  *
- * خطوتان لكل قطعة: عرض سعر مثبَّت من الخادم (`POST /products/{sku}/quote` بلا جسم — لا شيء
- * يرسله المتصفح يُصدَّق كسعر)، ثم أمر يحمل رقم العرض فقط. السعر الذي يُنفَّذ عليه هو الذي
+ * خطوتان: عرض سعر مثبَّت لكل قطعة من الخادم — كلها في طلب واحد (`POST /cart/quote` بالرمز
+ * والعدد فقط، لا شيء يرسله المتصفح يُصدَّق كسعر) — ثم أمر يحمل أرقام العروض فقط. السعر الذي يُنفَّذ عليه هو الذي
  * كتبه الخادم في صفّ العرض، لا الذي عرضته الشاشة.
  *
  * لكل قطعة عرضها وسعرها المثبَّت وقيدها في الدفتر، لكن السلة كلها **طلب واحد**: رقم واحد
@@ -45,16 +45,12 @@ export async function placeOrder(
   destination: Destination,
   receipt?: File | null,
 ): Promise<PlacedOrder> {
-  const quoteIds: string[] = [];
-
-  for (const item of items) {
-    for (let n = 0; n < item.qty; n++) {
-      const quote = await api<Quote>(`/products/${encodeURIComponent(item.slug)}/quote`, {
-        method: "POST",
-      });
-      quoteIds.push(quote.quote_id);
-    }
-  }
+  // طلب واحد للسلة كلها، لا طلب لكل قطعة: أربعون سبيكة كانت تستنفد حد الطلبات قبل التأكيد.
+  const { quotes } = await api<{ quotes: Quote[] }>("/cart/quote", {
+    method: "POST",
+    body: { items: items.map((i) => ({ sku: i.slug, qty: i.qty })) },
+  });
+  const quoteIds = quotes.map((q) => q.quote_id);
 
   let body: unknown = { quote_ids: quoteIds, ...destination };
   // صورة الإيصال ملف، فالطلب كله multipart حين تُرفق.
