@@ -226,10 +226,7 @@ function ProductPage() {
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
                 {t(
                   "نشتري منك هذا المنتج في أي وقت بسعر البيع اللحظي، ونرد لك جزءًا من المصنعية بشرط بقاء العبوة الأصلية سليمة وغير مفتوحة.",
-                )}{" "}
-                <Link to="/refund-policy" className="font-semibold text-gold-deep hover:underline">
-                  {t("اقرأ الشروط")}
-                </Link>
+                )}
               </p>
             </div>
           )}

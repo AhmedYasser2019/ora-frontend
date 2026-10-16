@@ -445,12 +445,6 @@ function KycSection() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const errs: typeof errors = {};
-    if (!front) errs.front = ["ارفع صورة الوجه الأمامي للهوية"];
-    if (docType === "id" && !back) errs.back = ["ارفع صورة الوجه الخلفي للهوية"];
-    setErrors(errs);
-    if (errs.front || errs.back) return;
-
     const sides: [File | null, string][] = [
       [front, "national_id_front"],
       [docType === "id" ? back : null, "national_id_back"],
@@ -554,7 +548,7 @@ function KycSection() {
           </div>
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || !front || (docType === "id" && !back)}
             className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
             {busy ? (

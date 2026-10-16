@@ -22,7 +22,6 @@ export const helpLinks = [
   { label: "الشروط والأحكام", to: "/terms" },
   { label: "سياسة الخصوصية", to: "/privacy" },
   { label: "سياسة الشحن والتوصيل", to: "/shipping-policy" },
-  { label: "سياسة الاسترجاع واسترداد الأموال", to: "/refund-policy" },
 ] as const;
 
 export const weightLabel = (g: number) =>

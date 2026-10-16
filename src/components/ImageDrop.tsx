@@ -28,7 +28,9 @@ export function ImageDrop({
 
   return (
     <div>
-      <p className="mb-1.5 text-xs font-semibold text-gold-deep">{t(label)}</p>
+      <p className="mb-1.5 text-xs font-semibold text-gold-deep">
+        {t(label)} <span className="text-destructive">*</span>
+      </p>
       <button
         type="button"
         onClick={() => ref.current?.click()}

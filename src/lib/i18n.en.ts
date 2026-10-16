@@ -161,7 +161,6 @@ export const en: Record<string, string> = {
   "الشروط والأحكام": "Terms & conditions",
   "سياسة الخصوصية": "Privacy policy",
   "سياسة الشحن والتوصيل": "Shipping & delivery policy",
-  "سياسة الاسترجاع واسترداد الأموال": "Returns & refunds policy",
 
   // الفئات والموردون
   "سبائك ذهب": "Gold bars",
@@ -878,7 +877,6 @@ export const en: Record<string, string> = {
   حتى: "up to",
   "نشتري منك هذا المنتج في أي وقت بسعر البيع اللحظي، ونرد لك جزءًا من المصنعية بشرط بقاء العبوة الأصلية سليمة وغير مفتوحة.":
     "We buy this product back any time at the live sell price and refund part of the fabrication fee, provided the original packaging is intact and unopened.",
-  "اقرأ الشروط": "Read the terms",
   "منتجات ذات صلة": "Related products",
 
   // المحفظة
@@ -974,11 +972,6 @@ export const en: Record<string, string> = {
   "نوضح هنا البيانات التي نجمعها، وسبب جمعها، وكيف نحميها.":
     "Here we set out what data we collect, why we collect it and how we protect it.",
 
-  "سياسة الاسترجاع واسترداد الأموال | زاد جولد": "Returns & refunds policy | Zad Gold",
-  "شروط ومدد استرجاع سبائك وعملات الذهب واسترداد الأموال من زاد جولد.":
-    "The terms and timeframes for returning gold bars and coins and getting refunds from Zad Gold.",
-  "نشتري منك ذهبك في أي وقت، وهذه هي شروط الاسترجاع والاسترداد.":
-    "We buy your gold back any time — these are the return and refund terms.",
 
   "سياسة الشحن والتوصيل | زاد جولد": "Shipping & delivery policy | Zad Gold",
   "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من زاد جولد لكل محافظات مصر.":

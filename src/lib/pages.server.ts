@@ -9,7 +9,7 @@ import { readLang } from "./i18n";
 
 import { API_URL, backend } from "./backend.server";
 
-export const PAGE_SLUGS = ["about", "privacy", "terms", "shipping", "refund"] as const;
+export const PAGE_SLUGS = ["about", "privacy", "terms", "shipping"] as const;
 export type PageSlug = (typeof PAGE_SLUGS)[number];
 
 export type ContentPage = {

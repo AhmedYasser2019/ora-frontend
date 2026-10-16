@@ -27,7 +27,6 @@ import { Route as NewsRouteImport } from './routes/news'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ShippingPolicyRouteImport } from './routes/shipping-policy'
 import { Route as SilverPriceRouteImport } from './routes/silver-price'
@@ -128,11 +127,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RefundPolicyRoute = RefundPolicyRouteImport.update({
-  id: '/refund-policy',
-  path: '/refund-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -198,7 +192,6 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/privacy': typeof PrivacyRoute
-  '/refund-policy': typeof RefundPolicyRoute
   '/reports': typeof ReportsRoute
   '/shipping-policy': typeof ShippingPolicyRoute
   '/silver-price': typeof SilverPriceRoute
@@ -228,7 +221,6 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/privacy': typeof PrivacyRoute
-  '/refund-policy': typeof RefundPolicyRoute
   '/reports': typeof ReportsRoute
   '/shipping-policy': typeof ShippingPolicyRoute
   '/silver-price': typeof SilverPriceRoute
@@ -259,7 +251,6 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/privacy': typeof PrivacyRoute
-  '/refund-policy': typeof RefundPolicyRoute
   '/reports': typeof ReportsRoute
   '/shipping-policy': typeof ShippingPolicyRoute
   '/silver-price': typeof SilverPriceRoute
@@ -291,7 +282,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/payment-methods'
     | '/privacy'
-    | '/refund-policy'
     | '/reports'
     | '/shipping-policy'
     | '/silver-price'
@@ -321,7 +311,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/payment-methods'
     | '/privacy'
-    | '/refund-policy'
     | '/reports'
     | '/shipping-policy'
     | '/silver-price'
@@ -351,7 +340,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/payment-methods'
     | '/privacy'
-    | '/refund-policy'
     | '/reports'
     | '/shipping-policy'
     | '/silver-price'
@@ -382,7 +370,6 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRoute
   PaymentMethodsRoute: typeof PaymentMethodsRoute
   PrivacyRoute: typeof PrivacyRoute
-  RefundPolicyRoute: typeof RefundPolicyRoute
   ReportsRoute: typeof ReportsRoute
   ShippingPolicyRoute: typeof ShippingPolicyRoute
   SilverPriceRoute: typeof SilverPriceRoute
@@ -522,13 +509,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/refund-policy': {
-      id: '/refund-policy'
-      path: '/refund-policy'
-      fullPath: '/refund-policy'
-      preLoaderRoute: typeof RefundPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reports': {
       id: '/reports'
       path: '/reports'
@@ -614,7 +594,6 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRoute,
   PaymentMethodsRoute: PaymentMethodsRoute,
   PrivacyRoute: PrivacyRoute,
-  RefundPolicyRoute: RefundPolicyRoute,
   ReportsRoute: ReportsRoute,
   ShippingPolicyRoute: ShippingPolicyRoute,
   SilverPriceRoute: SilverPriceRoute,
