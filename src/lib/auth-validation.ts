@@ -11,7 +11,8 @@ type FieldName =
   | "code"
   | "docNumber"
   | "docFront"
-  | "docBack";
+  | "docBack"
+  | "docSelfie";
 
 /** أرقام عربية ← لاتينية: لوحة المفاتيح العربية تكتب ٠١٠ والخادم يتحقق من 010. */
 export const latin = (s: string) =>

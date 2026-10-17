@@ -312,9 +312,13 @@ export const en: Record<string, string> = {
   "رجوع لتسجيل الدخول": "Back to sign in",
   "رقم موبايل غير صحيح": "Invalid mobile number",
   "الرقم القومي 14 رقمًا": "A national ID number is 14 digits",
-  "رقم جواز غير صحيح": "Invalid passport number",
   "ارفع صورة الوجه الأمامي للهوية": "Upload the front of your ID",
   "ارفع صورة الوجه الخلفي للهوية": "Upload the back of your ID",
+  "ارفع صورة شخصية واضحة لوجهك": "Upload a clear photo of your face",
+  "لتأكيد هويتك، ارفع صورتي بطاقة الرقم القومي وصورة شخصية لك:":
+    "To confirm your identity, upload both sides of your national ID and a photo of yourself:",
+  "الرقم القومي": "National ID number",
+  "اكتب الرقم القومي": "Enter your national ID number",
   "صيغة الملف غير مدعومة. الرجاء رفع صورة بصيغة JPG أو PNG":
     "Unsupported file format. Please upload a JPG or PNG image.",
   "تم إنشاء حسابك": "Your account was created",
@@ -354,16 +358,9 @@ export const en: Record<string, string> = {
   "أنشئ حسابك الآن": "Create your account now",
   "وابدأ أول عملية شراء أو استثمار في الذهب.": "and make your first gold purchase or investment.",
   "أحمد الباز": "Ahmed Elbaz",
-  "لتأكيد هويتك، صوّر أو ارفع أحد المستندات التالية:":
-    "To verify your identity, photograph or upload one of these documents:",
-  "بطاقة الرقم القومي": "National ID card",
-  "جواز السفر": "Passport",
-  "رقم البطاقة / جواز السفر": "ID or passport number",
-  "اكتب رقم البطاقة أو جواز السفر": "Enter your ID or passport number",
   "التعليمات تتطلب رفع صورة المستند. بياناتك تبقى آمنة وخاصة.":
     "Regulations require a photo of the document. Your data stays private and secure.",
   "الوجه الأمامي للبطاقة": "Front of the ID card",
-  "صفحة بيانات الجواز": "Passport data page",
   "الوجه الخلفي للبطاقة": "Back of the ID card",
   تأكيد: "Confirm",
   "اختر ما يصف خبرتك، عشان نرشّح لك المنتجات المناسبة.":
@@ -971,7 +968,6 @@ export const en: Record<string, string> = {
     "How Zad Gold collects, uses and protects your personal data.",
   "نوضح هنا البيانات التي نجمعها، وسبب جمعها، وكيف نحميها.":
     "Here we set out what data we collect, why we collect it and how we protect it.",
-
 
   "سياسة الشحن والتوصيل | زاد جولد": "Shipping & delivery policy | Zad Gold",
   "مواعيد ورسوم وشروط شحن وتوصيل سبائك وعملات الذهب من زاد جولد لكل محافظات مصر.":

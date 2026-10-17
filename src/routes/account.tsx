@@ -52,6 +52,10 @@ type Kyc = {
   documents: { id: number; type: string; status: KycStatus; note: string | null }[];
 };
 
+/** ما يلزم لتوثيق الحساب — نفس KycStatus::REQUIRED عند الخادم. */
+const REQUIRED_DOCS = ["national_id_front", "national_id_back", "selfie"] as const;
+type DocType = (typeof REQUIRED_DOCS)[number];
+
 const SIDE_LABEL: Record<string, string> = {
   national_id_front: "الوجه الأمامي للبطاقة",
   national_id_back: "الوجه الخلفي للبطاقة",
@@ -415,10 +419,8 @@ function PasswordInput({
 function KycSection() {
   const t = useT();
   const qc = useQueryClient();
-  const [docType, setDocType] = useState<"id" | "passport">("id");
-  const [front, setFront] = useState<File | null>(null);
-  const [back, setBack] = useState<File | null>(null);
-  const [errors, setErrors] = useState<{ front?: string[]; back?: string[] }>({});
+  const [files, setFiles] = useState<Partial<Record<DocType, File | null>>>({});
+  const [errors, setErrors] = useState<Partial<Record<DocType, string[]>>>({});
   const [busy, setBusy] = useState(false);
 
   const { data: kyc } = useQuery({ queryKey: ["kyc"], queryFn: () => api<Kyc>("/kyc") });
@@ -436,30 +438,30 @@ function KycSection() {
   const latest = kyc.documents.filter((d, i, all) => all.findIndex((x) => x.type === d.type) === i);
   const refused = latest.filter((d) => d.status === "rejected");
   const canUpload = kyc.status === "unverified" || kyc.status === "rejected";
+  // الثلاثة مطلوبة؛ ما قُبل منها لا يُعاد رفعه — يُطلب الناقص والمرفوض فقط.
+  const needed = REQUIRED_DOCS.filter(
+    (type) => latest.find((d) => d.type === type)?.status !== "approved",
+  );
 
-  const pick = (set: (f: File | null) => void, key: "front" | "back") => (f: File | null) => {
+  const pick = (key: DocType) => (f: File | null) => {
     const ok = !f || isIdImage(f);
-    set(ok ? f : null);
+    setFiles((x) => ({ ...x, [key]: ok ? f : null }));
     setErrors((x) => ({ ...x, [key]: ok ? undefined : [BAD_IMAGE] }));
   };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const sides: [File | null, string][] = [
-      [front, "national_id_front"],
-      [docType === "id" ? back : null, "national_id_back"],
-    ];
     setBusy(true);
     try {
-      for (const [file, type] of sides) {
+      for (const type of needed) {
+        const file = files[type];
         if (!file) continue;
         const body = new FormData();
         body.append("type", type);
         body.append("file", file);
         qc.setQueryData(["kyc"], await upload<Kyc>("/kyc/documents", body));
       }
-      setFront(null);
-      setBack(null);
+      setFiles({});
       toast.success(t("تم إرسال وثائقك للمراجعة"));
     } catch (e) {
       toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر رفع الصورة"));
@@ -508,47 +510,20 @@ function KycSection() {
                 : "وثّق هويتك أولًا لإتمام عمليات الشراء.",
             )}
           </p>
-          <div className="flex flex-wrap gap-6 text-sm text-primary">
-            {(
-              [
-                ["id", "بطاقة الرقم القومي"],
-                ["passport", "جواز السفر"],
-              ] as const
-            ).map(([v, label]) => (
-              <label key={v} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="kycDocType"
-                  checked={docType === v}
-                  onChange={() => {
-                    setDocType(v);
-                    setErrors({});
-                  }}
-                  className="accent-gold"
-                />
-                {t(label)}
-              </label>
-            ))}
-          </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <ImageDrop
-              label={docType === "id" ? "الوجه الأمامي للبطاقة" : "صفحة بيانات الجواز"}
-              file={front}
-              onPick={pick(setFront, "front")}
-              error={errors.front}
-            />
-            {docType === "id" && (
+            {needed.map((type) => (
               <ImageDrop
-                label="الوجه الخلفي للبطاقة"
-                file={back}
-                onPick={pick(setBack, "back")}
-                error={errors.back}
+                key={type}
+                label={SIDE_LABEL[type] ?? type}
+                file={files[type] ?? null}
+                onPick={pick(type)}
+                error={errors[type]}
               />
-            )}
+            ))}
           </div>
           <button
             type="submit"
-            disabled={busy || !front || (docType === "id" && !back)}
+            disabled={busy || needed.some((type) => !files[type])}
             className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
             {busy ? (

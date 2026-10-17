@@ -387,11 +387,12 @@ function AuthPage() {
     const blank = { name: "", phone: "", email: "", password: "", confirm: "" };
     return { login: blank, signup: blank, demo: blank };
   });
-  const [kyc, setKyc] = useState({ docType: "id", docNumber: "" });
+  const [docNumber, setDocNumber] = useState("");
   // الرقم الذي اجتاز فحص الخادم في الخطوة الثانية؛ التخطي يتركه null فلا يُرسل.
   const [idNumber, setIdNumber] = useState<string | null>(null);
   const [docFront, setDocFront] = useState<File | null>(null);
   const [docBack, setDocBack] = useState<File | null>(null);
+  const [docSelfie, setDocSelfie] = useState<File | null>(null);
   const [experience, setExperience] = useState<string>(EXPERIENCE[0]);
 
   const target = safeNext(next);
@@ -507,13 +508,12 @@ function AuthPage() {
   /** رقم مسجّل بحساب آخر يُرفض هنا، قبل خطوة الخبرة — لا عند إنهاء التسجيل. */
   const submitKyc = async (e: React.FormEvent) => {
     e.preventDefault();
-    const num = latin(kyc.docNumber);
+    const num = latin(docNumber);
     const errs: Errors = {};
-    if (kyc.docType === "id" ? !/^[23][0-9]{13}$/.test(num) : !/^[A-Z0-9]{6,12}$/i.test(num)) {
-      errs.docNumber = [kyc.docType === "id" ? "الرقم القومي 14 رقمًا" : "رقم جواز غير صحيح"];
-    }
+    if (!/^[23][0-9]{13}$/.test(num)) errs.docNumber = ["الرقم القومي 14 رقمًا"];
     if (!docFront) errs.docFront = ["ارفع صورة الوجه الأمامي للهوية"];
-    if (kyc.docType === "id" && !docBack) errs.docBack = ["ارفع صورة الوجه الخلفي للهوية"];
+    if (!docBack) errs.docBack = ["ارفع صورة الوجه الخلفي للهوية"];
+    if (!docSelfie) errs.docSelfie = ["ارفع صورة شخصية واضحة لوجهك"];
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
     setBusy(true);
@@ -559,6 +559,7 @@ function AuthPage() {
       const sides: [File | null, string][] = [
         [docFront, "national_id_front"],
         [docBack, "national_id_back"],
+        [docSelfie, "selfie"],
       ];
 
       for (const [file, type] of sides) {
@@ -808,64 +809,45 @@ function AuthPage() {
               {step === 2 && (
                 <form onSubmit={submitKyc} noValidate className="grid gap-4">
                   <p className="text-xs text-muted-foreground">
-                    {t("لتأكيد هويتك، صوّر أو ارفع أحد المستندات التالية:")}
+                    {t("لتأكيد هويتك، ارفع صورتي بطاقة الرقم القومي وصورة شخصية لك:")}
                   </p>
-                  <div className="flex flex-wrap gap-6 text-sm text-primary">
-                    {(
-                      [
-                        ["id", "بطاقة الرقم القومي"],
-                        ["passport", "جواز السفر"],
-                      ] as const
-                    ).map(([v, label]) => (
-                      <label key={v} className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name="docType"
-                          value={v}
-                          checked={kyc.docType === v}
-                          onChange={() => {
-                            setKyc({ ...kyc, docType: v });
-                            setErrors({});
-                          }}
-                          className="accent-gold"
-                        />
-                        {t(label)}
-                      </label>
-                    ))}
-                  </div>
                   <Field
                     id="docNumber"
-                    label="رقم البطاقة / جواز السفر"
+                    label="الرقم القومي"
                     icon={BadgeCheck}
                     dir="ltr"
                     required
-                    inputMode={kyc.docType === "id" ? "numeric" : "text"}
-                    value={kyc.docNumber}
+                    inputMode="numeric"
+                    value={docNumber}
                     onChange={(e) => {
-                      setKyc({ ...kyc, docNumber: e.target.value });
+                      setDocNumber(e.target.value);
                       clear("docNumber");
                     }}
                     error={errors.docNumber}
-                    placeholder={t("اكتب رقم البطاقة أو جواز السفر")}
+                    placeholder={t("اكتب الرقم القومي")}
                   />
                   <p className="text-xs text-muted-foreground">
                     {t("التعليمات تتطلب رفع صورة المستند. بياناتك تبقى آمنة وخاصة.")}
                   </p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <ImageDrop
-                      label={kyc.docType === "id" ? "الوجه الأمامي للبطاقة" : "صفحة بيانات الجواز"}
+                      label="الوجه الأمامي للبطاقة"
                       file={docFront}
                       onPick={pickDoc(setDocFront, "docFront")}
                       error={errors.docFront}
                     />
-                    {kyc.docType === "id" && (
-                      <ImageDrop
-                        label="الوجه الخلفي للبطاقة"
-                        file={docBack}
-                        onPick={pickDoc(setDocBack, "docBack")}
-                        error={errors.docBack}
-                      />
-                    )}
+                    <ImageDrop
+                      label="الوجه الخلفي للبطاقة"
+                      file={docBack}
+                      onPick={pickDoc(setDocBack, "docBack")}
+                      error={errors.docBack}
+                    />
+                    <ImageDrop
+                      label="صورة شخصية"
+                      file={docSelfie}
+                      onPick={pickDoc(setDocSelfie, "docSelfie")}
+                      error={errors.docSelfie}
+                    />
                   </div>
                   {stepNav(1, "التالي", 3)}
                 </form>
