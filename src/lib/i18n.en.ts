@@ -301,6 +301,9 @@ export const en: Record<string, string> = {
     "Enter the email on your account and we'll send you a verification code.",
   "إرسال الرمز": "Send code",
   "بعتنالك رمز التحقق على بريدك الإلكتروني": "We've emailed you a verification code",
+  "بعتنالك رمز التحقق على موبايلك": "We've texted you a verification code",
+  "اكتب رقم الموبايل المسجَّل في حسابك وهنبعتلك رمز تحقق.":
+    "Enter the mobile number on your account and we'll send you a verification code.",
   "رمز التحقق": "Verification code",
   "إعادة إرسال الرمز": "Resend code",
   "كلمة المرور الجديدة": "New password",

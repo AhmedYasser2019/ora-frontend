@@ -77,6 +77,7 @@ export const schemas = {
   loginEmail: z.object({ email, password: z.string().min(1, "اكتب كلمة المرور") }),
   signup: account.refine(same, mismatch),
   demo: account.omit({ phone: true }).refine(same, mismatch),
+  resetPhone: z.object({ phone }),
   resetEmail: z.object({ email }),
   resetCode: z.object({
     code: z

@@ -185,13 +185,18 @@ function StepRail({ step }: { step: number }) {
   );
 }
 
-/** نسيت كلمة المرور: البريد الإلكتروني ← الرمز اللي وصل عليه ← كلمة مرور جديدة. */
-function ForgotPassword({ onDone }: { onDone: () => void }) {
+/**
+ * نسيت كلمة المرور: رقم الموبايل ← الرمز اللي وصل عليه ← كلمة مرور جديدة، كما في التطبيق.
+ * حساب الديمو المستقل بلا موبايل، فيأخذ رمزه على البريد ($byEmail).
+ */
+function ForgotPassword({ byEmail, onDone }: { byEmail: boolean; onDone: () => void }) {
   const t = useT();
-  const [step, setStep] = useState<"email" | "code" | "password">("email");
+  const [step, setStep] = useState<"id" | "code" | "password">("id");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
-  const [email, setEmail] = useState("");
+  const [value, setValue] = useState("");
+  // الحقل الذي يُرسل في الطلبات الثلاثة؛ الخادم يربط الرمز به.
+  const key = byEmail ? "email" : "phone";
   const [code, setCode] = useState("");
   const [resetToken, setResetToken] = useState("");
   const [password, setPassword] = useState("");
@@ -209,7 +214,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
       await fn();
     } catch (err) {
       setErrors(fromServer(err));
-      if (err instanceof ApiError && err.errors["reset_token"]) setStep("email");
+      if (err instanceof ApiError && err.errors["reset_token"]) setStep("id");
       toast.error(err instanceof ApiError ? err.firstMessage : t("حاول مرة أخرى"));
     } finally {
       setBusy(false);
@@ -218,14 +223,18 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
 
   const send = (e: React.FormEvent) => {
     e.preventDefault();
-    const v = check(schemas.resetEmail, { email }, setErrors);
+    const v = byEmail
+      ? check(schemas.resetEmail, { email: value }, setErrors)?.email
+      : check(schemas.resetPhone, { phone: value }, setErrors)?.phone;
     if (!v) return;
-    setEmail(v.email);
+    setValue(v);
     run(async () => {
-      await api("/auth/otp", { method: "POST", body: { email: v.email } });
+      await api("/auth/otp", { method: "POST", body: { [key]: v } });
       setCode("");
       setStep("code");
-      toast.success(t("بعتنالك رمز التحقق على بريدك الإلكتروني"));
+      toast.success(
+        t(byEmail ? "بعتنالك رمز التحقق على بريدك الإلكتروني" : "بعتنالك رمز التحقق على موبايلك"),
+      );
     });
   };
 
@@ -236,7 +245,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
     run(async () => {
       const { reset_token } = await api<{ reset_token: string }>("/auth/otp/verify", {
         method: "POST",
-        body: { email, code: v.code },
+        body: { [key]: value, code: v.code },
       });
       setResetToken(reset_token);
       setStep("password");
@@ -251,7 +260,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
       await api("/auth/password", {
         method: "POST",
         body: {
-          email,
+          [key]: value,
           reset_token: resetToken,
           password: v.password,
           password_confirmation: v.confirm,
@@ -281,24 +290,44 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
         {t("نسيت كلمة المرور")}
       </h3>
 
-      {step === "email" && (
+      {step === "id" && (
         <form onSubmit={send} noValidate className="grid gap-4">
           <p className="text-xs text-muted-foreground">
-            {t("اكتب البريد الإلكتروني المسجَّل في حسابك وهنبعتلك رمز تحقق.")}
+            {t(
+              byEmail
+                ? "اكتب البريد الإلكتروني المسجَّل في حسابك وهنبعتلك رمز تحقق."
+                : "اكتب رقم الموبايل المسجَّل في حسابك وهنبعتلك رمز تحقق.",
+            )}
           </p>
-          <Field
-            id="reset-email"
-            label="البريد الإلكتروني"
-            icon={Mail}
-            type="email"
-            dir="ltr"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={edit(setEmail, "email")}
-            error={errors.email}
-            placeholder="you@example.com"
-          />
+          {byEmail ? (
+            <Field
+              id="reset-email"
+              label="البريد الإلكتروني"
+              icon={Mail}
+              type="email"
+              dir="ltr"
+              required
+              autoComplete="email"
+              value={value}
+              onChange={edit(setValue, "email")}
+              error={errors.email}
+              placeholder="you@example.com"
+            />
+          ) : (
+            <Field
+              id="reset-phone"
+              label="رقم الموبايل"
+              icon={Phone}
+              type="tel"
+              dir="ltr"
+              required
+              autoComplete="tel"
+              value={value}
+              onChange={edit(setValue, "phone")}
+              error={errors.phone}
+              placeholder="01xxxxxxxxx"
+            />
+          )}
           {submitBtn("إرسال الرمز")}
         </form>
       )}
@@ -321,7 +350,7 @@ function ForgotPassword({ onDone }: { onDone: () => void }) {
           {submitBtn("تأكيد")}
           <button
             type="button"
-            onClick={() => setStep("email")}
+            onClick={() => setStep("id")}
             className="text-xs font-semibold text-muted-foreground underline"
           >
             {t("إعادة إرسال الرمز")}
@@ -829,7 +858,7 @@ function AuthPage() {
           </div>
         ) : mode === "forgot" ? (
           <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8">
-            <ForgotPassword onDone={() => switchMode("login")} />
+            <ForgotPassword byEmail={demoLogin} onDone={() => switchMode("login")} />
           </div>
         ) : mode === "demo" ? (
           <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8">
