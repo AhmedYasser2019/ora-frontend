@@ -389,6 +389,8 @@ function AuthPage() {
     const blank = { name: "", phone: "", email: "", password: "", confirm: "" };
     return { login: blank, signup: blank, demo: blank };
   });
+  // حساب الديمو المستقل بلا موبايل، فيدخل بالبريد. الباقي بالموبايل كما في التطبيق.
+  const [demoLogin, setDemoLogin] = useState(false);
   const [docNumber, setDocNumber] = useState("");
   // الرقم الذي اجتاز فحص الخادم في الخطوة الثانية؛ التخطي يتركه null فلا يُرسل.
   const [idNumber, setIdNumber] = useState<string | null>(null);
@@ -452,14 +454,16 @@ function AuthPage() {
 
   const login = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const v = check(schemas.login, form, setErrors);
+    const v = demoLogin
+      ? check(schemas.loginEmail, form, setErrors)
+      : check(schemas.login, form, setErrors);
     if (!v) return;
     setBusy(true);
     try {
+      const { password, ...id } = v;
       const res = await api<{ token: string }>("/auth/token", {
         method: "POST",
-        // الباك إند يقبل بريدًا أو هاتفًا؛ الموقع يجمع بريدًا والتطبيق يجمع هاتفًا.
-        body: { email: v.email, password: v.password, device_name: "web" },
+        body: { ...id, password, device_name: "web" },
       });
 
       setToken(res.token);
@@ -750,19 +754,35 @@ function AuthPage() {
         {mode === "login" ? (
           <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8">
             <form onSubmit={login} noValidate className="grid gap-4">
-              <Field
-                id="email"
-                label="البريد الإلكتروني"
-                icon={Mail}
-                type="email"
-                dir="ltr"
-                required
-                autoComplete="email"
-                value={form.email}
-                onChange={edit("email")}
-                error={errors.email}
-                placeholder="you@example.com"
-              />
+              {demoLogin ? (
+                <Field
+                  id="email"
+                  label="البريد الإلكتروني"
+                  icon={Mail}
+                  type="email"
+                  dir="ltr"
+                  required
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={edit("email")}
+                  error={errors.email}
+                  placeholder="you@example.com"
+                />
+              ) : (
+                <Field
+                  id="phone"
+                  label="رقم الموبايل"
+                  icon={Phone}
+                  type="tel"
+                  dir="ltr"
+                  required
+                  autoComplete="tel"
+                  value={form.phone}
+                  onChange={edit("phone")}
+                  error={errors.phone}
+                  placeholder="01xxxxxxxxx"
+                />
+              )}
               <Field
                 id="password"
                 label="كلمة المرور"
@@ -784,6 +804,16 @@ function AuthPage() {
                 {t("نسيت كلمة المرور؟")}
               </button>
               {submitBtn("دخول")}
+              <button
+                type="button"
+                onClick={() => {
+                  setDemoLogin(!demoLogin);
+                  setErrors({});
+                }}
+                className="text-xs font-semibold text-muted-foreground underline"
+              >
+                {t(demoLogin ? "الدخول برقم الموبايل" : "حساب ديمو بدون موبايل؟ ادخل بالبريد")}
+              </button>
               {canPasskey && (
                 <button
                   type="button"

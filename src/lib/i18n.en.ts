@@ -294,6 +294,8 @@ export const en: Record<string, string> = {
   "كلمة المرور ضعيفة. يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص":
     "Password is too weak. It must contain an uppercase letter, a lowercase letter, a number and a symbol",
   "نسيت كلمة المرور؟": "Forgot your password?",
+  "الدخول برقم الموبايل": "Sign in with mobile number",
+  "حساب ديمو بدون موبايل؟ ادخل بالبريد": "Demo account without a mobile? Sign in with email",
   "نسيت كلمة المرور": "Forgot password",
   "اكتب البريد الإلكتروني المسجَّل في حسابك وهنبعتلك رمز تحقق.":
     "Enter the email on your account and we'll send you a verification code.",

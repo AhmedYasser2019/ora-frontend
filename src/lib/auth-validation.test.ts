@@ -60,3 +60,11 @@ for (const name of ["John123", "12345", "@@@", "!@#$%^&*"]) {
 for (const name of ["عبد الله", "Mary-Jane O'Neil"]) assert.equal(fullName.parse(name), name);
 // كلمة واحدة تُرفض: التطبيق يشترط اسمًا أخيرًا.
 for (const name of ["ققق", " Taha "]) assert.equal(fullName.safeParse(name).success, false, name);
+
+// الدخول بالموبايل كالتطبيق؛ البريد مسار الديمو المستقل وحده.
+assert.equal(
+  schemas.login.safeParse({ phone: "٠١٠١٢٣٤٥٦٧٨", password: "x" }).data?.phone,
+  "01012345678",
+);
+assert.equal(schemas.login.safeParse({ email: "a@b.co", password: "x" }).success, false);
+assert.equal(schemas.loginEmail.safeParse({ email: "a@b.co", password: "x" }).success, true);

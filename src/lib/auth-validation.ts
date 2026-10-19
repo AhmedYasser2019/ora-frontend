@@ -72,7 +72,9 @@ const account = z.object({
 });
 
 export const schemas = {
-  login: z.object({ email, password: z.string().min(1, "اكتب كلمة المرور") }),
+  // الموبايل هو المعرّف في الموقع والتطبيق. البريد لحساب الديمو المستقل فقط: لا موبايل له.
+  login: z.object({ phone, password: z.string().min(1, "اكتب كلمة المرور") }),
+  loginEmail: z.object({ email, password: z.string().min(1, "اكتب كلمة المرور") }),
   signup: account.refine(same, mismatch),
   demo: account.omit({ phone: true }).refine(same, mismatch),
   resetEmail: z.object({ email }),
