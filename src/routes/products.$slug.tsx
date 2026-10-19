@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, ChevronLeft, Minus, Plus, Recycle, ShieldCheck, Truck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { tr, useT } from "@/lib/i18n";
@@ -13,6 +13,7 @@ import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { productImage } from "@/lib/product-image";
 import { weightLabel } from "@/lib/site";
+import { gaItem, track } from "@/lib/analytics";
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ context, params }) => {
@@ -75,6 +76,12 @@ function ProductPage() {
 
   const price = p.price;
   const resale = p.resale;
+  // مرة لكل منتج يُفتح، لا مع كل تحديث سعر من البثّ.
+  useEffect(
+    () => track("view_item", { currency: "EGP", value: p.price, items: [gaItem(p.slug, p)] }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [p.slug],
+  );
   const img = productImage(p);
 
   const addToCart = () => {

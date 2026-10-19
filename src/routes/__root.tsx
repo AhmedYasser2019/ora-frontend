@@ -18,6 +18,8 @@ import { FavoritesProvider } from "@/lib/favorites";
 import { Toaster } from "@/components/ui/sonner";
 import { trackView } from "@/lib/api";
 import { localizeValidity } from "@/lib/form-validity";
+import { initAnalytics, setAnalyticsUser } from "@/lib/analytics";
+import { useAuth } from "@/lib/use-auth";
 
 /**
  * تُرسم أحيانًا خارج <LangProvider> (لو فشل RootComponent قبل تركيب الـ provider)،
@@ -154,9 +156,11 @@ function RootComponent() {
   useEffect(() => trackView(pathname), [pathname]);
   // `tr` لا `useT`: نحن فوق <LangProvider>، و`tr` تقرأ الكوكي فتتبع تبديل اللغة.
   useEffect(() => localizeValidity(tr), []);
+  useEffect(initAnalytics, []);
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AnalyticsUser />
       <LangProvider>
         <CartProvider>
           <FavoritesProvider>
@@ -168,4 +172,11 @@ function RootComponent() {
       </LangProvider>
     </QueryClientProvider>
   );
+}
+
+/** داخل QueryClientProvider لأن useAuth يسأل react-query. */
+function AnalyticsUser() {
+  const id = useAuth().user?.id ?? null;
+  useEffect(() => setAnalyticsUser(id), [id]);
+  return null;
 }

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Building2,
   Banknote,
@@ -18,6 +18,7 @@ import { PageShell } from "@/components/PageShell";
 import { deliveryFee, shortLines, shortMessage, useCart } from "@/lib/cart";
 import { bySlug, productsQuery } from "@/lib/catalog.queries";
 import { orderErrorMessage, placeOrder } from "@/lib/orders";
+import { gaItem, track } from "@/lib/analytics";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
 import { GOVERNORATES } from "@/lib/site";
@@ -90,6 +91,17 @@ function CheckoutPage() {
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { next: "/checkout" } });
   }, [loading, user, navigate]);
+
+  // مرة واحدة لكل فتح، حين تصل السلة — قد تصل بعد أول رسم.
+  const began = useRef(false);
+  useEffect(() => {
+    if (began.current || items.length === 0) return;
+    began.current = true;
+    track("begin_checkout", {
+      currency: "EGP",
+      items: items.map((i) => gaItem(i.slug, bySlug(catalog, i.slug), i.qty)),
+    });
+  }, [items, catalog]);
 
   // لا فرع افتراضي: الاستلام اختيار صريح من الزائر، ومن لا يريده يختار التوصيل.
   const branch = form.branch;
@@ -209,6 +221,16 @@ function CheckoutPage() {
           ? `${paid.grams} ${t("جرام")} + ${egp((paid.piasters + fee) / 100)} ${t("ج.م")}`
           : `${egp((order.gross_piasters + fee) / 100)} ${t("ج.م")}`,
       });
+      // الطلب التجريبي ليس بيعًا، فلا يدخل إيرادات GA.
+      if (!user.is_demo) {
+        track("purchase", {
+          transaction_id: order.order_id,
+          currency: "EGP",
+          value: (order.gross_piasters + fee) / 100,
+          shipping: fee / 100,
+          items: items.map((i) => gaItem(i.slug, bySlug(catalog, i.slug), i.qty)),
+        });
+      }
       clear();
     } catch (e) {
       toast.error(t(orderErrorMessage(e)));

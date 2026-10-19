@@ -22,6 +22,7 @@ import { z } from "zod";
 
 import { BAD_IMAGE, ImageDrop, isIdImage } from "@/components/ImageDrop";
 import { PageShell } from "@/components/PageShell";
+import { track } from "@/lib/analytics";
 import { api, ApiError, setToken, upload } from "@/lib/api";
 import { latin, schemas, type Errors } from "@/lib/auth-validation";
 import { cancelled, passkeysSupported, signInWithPasskey } from "@/lib/passkey";
@@ -472,6 +473,7 @@ function AuthPage() {
     setBusy(true);
     try {
       setToken((await signInWithPasskey()).token);
+      track("login", { method: "passkey" });
       toast.success(t("مرحبًا بعودتك"));
       navigate({ to: target });
     } catch (err) {
@@ -496,6 +498,7 @@ function AuthPage() {
       });
 
       setToken(res.token);
+      track("login", { method: "password" });
       toast.success(t("مرحبًا بعودتك"));
       navigate({ to: target });
     } catch (err) {
@@ -527,6 +530,7 @@ function AuthPage() {
       });
 
       setToken(token);
+      track("sign_up", { method: "demo" });
       toast.success(t("تم إنشاء حساب الديمو"), {
         description: t("اشحن رصيد تجريبي من صفحة حسابك وابدأ."),
       });
@@ -607,6 +611,7 @@ function AuthPage() {
       });
 
       setToken(token);
+      track("sign_up", { method: "email" });
 
       const sides: [File | null, string][] = [
         [docFront, "national_id_front"],

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { api, ApiError } from "./api";
 import { bySlug, productsQuery } from "./catalog.queries";
+import { gaItem, track } from "./analytics";
 import type { Product } from "./catalog.server";
 import { useT } from "./i18n";
 import type { SiteSettings } from "./settings.server";
@@ -139,6 +140,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return false;
       }
       put(slug, Math.min(current + qty, MAX_QTY));
+      track("add_to_cart", {
+        currency: "EGP",
+        value: (p?.price ?? 0) * qty,
+        items: [gaItem(slug, p, qty)],
+      });
       return true;
     },
     [loading, user, navigate, t, qc, put],
