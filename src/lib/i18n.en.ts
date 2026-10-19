@@ -1161,6 +1161,12 @@ export const en: Record<string, string> = {
   "حسابك مرفوض. أعد رفع وثيقة هويتك من صفحة حسابك.":
     "Your verification was rejected. Re-upload your ID from your account page.",
   "أعد رفع الهوية": "Re-upload ID",
+  "حسابك مرفوض. أعد رفع وثيقة هويتك من صفحة حسابك لتتمكن من شحن الرصيد.":
+    "Your account is rejected. Re-upload your ID from your account page to top up.",
+  "حسابك قيد المراجعة. يمكنك شحن الرصيد بعد اعتماد هويتك.":
+    "Your account is under review. You can top up once your identity is approved.",
+  "يجب توثيق حسابك أولًا لتتمكن من إيداع الأموال.":
+    "You must verify your account first to deposit funds.",
   "تعذّر إرسال الرسالة": "Couldn't send the message",
   "راجع اتصالك وحاول مرة أخرى.": "Check your connection and try again.",
   // بيانات المتجر القادمة من الداشبورد

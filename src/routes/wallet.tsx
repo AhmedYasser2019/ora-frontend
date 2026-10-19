@@ -145,6 +145,16 @@ function WalletPage() {
   const gramPrice = trade ? (prices?.gram[trade.price] ?? 0) : 0;
   const parsed = Number(amount);
   const valid = Number.isFinite(parsed) && parsed > 0;
+  // والخادم يرفض الإيداع قبل اعتماد الهوية (403): مال لا يُشترى به يعلق في الحساب.
+  const depositBlock =
+    user?.kyc_status === "rejected"
+      ? "حسابك مرفوض. أعد رفع وثيقة هويتك من صفحة حسابك لتتمكن من شحن الرصيد."
+      : user?.kyc_status === "pending"
+        ? "حسابك قيد المراجعة. يمكنك شحن الرصيد بعد اعتماد هويتك."
+        : user?.kyc_status === "unverified"
+          ? "يجب توثيق حسابك أولًا لتتمكن من إيداع الأموال."
+          : null;
+  const blocked = action === "deposit" && depositBlock !== null;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -484,6 +494,17 @@ function WalletPage() {
 
                 {action === "deposit" && (
                   <>
+                    {depositBlock && (
+                      <p
+                        role="alert"
+                        className="rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive"
+                      >
+                        {t(depositBlock)}{" "}
+                        <Link to="/account" className="font-semibold underline">
+                          {t("التحقق من الهوية")}
+                        </Link>
+                      </p>
+                    )}
                     <p className="text-[11px] text-muted-foreground">
                       {t("حوّل المبلغ أولًا على")}{" "}
                       <Link
@@ -560,7 +581,7 @@ function WalletPage() {
 
                 <button
                   type="submit"
-                  disabled={submitting || !valid}
+                  disabled={submitting || !valid || blocked}
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                 >
                   {submitting ? (
