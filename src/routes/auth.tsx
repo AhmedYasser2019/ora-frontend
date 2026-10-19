@@ -70,10 +70,10 @@ function fromServer(err: unknown): Errors {
   return { ...rest, ...(name && { name }), ...(id_number && { docNumber: id_number }) };
 }
 
-/** الباك إند يطلب اسمًا أخيرًا؛ اسم من كلمة واحدة يكرّرها بدل أن يُرفض التسجيل. */
+/** الحقل يشترط كلمتين (fullName): الأولى اسم أول والباقي اسم العائلة. */
 function nameParts(name: string) {
   const [first = "", ...rest] = name.split(/\s+/);
-  return { first_name: first, last_name: rest.join(" ") || first };
+  return { first_name: first, last_name: rest.join(" ") };
 }
 
 function Field({

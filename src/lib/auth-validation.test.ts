@@ -5,7 +5,7 @@ import { fullName, latin, schemas } from "./auth-validation";
 assert.equal(latin(" ٠١٠١٢٣٤٥٦٧٨ "), "01012345678");
 
 const ok = {
-  name: "أحمد",
+  name: "أحمد علي",
   phone: "01012345678",
   email: "a@b.co",
   password: "Mohamed@1",
@@ -58,3 +58,5 @@ for (const name of ["John123", "12345", "@@@", "!@#$%^&*"]) {
   assert.equal(fullName.safeParse(name).success, false, name);
 }
 for (const name of ["عبد الله", "Mary-Jane O'Neil"]) assert.equal(fullName.parse(name), name);
+// كلمة واحدة تُرفض: التطبيق يشترط اسمًا أخيرًا.
+for (const name of ["ققق", " Taha "]) assert.equal(fullName.safeParse(name).success, false, name);

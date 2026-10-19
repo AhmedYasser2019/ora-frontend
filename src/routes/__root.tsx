@@ -17,6 +17,7 @@ import { CartProvider } from "../lib/cart";
 import { FavoritesProvider } from "@/lib/favorites";
 import { Toaster } from "@/components/ui/sonner";
 import { trackView } from "@/lib/api";
+import { localizeValidity } from "@/lib/form-validity";
 
 /**
  * تُرسم أحيانًا خارج <LangProvider> (لو فشل RootComponent قبل تركيب الـ provider)،
@@ -151,6 +152,8 @@ function RootComponent() {
 
   // في المتصفح فقط: useEffect لا يعمل على الخادم، فالصفحة تُعدّ مرة لكل فتح لا لكل رسم.
   useEffect(() => trackView(pathname), [pathname]);
+  // `tr` لا `useT`: نحن فوق <LangProvider>، و`tr` تقرأ الكوكي فتتبع تبديل اللغة.
+  useEffect(() => localizeValidity(tr), []);
 
   return (
     <QueryClientProvider client={queryClient}>

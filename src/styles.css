@@ -193,3 +193,12 @@
     transform: translateX(50%);
   }
 }
+
+/*
+ * زر الإرسال يبقى معطّلًا ما دام في النموذج حقل لا يستوفي قيوده (required، minLength، ...)،
+ * لكل النماذج من مكان واحد بدل حالة canSubmit في كل شاشة. Enter يظل يُظهر رسالة الحقل.
+ */
+form:invalid [type="submit"] {
+  opacity: 0.6;
+  pointer-events: none;
+}
