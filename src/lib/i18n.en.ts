@@ -1168,4 +1168,16 @@ export const en: Record<string, string> = {
   فيسبوك: "Facebook",
   "قائمة الفروع قيد التحديث. تواصل معنا على الرقم الموحد لمعرفة أقرب فرع لك.":
     "Our branch list is being updated. Call the hotline and we'll point you to the nearest one.",
+  // مفاتيح المرور
+  "الدخول بالبصمة أو الوجه": "Sign in with fingerprint or face",
+  "تمت إضافة مفتاح المرور": "Passkey added",
+  "تقدر تدخل من هذا الجهاز بالبصمة أو الوجه.":
+    "You can now sign in on this device with your fingerprint or face.",
+  "تعذرت إضافة مفتاح المرور": "Couldn't add the passkey",
+  "تعذر حذف مفتاح المرور": "Couldn't remove the passkey",
+  "مفتاح مرور": "Passkey",
+  "آخر استخدام": "Last used",
+  "حذف مفتاح المرور": "Remove passkey",
+  "أضف هذا الجهاز": "Add this device",
+  "هذا المتصفح لا يدعم الدخول بالبصمة.": "This browser doesn't support passkeys.",
 };

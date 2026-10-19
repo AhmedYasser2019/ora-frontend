@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Eye,
   EyeOff,
+  Fingerprint,
   FlaskConical,
   KeyRound,
   LoaderCircle,
@@ -12,16 +13,18 @@ import {
   ShieldAlert,
   ShieldCheck,
   ShieldQuestion,
+  Trash2,
   Upload,
   User,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useT } from "@/lib/i18n";
+import { intlLocale, useT } from "@/lib/i18n";
 import { BAD_IMAGE, ImageDrop, isIdImage } from "@/components/ImageDrop";
 import { PageShell } from "@/components/PageShell";
 import { api, ApiError, hasRealToken, upload } from "@/lib/api";
 import { fullName } from "@/lib/auth-validation";
+import { addPasskey, cancelled, passkeysSupported, type Passkey } from "@/lib/passkey";
 import { useAuth } from "@/lib/use-auth";
 
 import { tr } from "@/lib/i18n";
@@ -258,6 +261,9 @@ function AccountPage() {
           {/* حساب الديمو كلمة مروره عشوائية لا يعرفها أحد. */}
           {!user.is_demo && <ChangePassword />}
 
+          {/* ولا مفاتيح مرور: الديمو يُفتح من الحساب الحقيقي. */}
+          {!user.is_demo && <Passkeys />}
+
           <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
             {/* حساب ديمو مستقل مالوش حساب حقيقي يرجع له — الزر كان هيخرّجه بس. */}
             {(!user.is_demo || hasRealToken()) && (
@@ -375,6 +381,116 @@ function ChangePassword() {
           {t("حفظ كلمة المرور")}
         </button>
       </form>
+    </details>
+  );
+}
+
+/**
+ * مفاتيح المرور: الدخول بالبصمة أو الوجه من هذا الجهاز. الإضافة تسأل كلمة المرور الحالية
+ * أولًا (انظر addPasskey)، والحذف لا — حذف مفتاح يضيّق الأبواب ولا يفتحها.
+ */
+function Passkeys() {
+  const t = useT();
+  const qc = useQueryClient();
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [supported, setSupported] = useState(false);
+  useEffect(() => setSupported(passkeysSupported()), []);
+
+  const { data: keys = [] } = useQuery({
+    queryKey: ["passkeys"],
+    queryFn: () => api<Passkey[]>("/me/passkeys"),
+  });
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await addPasskey(password);
+      setPassword("");
+      toast.success(t("تمت إضافة مفتاح المرور"), {
+        description: t("تقدر تدخل من هذا الجهاز بالبصمة أو الوجه."),
+      });
+      void qc.invalidateQueries({ queryKey: ["passkeys"] });
+    } catch (e) {
+      if (!cancelled(e)) {
+        toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذرت إضافة مفتاح المرور"));
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    try {
+      await api(`/me/passkeys/${encodeURIComponent(id)}`, { method: "DELETE" });
+      void qc.invalidateQueries({ queryKey: ["passkeys"] });
+    } catch {
+      toast.error(t("تعذر حذف مفتاح المرور"));
+    }
+  };
+
+  return (
+    <details className="mt-6 border-t border-border pt-5">
+      <summary className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-primary">
+        <Fingerprint className="h-3.5 w-3.5" /> {t("الدخول بالبصمة أو الوجه")}
+      </summary>
+
+      {keys.length > 0 && (
+        <ul className="mt-4 grid gap-2">
+          {keys.map((k) => (
+            <li
+              key={k.id}
+              className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm"
+            >
+              <span>
+                <span className="font-semibold text-primary">{k.name ?? t("مفتاح مرور")}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {t("آخر استخدام")}: {new Date(k.last_used_at).toLocaleDateString(intlLocale())}
+                </span>
+              </span>
+              <button
+                onClick={() => remove(k.id)}
+                aria-label={t("حذف مفتاح المرور")}
+                className="rounded-md p-1.5 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {supported ? (
+        <form onSubmit={add} className="mt-4 grid gap-4">
+          <div>
+            <label htmlFor="pk_current" className="mb-1.5 block text-xs font-semibold text-primary">
+              {t("كلمة المرور الحالية")}
+            </label>
+            <input
+              id="pk_current"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={busy}
+            className="flex items-center justify-center gap-2 rounded-full border border-primary py-2.5 text-sm font-semibold text-primary hover:bg-muted disabled:opacity-60"
+          >
+            {busy && <LoaderCircle className="h-4 w-4 animate-spin" />}
+            {t("أضف هذا الجهاز")}
+          </button>
+        </form>
+      ) : (
+        <p className="mt-4 text-xs text-muted-foreground">
+          {t("هذا المتصفح لا يدعم الدخول بالبصمة.")}
+        </p>
+      )}
     </details>
   );
 }

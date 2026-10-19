@@ -5,6 +5,7 @@ import {
   Check,
   Eye,
   EyeOff,
+  Fingerprint,
   FlaskConical,
   IdCard,
   KeyRound,
@@ -23,6 +24,7 @@ import { BAD_IMAGE, ImageDrop, isIdImage } from "@/components/ImageDrop";
 import { PageShell } from "@/components/PageShell";
 import { api, ApiError, setToken, upload } from "@/lib/api";
 import { latin, schemas, type Errors } from "@/lib/auth-validation";
+import { cancelled, passkeysSupported, signInWithPasskey } from "@/lib/passkey";
 import { safeNext, useAuth } from "@/lib/use-auth";
 
 const searchSchema = z.object({
@@ -431,6 +433,23 @@ function AuthPage() {
     });
   };
 
+  // بعد التحميل فقط: الخادم لا يعرف إن كان المتصفح يدعم مفاتيح المرور.
+  const [canPasskey, setCanPasskey] = useState(false);
+  useEffect(() => setCanPasskey(passkeysSupported()), []);
+
+  const loginWithPasskey = async () => {
+    setBusy(true);
+    try {
+      setToken((await signInWithPasskey()).token);
+      toast.success(t("مرحبًا بعودتك"));
+      navigate({ to: target });
+    } catch (err) {
+      if (!cancelled(err)) fail(err, "تعذر تسجيل الدخول");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const login = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const v = check(schemas.login, form, setErrors);
@@ -765,6 +784,17 @@ function AuthPage() {
                 {t("نسيت كلمة المرور؟")}
               </button>
               {submitBtn("دخول")}
+              {canPasskey && (
+                <button
+                  type="button"
+                  onClick={loginWithPasskey}
+                  disabled={busy}
+                  className="flex items-center justify-center gap-2 rounded-full border border-primary py-3 text-sm font-semibold text-primary transition-colors hover:bg-muted disabled:opacity-60"
+                >
+                  <Fingerprint className="h-4 w-4" />
+                  {t("الدخول بالبصمة أو الوجه")}
+                </button>
+              )}
             </form>
           </div>
         ) : mode === "forgot" ? (
