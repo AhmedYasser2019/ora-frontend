@@ -25,7 +25,7 @@ import { PageShell } from "@/components/PageShell";
 import { api, ApiError, hasRealToken, upload } from "@/lib/api";
 import { fullName } from "@/lib/auth-validation";
 import { addPasskey, cancelled, passkeysSupported, type Passkey } from "@/lib/passkey";
-import { useAuth } from "@/lib/use-auth";
+import { useAuth, type User as Me } from "@/lib/use-auth";
 
 import { tr } from "@/lib/i18n";
 
@@ -77,6 +77,7 @@ function AccountPage() {
   const { user, loading, signOut, switchDemo } = useAuth();
   const navigate = useNavigate();
   const t = useT();
+  const qc = useQueryClient();
   const [profile, setProfile] = useState({ full_name: "", phone: "", current_password: "" });
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -97,10 +98,12 @@ function AccountPage() {
 
   // رقم جديد يطلب كلمة المرور الحالية: الرمز المسروق وحده لا ينقل الحساب لرقم آخر.
   const phoneChanged = !!user && profile.phone.trim() !== (user.phone ?? "");
+  // لا شيء تغيّر = لا حفظ؛ والرجوع للقيمة الأصلية يعطّل الزر من جديد.
+  const dirty = !!user && (phoneChanged || profile.full_name.trim() !== (user.name ?? ""));
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !dirty) return;
     const name = fullName.safeParse(profile.full_name);
     if (!name.success) {
       toast.error(t(name.error.issues[0]?.message ?? ""));
@@ -108,7 +111,7 @@ function AccountPage() {
     }
     setSaving(true);
     try {
-      await api("/me", {
+      const updated = await api<Me>("/me", {
         method: "PATCH",
         body: {
           name: name.data,
@@ -117,7 +120,8 @@ function AccountPage() {
             : {}),
         },
       });
-      setProfile((p) => ({ ...p, current_password: "" }));
+      // الرد نفس شكل GET /me: نحدّث الذاكرة فيصير المحفوظ هو الأصل ويتعطّل الزر.
+      qc.setQueryData(["me"], updated);
       toast.success(t("تم حفظ بياناتك"));
     } catch (e) {
       toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر حفظ البيانات"));
@@ -242,8 +246,8 @@ function AccountPage() {
               )}
               <button
                 type="submit"
-                disabled={saving}
-                className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                disabled={saving || !dirty}
+                className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary"
               >
                 {saving ? (
                   <LoaderCircle className="h-4 w-4 animate-spin" />
