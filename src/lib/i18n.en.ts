@@ -815,6 +815,11 @@ export const en: Record<string, string> = {
   "لا توجد طلبات بعد": "No orders yet",
   "استلام من": "Pickup from",
   "إلغاء الطلب": "Cancel order",
+  "إلغاء هذا الطلب؟": "Cancel this order?",
+  "هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.":
+    "Are you sure you want to cancel this order? This action cannot be undone.",
+  "تأكيد الإلغاء": "Confirm cancellation",
+  "الإبقاء على الطلب": "Keep order",
 
   // طرق الدفع
   "طرق الدفع | زاد جولد": "Payment methods | Zad Gold",

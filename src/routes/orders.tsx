@@ -11,6 +11,18 @@ import { egp } from "@/lib/prices.queries";
 import { pct } from "@/lib/holdings";
 import { useAuth } from "@/lib/use-auth";
 import { PaymentReference } from "@/components/PaymentReference";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { tr } from "@/lib/i18n";
 
@@ -258,18 +270,41 @@ function OrdersPage() {
                       {egp((o.gross_piasters + (o.delivery_fee_piasters ?? 0)) / 100)} {t("ج.م")}
                     </p>
                     {cancellable && (
-                      <button
-                        onClick={() => cancel(o.order_id)}
-                        disabled={busy === o.order_id}
-                        className="flex items-center gap-1.5 rounded-full border border-destructive/40 px-4 py-2 text-xs font-semibold text-destructive hover:bg-destructive/5 disabled:opacity-50"
-                      >
-                        {busy === o.order_id ? (
-                          <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <XCircle className="h-3.5 w-3.5" />
-                        )}
-                        {t("إلغاء الطلب")}
-                      </button>
+                      // الإلغاء لا رجعة فيه، فلا يُنفَّذ من نقرة واحدة.
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            disabled={busy === o.order_id}
+                            className="flex items-center gap-1.5 rounded-full border border-destructive/40 px-4 py-2 text-xs font-semibold text-destructive hover:bg-destructive/5 disabled:opacity-50"
+                          >
+                            {busy === o.order_id ? (
+                              <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <XCircle className="h-3.5 w-3.5" />
+                            )}
+                            {t("إلغاء الطلب")}
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("إلغاء هذا الطلب؟")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t(
+                                "هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.",
+                              )}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("الإبقاء على الطلب")}</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => cancel(o.order_id)}
+                              className={buttonVariants({ variant: "destructive" })}
+                            >
+                              {t("تأكيد الإلغاء")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
                   </div>
                 </div>
