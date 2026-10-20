@@ -78,7 +78,7 @@ function AccountPage() {
   const navigate = useNavigate();
   const t = useT();
   const qc = useQueryClient();
-  const [profile, setProfile] = useState({ full_name: "", phone: "", current_password: "" });
+  const [profile, setProfile] = useState({ full_name: "" });
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [switching, setSwitching] = useState(false);
@@ -92,14 +92,12 @@ function AccountPage() {
   useEffect(() => {
     if (!user) return;
     // useAuth حمّل /me بالفعل، فالبيانات هنا هي نفسها بلا نداء ثانٍ.
-    setProfile({ full_name: user.name ?? "", phone: user.phone ?? "", current_password: "" });
+    setProfile({ full_name: user.name ?? "" });
     setFetching(false);
   }, [user]);
 
-  // رقم جديد يطلب كلمة المرور الحالية: الرمز المسروق وحده لا ينقل الحساب لرقم آخر.
-  const phoneChanged = !!user && profile.phone.trim() !== (user.phone ?? "");
   // لا شيء تغيّر = لا حفظ؛ والرجوع للقيمة الأصلية يعطّل الزر من جديد.
-  const dirty = !!user && (phoneChanged || profile.full_name.trim() !== (user.name ?? ""));
+  const dirty = !!user && profile.full_name.trim() !== (user.name ?? "");
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,12 +111,7 @@ function AccountPage() {
     try {
       const updated = await api<Me>("/me", {
         method: "PATCH",
-        body: {
-          name: name.data,
-          ...(phoneChanged
-            ? { phone: profile.phone.trim(), current_password: profile.current_password }
-            : {}),
-        },
+        body: { name: name.data },
       });
       // الرد نفس شكل GET /me: نحدّث الذاكرة فيصير المحفوظ هو الأصل ويتعطّل الزر.
       qc.setQueryData(["me"], updated);
@@ -225,7 +218,7 @@ function AccountPage() {
                     className="w-full cursor-not-allowed rounded-xl border border-input bg-muted px-3 py-2.5 text-sm text-muted-foreground outline-none"
                   />
                   <p id="email_hint" className="mt-1 text-xs text-muted-foreground">
-                    {t("لا يمكن تغيير البريد الإلكتروني")}
+                    {t("لا يمكن تغيير البريد الإلكتروني حاليًا")}
                   </p>
                 </div>
               )}
@@ -233,35 +226,20 @@ function AccountPage() {
                 <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold text-primary">
                   {t("رقم الموبايل")}
                 </label>
+                {/* الهاتف والبريد مقفولان لحد ما بوابة الرسائل تتحقق من الجديد بكود. */}
                 <input
                   id="phone"
                   dir="ltr"
                   type="tel"
-                  value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                  placeholder="01xxxxxxxxx"
-                  className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                  readOnly
+                  value={user.phone ?? ""}
+                  aria-describedby="phone_hint"
+                  className="w-full cursor-not-allowed rounded-xl border border-input bg-muted px-3 py-2.5 text-sm text-muted-foreground outline-none"
                 />
+                <p id="phone_hint" className="mt-1 text-xs text-muted-foreground">
+                  {t("لا يمكن تغيير رقم الموبايل حاليًا")}
+                </p>
               </div>
-              {phoneChanged && (
-                <div>
-                  <label
-                    htmlFor="current_password"
-                    className="mb-1.5 block text-xs font-semibold text-primary"
-                  >
-                    {t("كلمة المرور الحالية")}
-                  </label>
-                  <input
-                    id="current_password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    value={profile.current_password}
-                    onChange={(e) => setProfile({ ...profile, current_password: e.target.value })}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
-                  />
-                </div>
-              )}
               <button
                 type="submit"
                 disabled={saving || !dirty}
