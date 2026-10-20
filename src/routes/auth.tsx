@@ -610,17 +610,12 @@ function AuthPage() {
       setToken(token);
       track("sign_up", { method: "email" });
 
-      const sides: [File | null, string][] = [
-        [docFront, "national_id_front"],
-        [docBack, "national_id_back"],
-        [docSelfie, "selfie"],
-      ];
-
-      for (const [file, type] of sides) {
-        if (!file) continue;
+      // الثلاثة في طلب واحد أو لا شيء — من تخطّى الخطوة يرفعها من صفحة حسابه.
+      if (docFront && docBack && docSelfie) {
         const body = new FormData();
-        body.append("type", type);
-        body.append("file", file);
+        body.append("national_id_front", docFront);
+        body.append("national_id_back", docBack);
+        body.append("selfie", docSelfie);
         try {
           await upload("/kyc/documents", body);
         } catch {

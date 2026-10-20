@@ -51,17 +51,22 @@ type KycStatus = "unverified" | "pending" | "approved" | "rejected";
 type Kyc = {
   status: KycStatus;
   status_label: string;
+  /**
+   * الطلبات المسموحة للرفع القادم، كل واحد قائمة حقول — الناقص والمرفوض. اثنان = البطاقة
+   * أو جواز السفر والعميل يختار. فاضية = لا شيء يُرفع الآن.
+   */
+  needed: DocType[][];
   /** الأحدث أولًا. `note` سبب الرفض كما كتبه المراجع. */
   documents: { id: number; type: string; status: KycStatus; note: string | null }[];
 };
 
-/** ما يلزم لتوثيق الحساب — نفس KycStatus::REQUIRED عند الخادم. */
-const REQUIRED_DOCS = ["national_id_front", "national_id_back", "selfie"] as const;
-type DocType = (typeof REQUIRED_DOCS)[number];
+/** أنواع الوثائق — نفس KycStatus::TYPES عند الخادم. */
+type DocType = "national_id_front" | "national_id_back" | "passport" | "selfie";
 
 const SIDE_LABEL: Record<string, string> = {
   national_id_front: "الوجه الأمامي للبطاقة",
   national_id_back: "الوجه الخلفي للبطاقة",
+  passport: "صفحة البيانات في جواز السفر",
   selfie: "صورة شخصية",
 };
 
@@ -538,6 +543,8 @@ function KycSection() {
   const [files, setFiles] = useState<Partial<Record<DocType, File | null>>>({});
   const [errors, setErrors] = useState<Partial<Record<DocType, string[]>>>({});
   const [busy, setBusy] = useState(false);
+  // أي طلب من needed: 0 = البطاقة (الأول دائمًا)، 1 = جواز السفر لو متاح.
+  const [choice, setChoice] = useState(0);
 
   const { data: kyc } = useQuery({ queryKey: ["kyc"], queryFn: () => api<Kyc>("/kyc") });
 
@@ -553,11 +560,8 @@ function KycSection() {
   // الأحدث من كل نوع هو ما يُحتسب — نفس قاعدة الخادم.
   const latest = kyc.documents.filter((d, i, all) => all.findIndex((x) => x.type === d.type) === i);
   const refused = latest.filter((d) => d.status === "rejected");
-  const canUpload = kyc.status === "unverified" || kyc.status === "rejected";
-  // الثلاثة مطلوبة؛ ما قُبل منها لا يُعاد رفعه — يُطلب الناقص والمرفوض فقط.
-  const needed = REQUIRED_DOCS.filter(
-    (type) => latest.find((d) => d.type === type)?.status !== "approved",
-  );
+  // الخادم يحدد المطلوب: ما قيد المراجعة أو قُبل لا يُعاد رفعه.
+  const needed = kyc.needed[choice] ?? kyc.needed[0] ?? [];
 
   const pick = (key: DocType) => (f: File | null) => {
     const ok = !f || isIdImage(f);
@@ -569,17 +573,14 @@ function KycSection() {
     e.preventDefault();
     setBusy(true);
     try {
-      for (const type of needed) {
-        const file = files[type];
-        if (!file) continue;
-        const body = new FormData();
-        body.append("type", type);
-        body.append("file", file);
-        qc.setQueryData(["kyc"], await upload<Kyc>("/kyc/documents", body));
-      }
+      // كل المطلوب في طلب واحد: إما يُحفظ كله أو لا شيء.
+      const body = new FormData();
+      for (const type of needed) body.append(type, files[type]!);
+      qc.setQueryData(["kyc"], await upload<Kyc>("/kyc/documents", body));
       setFiles({});
       toast.success(t("تم إرسال وثائقك للمراجعة"));
     } catch (e) {
+      if (e instanceof ApiError) setErrors(e.errors);
       toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر رفع الصورة"));
     } finally {
       setBusy(false);
@@ -617,7 +618,7 @@ function KycSection() {
         </p>
       )}
 
-      {canUpload && (
+      {needed.length > 0 && (
         <form onSubmit={submit} noValidate className="mt-4 grid gap-4">
           <p className="text-xs text-muted-foreground">
             {t(
@@ -626,6 +627,25 @@ function KycSection() {
                 : "وثّق هويتك أولًا لإتمام عمليات الشراء.",
             )}
           </p>
+          {kyc.needed.length > 1 && (
+            <div className="grid grid-cols-2 gap-2" role="group" aria-label={t("نوع الوثيقة")}>
+              {kyc.needed.map((option, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-pressed={needed === option}
+                  onClick={() => setChoice(i)}
+                  className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                    needed === option
+                      ? "border-gold bg-gold/15 text-gold-deep"
+                      : "border-border text-primary hover:bg-secondary/70"
+                  }`}
+                >
+                  {t(option.includes("passport") ? "جواز السفر" : "البطاقة الشخصية")}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             {needed.map((type) => (
               <ImageDrop

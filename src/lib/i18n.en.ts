@@ -373,6 +373,10 @@ export const en: Record<string, string> = {
   "التعليمات تتطلب رفع صورة المستند. بياناتك تبقى آمنة وخاصة.":
     "Regulations require a photo of the document. Your data stays private and secure.",
   "الوجه الأمامي للبطاقة": "Front of the ID card",
+  "صفحة البيانات في جواز السفر": "Passport photo page",
+  "نوع الوثيقة": "Document type",
+  "البطاقة الشخصية": "National ID card",
+  "جواز السفر": "Passport",
   "الوجه الخلفي للبطاقة": "Back of the ID card",
   تأكيد: "Confirm",
   "اختر ما يصف خبرتك، عشان نرشّح لك المنتجات المناسبة.":
