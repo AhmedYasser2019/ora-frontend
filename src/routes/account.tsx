@@ -179,13 +179,9 @@ function AccountPage() {
               <p className="font-display text-lg text-primary">
                 {profile.full_name || t("عميل زاد جولد")}
               </p>
-              {user.is_demo ? (
+              {user.is_demo && (
                 <p className="text-xs font-semibold text-gold-deep">
                   {t("وضع الديمو — فلوس تجريبية")}
-                </p>
-              ) : (
-                <p dir="ltr" className="text-xs text-muted-foreground">
-                  {user.email}
                 </p>
               )}
             </div>
@@ -211,6 +207,28 @@ function AccountPage() {
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
                 />
               </div>
+              {!user.is_demo && (
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="mb-1.5 block text-xs font-semibold text-primary"
+                  >
+                    {t("البريد الإلكتروني")}
+                  </label>
+                  <input
+                    id="email"
+                    dir="ltr"
+                    type="email"
+                    readOnly
+                    value={user.email}
+                    aria-describedby="email_hint"
+                    className="w-full cursor-not-allowed rounded-xl border border-input bg-muted px-3 py-2.5 text-sm text-muted-foreground outline-none"
+                  />
+                  <p id="email_hint" className="mt-1 text-xs text-muted-foreground">
+                    {t("لا يمكن تغيير البريد الإلكتروني")}
+                  </p>
+                </div>
+              )}
               <div>
                 <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold text-primary">
                   {t("رقم الموبايل")}

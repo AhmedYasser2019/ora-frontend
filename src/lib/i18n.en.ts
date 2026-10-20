@@ -363,6 +363,7 @@ export const en: Record<string, string> = {
   "تسجيل الدخول": "Sign in",
   "حساب جديد": "New account",
   "البريد الإلكتروني": "Email address",
+  "لا يمكن تغيير البريد الإلكتروني": "Email address can't be changed",
   "كلمة المرور": "Password",
   دخول: "Sign in",
   "أنشئ حسابك الآن": "Create your account now",
