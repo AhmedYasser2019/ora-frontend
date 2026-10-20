@@ -317,9 +317,6 @@ export const en: Record<string, string> = {
   "رجوع لتسجيل الدخول": "Back to sign in",
   "رقم موبايل غير صحيح": "Invalid mobile number",
   "الرقم القومي 14 رقمًا": "A national ID number is 14 digits",
-  "ارفع صورة الوجه الأمامي للهوية": "Upload the front of your ID",
-  "ارفع صورة الوجه الخلفي للهوية": "Upload the back of your ID",
-  "ارفع صورة شخصية واضحة لوجهك": "Upload a clear photo of your face",
   "لتأكيد هويتك، ارفع صورتي بطاقة الرقم القومي وصورة شخصية لك:":
     "To confirm your identity, upload both sides of your national ID and a photo of yourself:",
   "الرقم القومي": "National ID number",

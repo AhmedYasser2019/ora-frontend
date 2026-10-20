@@ -428,6 +428,9 @@ function AuthPage() {
   const [docBack, setDocBack] = useState<File | null>(null);
   const [docSelfie, setDocSelfie] = useState<File | null>(null);
   const [experience, setExperience] = useState<string>(EXPERIENCE[0]);
+  const idOk = /^[23][0-9]{13}$/.test(latin(docNumber));
+  // «التالي» مقفول لحد ما الرقم والصور الثلاث تكتمل — زي فورم الرفع في صفحة الحساب.
+  const kycReady = idOk && !!docFront && !!docBack && !!docSelfie;
 
   const target = safeNext(next);
   const wizard = mode === "signup" && step > 1;
@@ -564,14 +567,8 @@ function AuthPage() {
   /** رقم مسجّل بحساب آخر يُرفض هنا، قبل خطوة الخبرة — لا عند إنهاء التسجيل. */
   const submitKyc = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!kycReady) return;
     const num = latin(docNumber);
-    const errs: Errors = {};
-    if (!/^[23][0-9]{13}$/.test(num)) errs.docNumber = ["الرقم القومي 14 رقمًا"];
-    if (!docFront) errs.docFront = ["ارفع صورة الوجه الأمامي للهوية"];
-    if (!docBack) errs.docBack = ["ارفع صورة الوجه الخلفي للهوية"];
-    if (!docSelfie) errs.docSelfie = ["ارفع صورة شخصية واضحة لوجهك"];
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
     setBusy(true);
     try {
       await api("/auth/register/check", { method: "POST", body: { id_number: num } });
@@ -646,10 +643,10 @@ function AuthPage() {
     }
   };
 
-  const submitBtn = (label: string) => (
+  const submitBtn = (label: string, ready = true) => (
     <button
       type="submit"
-      disabled={busy}
+      disabled={busy || !ready}
       className="mt-1 flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
     >
       {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
@@ -658,7 +655,7 @@ function AuthPage() {
   );
 
   /** رجوع + التالي (+ تخطي: التوثيق يكمل بعدين من صفحة الحساب) */
-  const stepNav = (back: number, label: string, skipTo?: number) => (
+  const stepNav = (back: number, label: string, skipTo?: number, ready?: boolean) => (
     <>
       <div className="mt-1 flex gap-3">
         <button
@@ -671,7 +668,7 @@ function AuthPage() {
         >
           {t("رجوع")}
         </button>
-        <div className="grid flex-1">{submitBtn(label)}</div>
+        <div className="grid flex-1">{submitBtn(label, ready)}</div>
       </div>
       {skipTo !== undefined && (
         <button
@@ -917,6 +914,12 @@ function AuthPage() {
                       setDocNumber(e.target.value);
                       clear("docNumber");
                     }}
+                    // الزرار المقفول لازم يقول السبب: رقم ناقص يظهر خطأه أول ما يسيب الحقل.
+                    onBlur={() =>
+                      docNumber &&
+                      !idOk &&
+                      setErrors((x) => ({ ...x, docNumber: ["الرقم القومي 14 رقمًا"] }))
+                    }
                     error={errors.docNumber}
                     placeholder={t("اكتب الرقم القومي")}
                   />
@@ -943,7 +946,7 @@ function AuthPage() {
                       error={errors.docSelfie}
                     />
                   </div>
-                  {stepNav(1, "التالي", 3)}
+                  {stepNav(1, "التالي", 3, kycReady)}
                 </form>
               )}
 
