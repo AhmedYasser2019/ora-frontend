@@ -403,15 +403,6 @@ export const en: Record<string, string> = {
   "فرع مدينة نصر": "Nasr City branch",
   "فرع المهندسين": "Mohandessin branch",
   "فرع المنصورة": "Mansoura branch",
-  "14 شارع فيكتور عمانويل، سموحة، الإسكندرية": "14 Victor Emmanuel St, Smouha, Alexandria",
-  "22 شارع عباس العقاد، مدينة نصر، القاهرة": "22 Abbas El-Akkad St, Nasr City, Cairo",
-  "8 شارع جامعة الدول العربية، المهندسين، الجيزة":
-    "8 Gameat El-Dowal El-Arabeya St, Mohandessin, Giza",
-  "5 شارع الجمهورية، المنصورة، الدقهلية": "5 El-Gomhoreya St, Mansoura, Dakahlia",
-  "يوميًا 10 ص – 10 م": "Daily 10am – 10pm",
-  "يوميًا 10 ص – 11 م": "Daily 10am – 11pm",
-  "يوميًا 11 ص – 10 م": "Daily 11am – 10pm",
-  "السبت – الخميس 10 ص – 9 م": "Saturday – Thursday 10am – 9pm",
 
   // حاسبة الميزانية
   "حاسبة الميزانية | كم ذهب تشتري بميزانيتك؟ — زاد جولد":

@@ -44,12 +44,12 @@ function BranchesPage() {
       )}
       <div className="grid gap-5 md:grid-cols-2">
         {branches.map((b) => (
-          <div key={b.name} className="rounded-2xl border border-border bg-card p-6">
-            <p className="text-xs tracking-[0.2em] text-gold-deep">{t(b.city)}</p>
-            <h2 className="mt-2 text-xl text-primary">{t(b.name)}</h2>
+          <div key={b.code} className="rounded-2xl border border-border bg-card p-6">
+            <p className="text-xs tracking-[0.2em] text-gold-deep">{b.city}</p>
+            <h2 className="mt-2 text-xl text-primary">{b.name}</h2>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 text-gold-deep" /> {t(b.address)}
+                <MapPin className="mt-0.5 h-4 w-4 text-gold-deep" /> {b.address}
               </li>
               {b.phone && (
                 <li className="flex items-center gap-2">
@@ -59,7 +59,7 @@ function BranchesPage() {
               )}
               {b.hours && (
                 <li className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gold-deep" /> {t(b.hours)}
+                  <Clock className="h-4 w-4 text-gold-deep" /> {b.hours}
                 </li>
               )}
             </ul>
