@@ -321,6 +321,11 @@ export const en: Record<string, string> = {
     "To confirm your identity, upload both sides of your national ID and a photo of yourself:",
   "الرقم القومي": "National ID number",
   "اكتب الرقم القومي": "Enter your national ID number",
+  "لتأكيد هويتك، ارفع صورة صفحة البيانات في جواز السفر وصورة شخصية لك:":
+    "To confirm your identity, upload your passport's photo page and a photo of yourself:",
+  "رقم جواز السفر": "Passport number",
+  "اكتب رقم جواز السفر": "Enter your passport number",
+  "رقم جواز السفر من 6 إلى 12 حرفًا أو رقمًا": "A passport number is 6 to 12 letters or digits",
   "صيغة الملف غير مدعومة. الرجاء رفع صورة بصيغة JPG أو PNG":
     "Unsupported file format. Please upload a JPG or PNG image.",
   "تم إنشاء حسابك": "Your account was created",
