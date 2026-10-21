@@ -9,8 +9,10 @@ import { readLang } from "./i18n";
 
 import { API_URL, backend } from "./backend.server";
 
-/** فرع واحد كما يكتبه المسؤول في الداشبورد — انظر SiteSettings في الباك إند. */
+/** فرع واحد كما يكتبه المسؤول في الداشبورد، بلغة الزائر — انظر SiteSettings في الباك إند. */
 export type Branch = {
+  /** ثابت مدى حياة الفرع، وهو ما يُرسل في `branch` عند الاستلام — لا الاسم، فالاسم يتغيّر باللغة. */
+  code: string;
   city: string;
   name: string;
   address: string;
