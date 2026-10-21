@@ -630,8 +630,8 @@ function AuthPage() {
       setToken(token);
       track("sign_up", { method: "email" });
 
-      // الوثيقة كلها في طلب واحد أو لا شيء — من تخطّى الخطوة يرفعها من صفحة حسابه.
-      if (docs.every(([, f]) => f)) {
+      // الوثيقة كلها في طلب واحد أو لا شيء — من تخطّى الخطوة (idNumber = null) يرفعها من صفحة حسابه.
+      if (idNumber && docs.every(([, f]) => f)) {
         const body = new FormData();
         for (const [field, file] of docs) body.append(field, file!);
         try {
