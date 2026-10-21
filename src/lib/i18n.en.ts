@@ -1203,4 +1203,18 @@ export const en: Record<string, string> = {
   "حذف مفتاح المرور": "Remove passkey",
   "أضف هذا الجهاز": "Add this device",
   "هذا المتصفح لا يدعم الدخول بالبصمة.": "This browser doesn't support passkeys.",
+  // تعديل سعر الطلب وما ينتظره
+  "التحقق من الدفع": "Payment verified",
+  "تأكيد السعر مع التاجر": "Price confirmed with the dealer",
+  "موافقة الإدارة": "Management approval",
+  "تغيّر سعر التاجر قبل تثبيت طلبك": "The dealer price changed before your order was confirmed",
+  "السعر الجديد للجرام": "New price per gram",
+  "الإجمالي الجديد": "New total",
+  "عليك فرق": "You pay the difference",
+  "لك فرق": "Refund to you",
+  "رقم تحويل الفرق": "Reference of the transfer for the difference",
+  "قبول السعر الجديد": "Accept the new price",
+  "تم قبول السعر الجديد": "New price accepted",
+  "تعذر قبول السعر": "Couldn't accept the price",
+  "أو ألغِ الطلب ويعود لك المبلغ كاملًا.": "Or cancel the order and get the full amount back.",
 };

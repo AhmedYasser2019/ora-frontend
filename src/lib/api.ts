@@ -130,6 +130,8 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
   const headers: Record<string, string> = {
     accept: "application/json",
     "accept-language": lang(),
+    // يُسجَّل قناةً للطلب في تقارير المكتب (الموقع أم التطبيق)، ولا يغيّر شيئًا غير ذلك.
+    "x-client": "web",
   };
   // FormData يضع حدود multipart بنفسه — ملف يُرفع مع طلب يحتاج مفتاح تكرار.
   const form = options.body instanceof FormData;
@@ -170,6 +172,7 @@ export async function upload<T>(path: string, form: FormData): Promise<T> {
   const headers: Record<string, string> = {
     accept: "application/json",
     "accept-language": lang(),
+    "x-client": "web",
   };
   if (token) headers["authorization"] = `Bearer ${token}`;
 

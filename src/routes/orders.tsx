@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LoaderCircle, MapPin, Package, Store, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, LoaderCircle, MapPin, Package, Store, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { intlLocale, useT } from "@/lib/i18n";
@@ -39,7 +39,11 @@ export const Route = createFileRoute("/orders")({
 });
 
 /** دورة حياة الطلب في الباك إند — انظر OrderStatus. */
-type Status = "pending" | "approved" | "ready" | "delivered" | "completed" | "cancelled";
+type Status =
+  "pending" | "repriced" | "approved" | "ready" | "delivered" | "completed" | "cancelled";
+
+/** ما ينتظره الطلب قبل موافقة المكتب — انظر OrderChecks في docs/openapi.json. */
+type Check = "pending" | "done" | "not_required";
 
 type Order = {
   order_id: string;
@@ -69,10 +73,26 @@ type Order = {
   };
   /** طلب دُفع بجرامات المحفظة: ما خرج فعلًا من الرصيدين. */
   paid_from_balance?: { grams: string; piasters: number };
+  /** للطلب المفتوح فقط: الدفع، تأكيد التاجر، وموافقة الإدارة على الطلب الكبير. */
+  checks?: { payment: Check; dealer: Check; ceo: Check };
+  /** السعر الجديد المعروض حين تحرّك سعر التاجر قبل تثبيت الطلب (`repriced`). */
+  proposed_price?: {
+    unit_price_piasters_per_gram: number;
+    gross_piasters: number;
+    difference_piasters: number;
+    needs_payment_reference: boolean;
+  };
 };
+
+const CHECKS: [keyof NonNullable<Order["checks"]>, string][] = [
+  ["payment", "التحقق من الدفع"],
+  ["dealer", "تأكيد السعر مع التاجر"],
+  ["ceo", "موافقة الإدارة"],
+];
 
 const STATUS_CLASS: Record<Status, string> = {
   pending: "bg-gold/15 text-gold-deep",
+  repriced: "bg-destructive/15 text-destructive",
   approved: "bg-gold/25 text-gold-deep",
   ready: "bg-secondary text-primary",
   delivered: "bg-primary text-primary-foreground",
@@ -81,7 +101,7 @@ const STATUS_CLASS: Record<Status, string> = {
 };
 
 /** ما دام لم يُسلَّم بعد، يمكن للعميل التراجع. */
-const CANCELLABLE: Status[] = ["pending", "approved", "ready"];
+const CANCELLABLE: Status[] = ["pending", "repriced", "approved", "ready"];
 
 const PAYMENT: Record<string, string> = {
   instapay: "InstaPay",
@@ -309,7 +329,32 @@ function OrdersPage() {
                   </div>
                 </div>
 
+                {o.status === "pending" && o.checks && (
+                  <ul className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4 text-[11px]">
+                    {CHECKS.filter(([key]) => o.checks![key] !== "not_required").map(
+                      ([key, label]) => (
+                        <li
+                          key={key}
+                          className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-muted-foreground"
+                        >
+                          {o.checks![key] === "done" ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-gold-deep" />
+                          ) : (
+                            <Clock className="h-3.5 w-3.5" />
+                          )}
+                          {t(label)}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                )}
+
+                {o.status === "repriced" && o.proposed_price && (
+                  <PriceOffer orderId={o.order_id} offer={o.proposed_price} onAccepted={refresh} />
+                )}
+
                 {o.status === "pending" &&
+                  o.checks?.payment === "pending" &&
                   (d?.payment_method === "instapay" || d?.payment_method === "bank") && (
                     <div className="mt-4 border-t border-border pt-4">
                       <PaymentReference
@@ -325,5 +370,81 @@ function OrdersPage() {
         </div>
       )}
     </PageShell>
+  );
+}
+
+/**
+ * سعر التاجر تحرّك بعد الدفع وقبل تثبيت الطلب، فعرض المكتب سعرًا جديدًا. العميل يقبله — والفرق
+ * يُخصم من المحفظة أو يُرد إليها، أو في طلب InstaPay/تحويل يُرسل رقم تحويل الفرق — أو يلغي
+ * الطلب بزر الإلغاء فيعود له كل شيء.
+ */
+function PriceOffer({
+  orderId,
+  offer,
+  onAccepted,
+}: {
+  orderId: string;
+  offer: NonNullable<Order["proposed_price"]>;
+  onAccepted: () => void;
+}) {
+  const t = useT();
+  const [reference, setReference] = useState("");
+  const [busy, setBusy] = useState(false);
+  const up = offer.difference_piasters > 0;
+
+  const accept = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await api(`/orders/${orderId}/accept-price`, {
+        method: "POST",
+        body: offer.needs_payment_reference ? { payment_reference: reference.trim() } : {},
+      });
+      toast.success(t("تم قبول السعر الجديد"));
+      onAccepted();
+    } catch (e) {
+      toast.error(t(e instanceof ApiError ? e.firstMessage : "تعذر قبول السعر"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={accept}
+      className="mt-4 space-y-3 rounded-xl border border-gold/40 bg-gold/5 p-4"
+    >
+      <p className="text-sm font-semibold text-primary">{t("تغيّر سعر التاجر قبل تثبيت طلبك")}</p>
+      <p className="text-xs text-muted-foreground">
+        {t("السعر الجديد للجرام")}: {egp(offer.unit_price_piasters_per_gram / 100)} {t("ج.م")} ·{" "}
+        {t("الإجمالي الجديد")}: {egp(offer.gross_piasters / 100)} {t("ج.م")} ·{" "}
+        {up ? t("عليك فرق") : t("لك فرق")}: {egp(Math.abs(offer.difference_piasters) / 100)}{" "}
+        {t("ج.م")}
+      </p>
+      {offer.needs_payment_reference && (
+        <input
+          dir="ltr"
+          className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm text-primary outline-none focus:border-gold"
+          placeholder={t("رقم تحويل الفرق")}
+          value={reference}
+          onChange={(e) => setReference(e.target.value)}
+          maxLength={64}
+          required
+        />
+      )}
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          disabled={busy}
+          className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-50"
+        >
+          {busy && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}
+          {t("قبول السعر الجديد")}
+        </button>
+        <span className="text-[11px] text-muted-foreground">
+          {t("أو ألغِ الطلب ويعود لك المبلغ كاملًا.")}
+        </span>
+      </div>
+    </form>
   );
 }
