@@ -1,8 +1,17 @@
 import assert from "node:assert";
-import { fullName, latin, schemas } from "./auth-validation";
+import { fullName, idNumberOk, latin, schemas } from "./auth-validation";
 
 // أرقام عربية تُقبل وتُرسل لاتينية.
 assert.equal(latin(" ٠١٠١٢٣٤٥٦٧٨ "), "01012345678");
+
+// الرقم القومي 14 رقمًا يبدأ بـ 2 أو 3؛ الجواز 6–12 حرفًا ورقمًا — كل نوع بقاعدته.
+assert.equal(idNumberOk("29001011234567", false), true);
+assert.equal(idNumberOk("٢٩٠٠١٠١١٢٣٤٥٦٧", false), true);
+for (const id of ["19001011234567", "2900101123456", "A12345678"])
+  assert.equal(idNumberOk(id, false), false, id);
+for (const p of ["A12345678", "a1234567", "123456"]) assert.equal(idNumberOk(p, true), true, p);
+for (const p of ["A1234", "A12345678901X", "A-123456", "29001011234567"])
+  assert.equal(idNumberOk(p, true), false, p);
 
 const ok = {
   name: "أحمد علي",

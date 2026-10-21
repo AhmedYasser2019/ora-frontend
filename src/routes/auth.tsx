@@ -24,7 +24,7 @@ import { BAD_IMAGE, ImageDrop, isIdImage } from "@/components/ImageDrop";
 import { PageShell } from "@/components/PageShell";
 import { track } from "@/lib/analytics";
 import { api, ApiError, setToken, upload } from "@/lib/api";
-import { latin, schemas, type Errors } from "@/lib/auth-validation";
+import { idNumberOk, latin, schemas, type Errors } from "@/lib/auth-validation";
 import { cancelled, passkeysSupported, signInWithPasskey } from "@/lib/passkey";
 import { safeNext, useAuth } from "@/lib/use-auth";
 
@@ -421,16 +421,30 @@ function AuthPage() {
   });
   // حساب الديمو المستقل بلا موبايل، فيدخل بالبريد. الباقي بالموبايل كما في التطبيق.
   const [demoLogin, setDemoLogin] = useState(false);
+  // البطاقة أو جواز السفر، كما في التطبيق — لمن لا يحمل رقمًا قوميًا.
+  const [passport, setPassport] = useState(false);
   const [docNumber, setDocNumber] = useState("");
   // الرقم الذي اجتاز فحص الخادم في الخطوة الثانية؛ التخطي يتركه null فلا يُرسل.
   const [idNumber, setIdNumber] = useState<string | null>(null);
   const [docFront, setDocFront] = useState<File | null>(null);
   const [docBack, setDocBack] = useState<File | null>(null);
+  const [docPassport, setDocPassport] = useState<File | null>(null);
   const [docSelfie, setDocSelfie] = useState<File | null>(null);
   const [experience, setExperience] = useState<string>(EXPERIENCE[0]);
-  const idOk = /^[23][0-9]{13}$/.test(latin(docNumber));
-  // «التالي» مقفول لحد ما الرقم والصور الثلاث تكتمل — زي فورم الرفع في صفحة الحساب.
-  const kycReady = idOk && !!docFront && !!docBack && !!docSelfie;
+  const idOk = idNumberOk(docNumber, passport);
+  // حقول الرفع بأسمائها عند الخادم (KycStatus::SETS): البطاقة بوجهيها أو صفحة الجواز، ومعها صورة شخصية.
+  const docs: [string, File | null][] = passport
+    ? [
+        ["passport", docPassport],
+        ["selfie", docSelfie],
+      ]
+    : [
+        ["national_id_front", docFront],
+        ["national_id_back", docBack],
+        ["selfie", docSelfie],
+      ];
+  // «التالي» مقفول لحد ما الرقم وصور الوثيقة تكتمل — زي فورم الرفع في صفحة الحساب.
+  const kycReady = idOk && docs.every(([, f]) => f);
 
   const target = safeNext(next);
   const wizard = mode === "signup" && step > 1;
@@ -450,6 +464,12 @@ function AuthPage() {
 
   /** الكتابة في حقل تمسح خطأه — الرسالة تخص القيمة القديمة. */
   const clear = (key: keyof Errors) => setErrors((x) => ({ ...x, [key]: undefined }));
+  // رقم تغيّر بعد فحص الخادم لم يعد هو المفحوص — فلا يُرسل لو تخطّى الخطوة بعدها.
+  const setNumber = (v: string) => {
+    setDocNumber(v);
+    setIdNumber(null);
+    clear("docNumber");
+  };
   // ملف غير JPG/PNG لا يُحفظ أصلًا، فلا يمكن تجاوز الخطوة به.
   const pickDoc = (set: (f: File | null) => void, key: keyof Errors) => (f: File | null) => {
     const ok = !f || isIdImage(f);
@@ -568,7 +588,7 @@ function AuthPage() {
   const submitKyc = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!kycReady) return;
-    const num = latin(docNumber);
+    const num = latin(docNumber).toUpperCase();
     setBusy(true);
     try {
       await api("/auth/register/check", { method: "POST", body: { id_number: num } });
@@ -610,12 +630,10 @@ function AuthPage() {
       setToken(token);
       track("sign_up", { method: "email" });
 
-      // الثلاثة في طلب واحد أو لا شيء — من تخطّى الخطوة يرفعها من صفحة حسابه.
-      if (docFront && docBack && docSelfie) {
+      // الوثيقة كلها في طلب واحد أو لا شيء — من تخطّى الخطوة يرفعها من صفحة حسابه.
+      if (docs.every(([, f]) => f)) {
         const body = new FormData();
-        body.append("national_id_front", docFront);
-        body.append("national_id_back", docBack);
-        body.append("selfie", docSelfie);
+        for (const [field, file] of docs) body.append(field, file!);
         try {
           await upload("/kyc/documents", body);
         } catch {
@@ -894,46 +912,92 @@ function AuthPage() {
 
               {step === 2 && (
                 <form onSubmit={submitKyc} noValidate className="grid gap-4">
+                  <div
+                    className="grid grid-cols-2 gap-2"
+                    role="group"
+                    aria-label={t("نوع الوثيقة")}
+                  >
+                    {([false, true] as const).map((p) => (
+                      <button
+                        key={String(p)}
+                        type="button"
+                        aria-pressed={passport === p}
+                        onClick={() => {
+                          if (passport === p) return;
+                          setPassport(p);
+                          // الرقم يختلف شكله بين النوعين، فلا يُنقل من واحد للآخر.
+                          setNumber("");
+                        }}
+                        className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                          passport === p
+                            ? "border-gold bg-gold/15 text-gold-deep"
+                            : "border-border text-primary hover:bg-secondary/70"
+                        }`}
+                      >
+                        {t(p ? "جواز السفر" : "البطاقة الشخصية")}
+                      </button>
+                    ))}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    {t("لتأكيد هويتك، ارفع صورتي بطاقة الرقم القومي وصورة شخصية لك:")}
+                    {t(
+                      passport
+                        ? "لتأكيد هويتك، ارفع صورة صفحة البيانات في جواز السفر وصورة شخصية لك:"
+                        : "لتأكيد هويتك، ارفع صورتي بطاقة الرقم القومي وصورة شخصية لك:",
+                    )}
                   </p>
                   <Field
                     id="docNumber"
-                    label="الرقم القومي"
+                    label={passport ? "رقم جواز السفر" : "الرقم القومي"}
                     icon={BadgeCheck}
                     dir="ltr"
                     required
-                    inputMode="numeric"
+                    inputMode={passport ? "text" : "numeric"}
+                    autoCapitalize={passport ? "characters" : undefined}
                     value={docNumber}
-                    onChange={(e) => {
-                      setDocNumber(e.target.value);
-                      clear("docNumber");
-                    }}
+                    onChange={(e) => setNumber(e.target.value)}
                     // الزرار المقفول لازم يقول السبب: رقم ناقص يظهر خطأه أول ما يسيب الحقل.
                     onBlur={() =>
                       docNumber &&
                       !idOk &&
-                      setErrors((x) => ({ ...x, docNumber: ["الرقم القومي 14 رقمًا"] }))
+                      setErrors((x) => ({
+                        ...x,
+                        docNumber: [
+                          passport
+                            ? "رقم جواز السفر من 6 إلى 12 حرفًا أو رقمًا"
+                            : "الرقم القومي 14 رقمًا",
+                        ],
+                      }))
                     }
                     error={errors.docNumber}
-                    placeholder={t("اكتب الرقم القومي")}
+                    placeholder={t(passport ? "اكتب رقم جواز السفر" : "اكتب الرقم القومي")}
                   />
                   <p className="text-xs text-muted-foreground">
                     {t("التعليمات تتطلب رفع صورة المستند. بياناتك تبقى آمنة وخاصة.")}
                   </p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <ImageDrop
-                      label="الوجه الأمامي للبطاقة"
-                      file={docFront}
-                      onPick={pickDoc(setDocFront, "docFront")}
-                      error={errors.docFront}
-                    />
-                    <ImageDrop
-                      label="الوجه الخلفي للبطاقة"
-                      file={docBack}
-                      onPick={pickDoc(setDocBack, "docBack")}
-                      error={errors.docBack}
-                    />
+                    {passport ? (
+                      <ImageDrop
+                        label="صفحة البيانات في جواز السفر"
+                        file={docPassport}
+                        onPick={pickDoc(setDocPassport, "docPassport")}
+                        error={errors.docPassport}
+                      />
+                    ) : (
+                      <>
+                        <ImageDrop
+                          label="الوجه الأمامي للبطاقة"
+                          file={docFront}
+                          onPick={pickDoc(setDocFront, "docFront")}
+                          error={errors.docFront}
+                        />
+                        <ImageDrop
+                          label="الوجه الخلفي للبطاقة"
+                          file={docBack}
+                          onPick={pickDoc(setDocBack, "docBack")}
+                          error={errors.docBack}
+                        />
+                      </>
+                    )}
                     <ImageDrop
                       label="صورة شخصية"
                       file={docSelfie}
