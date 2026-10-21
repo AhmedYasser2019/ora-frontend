@@ -484,8 +484,8 @@ function CheckoutPage() {
                     {t("اختر الفرع")}
                   </option>
                   {branches.map((b) => (
-                    <option key={b.name} value={b.name}>
-                      {t(b.name)}
+                    <option key={b.code} value={b.code}>
+                      {b.name}
                     </option>
                   ))}
                 </select>
