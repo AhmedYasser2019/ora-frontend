@@ -466,7 +466,7 @@ function AuthPage() {
   const clear = (key: keyof Errors) => setErrors((x) => ({ ...x, [key]: undefined }));
   // رقم تغيّر بعد فحص الخادم لم يعد هو المفحوص — فلا يُرسل لو تخطّى الخطوة بعدها.
   const setNumber = (v: string) => {
-    setDocNumber(v);
+    setDocNumber(passport ? v.toUpperCase() : v);
     setIdNumber(null);
     clear("docNumber");
   };
@@ -963,7 +963,7 @@ function AuthPage() {
                         ...x,
                         docNumber: [
                           passport
-                            ? "رقم جواز السفر من 6 إلى 12 حرفًا أو رقمًا"
+                            ? "رقم جواز السفر المصري يجب أن يكون حرفًا واحدًا يليه 8 أرقام (مثال: A12345678)"
                             : "الرقم القومي 14 رقمًا",
                         ],
                       }))
