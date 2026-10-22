@@ -19,9 +19,9 @@ type FieldName =
 export const latin = (s: string) =>
   s.trim().replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x660));
 
-// نفس AuthController::idNumberRules: رقم قومي 14 رقمًا يبدأ بـ 2 أو 3، أو رقم جواز 6–12 حرفًا ورقمًا.
+// نفس AuthController::idNumberRules: رقم قومي 14 رقمًا يبدأ بـ 2 أو 3، أو جواز سفر مصري: حرف ثم 8 أرقام.
 export const idNumberOk = (s: string, passport: boolean) =>
-  (passport ? /^[A-Za-z0-9]{6,12}$/ : /^[23][0-9]{13}$/).test(latin(s));
+  (passport ? /^[A-Z][0-9]{8}$/ : /^[23][0-9]{13}$/).test(latin(s).toUpperCase());
 
 // نفس قواعد الباك إند (AuthController) — الواجهة تسبقه برسالة تحت الحقل، وهو يبقى الحَكَم.
 // الطول والبادئة لكل منهما رسالته: رسالة واحدة كانت تطلب «يبدأ بـ 010» من رقم يبدأ بـ 010 وناقص رقم.
