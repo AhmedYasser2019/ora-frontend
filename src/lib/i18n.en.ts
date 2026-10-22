@@ -801,6 +801,9 @@ export const en: Record<string, string> = {
   متاح: "Available",
 
   // الطلبات
+  "تفاصيل الطلب | زاد جولد": "Order details | Zad Gold",
+  "لم نعثر على هذا الطلب في حسابك": "We couldn't find this order in your account.",
+  "كل الطلبات": "All orders",
   "طلباتي | زاد جولد": "My orders | Zad Gold",
   "تابع حالة طلباتك في زاد جولد وتفاصيل كل طلب.":
     "Track the status and details of your Zad Gold orders.",

@@ -26,7 +26,7 @@ const linkFor = ({ action, type }: AppNotification) => {
   const id = action?.id;
   switch (action?.type ?? type.split(".")[0]) {
     case "order":
-      return { to: "/orders" } as const;
+      return id ? ({ to: "/orders/$id", params: { id } } as const) : ({ to: "/orders" } as const);
     case "news":
       return id ? ({ to: "/news/$id", params: { id } } as const) : ({ to: "/news" } as const);
     case "product":
