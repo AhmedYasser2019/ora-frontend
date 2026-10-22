@@ -35,7 +35,7 @@ export const Route = createFileRoute("/orders")({
       { property: "og:description", content: tr("متابعة حالة الطلبات.") },
     ],
   }),
-  component: OrdersPage,
+  component: () => <OrdersPage />,
 });
 
 /** دورة حياة الطلب في الباك إند — انظر OrderStatus. */
@@ -116,7 +116,8 @@ const when = (iso: string) =>
     new Date(iso),
   );
 
-function OrdersPage() {
+/** `id` من /orders/$id: رابط تنبيه أو إشعار يفتح الطلب نفسه، لا القائمة. */
+export function OrdersPage({ id }: { id?: string }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const t = useT();
@@ -124,16 +125,32 @@ function OrdersPage() {
   const [busy, setBusy] = useState("");
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/auth", search: { next: "/orders" } });
-  }, [loading, user, navigate]);
+    if (!loading && !user)
+      navigate({ to: "/auth", search: { next: id ? `/orders/${id}` : "/orders" } });
+  }, [loading, user, navigate, id]);
 
   // مُصفَّح من الخادم؛ الصفحة الأولى هي أحدث الطلبات. البثّ الحيّ يُبطله مع كل سعر جديد
   // فتتحدّث قيمة القطع المشتراة — انظر use-live-prices.
-  const { data: orders = [], isPending: fetching } = useQuery({
-    queryKey: ["orders"],
-    queryFn: () => api<{ data: Order[] }>("/orders").then((page) => page.data),
+  const {
+    data: orders = [],
+    isPending: fetching,
+    isError,
+  } = useQuery({
+    queryKey: id ? ["orders", id] : ["orders"],
+    queryFn: () =>
+      id
+        ? api<Order>(`/orders/${encodeURIComponent(id)}`).then((order) => [order])
+        : api<{ data: Order[] }>("/orders").then((page) => page.data),
     enabled: !!user,
+    retry: false,
   });
+
+  // طلب غير موجود أو لعميل آخر (404 من الخادم): رسالة، ثم قائمة الطلبات بدل صفحة مكسورة.
+  useEffect(() => {
+    if (!id || !isError) return;
+    toast.error(t("لم نعثر على هذا الطلب في حسابك"));
+    navigate({ to: "/orders", replace: true });
+  }, [id, isError, navigate, t]);
   const refresh = () => qc.invalidateQueries({ queryKey: ["orders"] });
 
   const cancel = async (id: string) => {
@@ -150,7 +167,7 @@ function OrdersPage() {
     }
   };
 
-  if (loading || !user || fetching) {
+  if (loading || !user || fetching || (id && isError)) {
     return (
       <PageShell title="طلباتي">
         <div className="flex justify-center py-20">
@@ -165,6 +182,11 @@ function OrdersPage() {
       title="طلباتي"
       subtitle="كل طلباتك وحالتها الحالية. يمكنك إلغاء أي طلب ما دام لم يُشحن بعد."
     >
+      {id && (
+        <Link to="/orders" className="mb-4 inline-block text-sm font-semibold text-gold-deep">
+          {t("كل الطلبات")}
+        </Link>
+      )}
       {orders.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
           <Package className="mx-auto h-10 w-10 text-gold-deep" />

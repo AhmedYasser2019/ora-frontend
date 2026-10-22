@@ -34,6 +34,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ZakatRouteImport } from './routes/zakat'
 import { Route as NewsIdRouteImport } from './routes/news_.$id'
+import { Route as OrdersIdRouteImport } from './routes/orders_.$id'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as ReportsIdRouteImport } from './routes/reports_.$id'
 
@@ -162,6 +163,11 @@ const NewsIdRoute = NewsIdRouteImport.update({
   path: '/news/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders_/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsSlugRoute = ProductsSlugRouteImport.update({
   id: '/products/$slug',
   path: '/products/$slug',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/news/$id': typeof NewsIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/reports/$id': typeof ReportsIdRoute
 }
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/news/$id': typeof NewsIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/reports/$id': typeof ReportsIdRoute
 }
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/zakat': typeof ZakatRoute
   '/news_/$id': typeof NewsIdRoute
+  '/orders_/$id': typeof OrdersIdRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/reports_/$id': typeof ReportsIdRoute
 }
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/zakat'
     | '/news/$id'
+    | '/orders/$id'
     | '/products/$slug'
     | '/reports/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/zakat'
     | '/news/$id'
+    | '/orders/$id'
     | '/products/$slug'
     | '/reports/$id'
   id:
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/zakat'
     | '/news_/$id'
+    | '/orders_/$id'
     | '/products/$slug'
     | '/reports_/$id'
   fileRoutesById: FileRoutesById
@@ -377,6 +389,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   ZakatRoute: typeof ZakatRoute
   NewsIdRoute: typeof NewsIdRoute
+  OrdersIdRoute: typeof OrdersIdRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   ReportsIdRoute: typeof ReportsIdRoute
 }
@@ -558,6 +571,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders_/$id': {
+      id: '/orders_/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products/$slug': {
       id: '/products/$slug'
       path: '/products/$slug'
@@ -601,6 +621,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   ZakatRoute: ZakatRoute,
   NewsIdRoute: NewsIdRoute,
+  OrdersIdRoute: OrdersIdRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   ReportsIdRoute: ReportsIdRoute,
 }
