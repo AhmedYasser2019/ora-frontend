@@ -74,9 +74,21 @@ export function useAuth() {
   };
 }
 
-/** Keep only same-origin relative paths for post-auth redirects. */
+/**
+ * Keep only same-origin relative paths for post-auth redirects.
+ *
+ * Browsers treat `\` like `/` in URLs and strip tabs/newlines, so `/\evil.com` or `/\t/evil.com`
+ * would become the protocol-relative `//evil.com`. Reject backslashes and control characters
+ * outright instead of trying to normalise them.
+ */
 export function safeNext(next: unknown): string {
-  if (typeof next === "string" && next.startsWith("/") && !next.startsWith("//")) {
+  if (
+    typeof next === "string" &&
+    next.startsWith("/") &&
+    !next.startsWith("//") &&
+    // eslint-disable-next-line no-control-regex
+    !/[\\\u0000-\u001f\u007f]/.test(next)
+  ) {
     return next;
   }
   return "/";

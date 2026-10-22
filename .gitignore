@@ -33,3 +33,5 @@ dist-ssr
 
 # Local environment
 .env
+.env.*
+!.env.example

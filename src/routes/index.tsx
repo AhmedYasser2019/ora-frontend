@@ -309,8 +309,10 @@ function Home() {
 }
 
 /** رابط المتجر من الداشبورد؛ قبل نزول التطبيق يبقى الزر «قريبًا». */
-function StoreButton({ store, href }: { store: string; href: string | null | undefined }) {
+function StoreButton({ store, href: raw }: { store: string; href: string | null | undefined }) {
   const t = useT();
+  // الرابط من الداشبورد: https فقط، فلا يصير `javascript:` أو غيره رابطًا قابلًا للنقر.
+  const href = raw && /^https:\/\//i.test(raw) ? raw : null;
   const inner = (
     <>
       <Smartphone className="h-6 w-6 text-gold" />
