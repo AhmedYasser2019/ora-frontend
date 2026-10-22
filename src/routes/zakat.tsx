@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { PageShell } from "@/components/PageShell";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
-import { GOLD_NISAB_GRAMS, SILVER_NISAB_GRAMS, zakat } from "@/lib/zakat";
+import { goldNisabGrams, SILVER_NISAB_GRAMS, zakat } from "@/lib/zakat";
 
 import { tr } from "@/lib/i18n";
 
@@ -28,8 +28,8 @@ export const Route = createFileRoute("/zakat")({
 });
 
 const karats = [
-  { label: "عيار 24", key: "k24" },
-  { label: "عيار 21", key: "k21" },
+  { label: "عيار 24", key: "k24", karat: 24 },
+  { label: "عيار 21", key: "k21", karat: 21 },
 ] as const;
 
 function ZakatPage() {
@@ -43,18 +43,29 @@ function ZakatPage() {
   const silverGrams = Math.max(0, Number(silverText) || 0);
 
   const gram = data?.gram;
-  const goldValue = (gram?.[karats[karat]!.key] ?? 0) * grams;
+  const selected = karats[karat]!;
+  const goldGram = gram?.[selected.key] ?? 0;
+  const goldValue = goldGram * grams;
   const silverValue = (gram?.silver ?? 0) * silverGrams;
-  const { total, nisab, due } = zakat(goldValue, silverValue, gram?.k21 ?? 0, gram?.silver ?? 0);
+  const { total, nisab, due } = zakat(
+    goldValue,
+    silverValue,
+    goldGram,
+    selected.karat,
+    gram?.silver ?? 0,
+  );
+  // النصاب بجرامات العيار المختار: 85 لعيار 24، و97.14 لعيار 21.
   const nisabLabel =
     goldValue > 0
-      ? `النصاب (${GOLD_NISAB_GRAMS} جرام ذهب عيار 21)`
-      : `النصاب (${SILVER_NISAB_GRAMS} جرام فضة)`;
+      ? t("النصاب ({n} جرام ذهب {k})")
+          .replace("{n}", String(+goldNisabGrams(selected.karat).toFixed(2)))
+          .replace("{k}", t(selected.label))
+      : t(`النصاب (${SILVER_NISAB_GRAMS} جرام فضة)`);
 
   return (
     <PageShell
       title="حساب الزكاة"
-      subtitle="نصاب الزكاة 85 جرامًا من الذهب عيار 21، أو 595 جرامًا من الفضة لمن يملك فضة وحدها، ونسبتها 2.5% بعد مرور حَوْل هجري كامل — وفق ما تعتمده دار الإفتاء المصرية."
+      subtitle="نصاب الزكاة 85 جرامًا من الذهب الخالص (عيار 24)، أي ما يعادل 97.14 جرامًا تقريبًا من عيار 21، أو 595 جرامًا من الفضة لمن يملك فضة وحدها، ونسبتها 2.5% بعد مرور حَوْل هجري كامل."
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-6">
@@ -118,7 +129,7 @@ function ZakatPage() {
               </dd>
             </div>
             <div className="flex items-center justify-between border-b border-primary-foreground/10 pb-3">
-              <dt className="text-primary-foreground/75">{t(nisabLabel)}</dt>
+              <dt className="text-primary-foreground/75">{nisabLabel}</dt>
               <dd className="font-display text-lg text-gold">
                 {egp(nisab)} {t("ج.م")}
               </dd>
