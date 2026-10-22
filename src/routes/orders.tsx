@@ -157,7 +157,7 @@ export function OrdersPage({ id }: { id?: string }) {
     if (!user) return;
     setBusy(id);
     try {
-      await api(`/orders/${id}/cancel`, { method: "POST" });
+      await api(`/orders/${encodeURIComponent(id)}/cancel`, { method: "POST" });
       toast.success(t("تم إلغاء الطلب"));
       void refresh();
     } catch (e) {
@@ -418,7 +418,7 @@ function PriceOffer({
     e.preventDefault();
     setBusy(true);
     try {
-      await api(`/orders/${orderId}/accept-price`, {
+      await api(`/orders/${encodeURIComponent(orderId)}/accept-price`, {
         method: "POST",
         body: offer.needs_payment_reference ? { payment_reference: reference.trim() } : {},
       });

@@ -29,7 +29,7 @@ export function PaymentReference({
     e.preventDefault();
     setBusy(true);
     try {
-      await api(`/orders/${orderId}/payment-reference`, {
+      await api(`/orders/${encodeURIComponent(orderId)}/payment-reference`, {
         method: "PUT",
         body: { payment_reference: value.trim() },
       });
