@@ -3,8 +3,14 @@ import { toast } from "sonner";
 
 import { useFavorites } from "@/lib/favorites";
 import { useT } from "@/lib/i18n";
+import { GUEST_MODE } from "@/lib/site";
 
-export function FavoriteButton({
+/** المفضلة في الحساب، فلا زر لها في وضع الزائر. */
+export function FavoriteButton(props: { slug: string; title: string; className?: string }) {
+  return GUEST_MODE ? null : <AccountFavoriteButton {...props} />;
+}
+
+function AccountFavoriteButton({
   slug,
   title,
   className = "",

@@ -1221,4 +1221,20 @@ export const en: Record<string, string> = {
   "تم قبول السعر الجديد": "New price accepted",
   "تعذر قبول السعر": "Couldn't accept the price",
   "أو ألغِ الطلب ويعود لك المبلغ كاملًا.": "Or cancel the order and get the full amount back.",
+  // وضع الزائر
+  "سيتصل بك فريقنا لتحديد موعد زيارة الفرع. السعر النهائي هو سعر لحظة الشراء في الفرع، والدفع هناك.":
+    "Our team will call you to arrange a branch visit. The final price is the price at the moment you buy at the branch, and you pay there.",
+  "اترك بياناتك وسيتصل بك فريقنا لتحديد موعد في الفرع. الدفع والاستلام في الفرع بسعر لحظة الشراء.":
+    "Leave your details and our team will call to arrange a branch visit. You pay and collect at the branch, at the price of the moment.",
+  "أي فرع — نتفق على الهاتف": "Any branch — we'll agree on the phone",
+  ملاحظات: "Notes",
+  "مثال: أفضّل الاتصال بعد الخامسة مساءً": "e.g. Please call after 5 pm",
+  "أرسل الطلب": "Send request",
+  "الإجمالي التقديري": "Estimated total",
+  "بسعر اليوم للعرض فقط. القطع غير محجوزة، والتوافر والسعر النهائي يتأكدان في الفرع.":
+    "At today's price, for reference only. Pieces are not held; availability and the final price are confirmed at the branch.",
+  "حدث خطأ، حاول مرة أخرى.": "Something went wrong, please try again.",
+  "الأسعار في السلة محدثة لحظيًا مع سعر الذهب للعرض فقط. السعر النهائي والدفع في الفرع.":
+    "Cart prices follow the live gold price, for reference only. The final price and payment are at the branch.",
+  "اطلب أونلاين واستلم من الفرع": "Order online, collect at the branch",
 };

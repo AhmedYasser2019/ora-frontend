@@ -10,6 +10,7 @@ import { deliveryFee, shortLines, shortMessage, useCart } from "@/lib/cart";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useLivePrices } from "@/lib/use-live-prices";
 import { productImage } from "@/lib/product-image";
+import { GUEST_MODE } from "@/lib/site";
 
 import { tr } from "@/lib/i18n";
 
@@ -42,13 +43,19 @@ function CartPage() {
   const priceOf = (slug: string) => bySlug(catalog, slug)?.price ?? 0;
   const subtotal = items.reduce((s, i) => s + priceOf(i.slug) * i.qty, 0);
   // التوصيل للمنزل هو اختيار الإتمام الافتراضي؛ الاستلام من الفرع هناك يُسقطه.
-  const delivery = deliveryFee(subtotal, useSiteSettings()?.delivery);
+  const rule = useSiteSettings()?.delivery;
+  // وضع الزائر: الاستلام والدفع في الفرع، فلا شحن.
+  const delivery = GUEST_MODE ? 0 : deliveryFee(subtotal, rule);
   const short = shortLines(items, catalog);
 
   return (
     <PageShell
       title="سلة الشراء"
-      subtitle="الأسعار في السلة محدثة لحظيًا مع سعر الذهب، ويتم تثبيت السعر النهائي عند تأكيد الطلب."
+      subtitle={
+        GUEST_MODE
+          ? "الأسعار في السلة محدثة لحظيًا مع سعر الذهب للعرض فقط. السعر النهائي والدفع في الفرع."
+          : "الأسعار في السلة محدثة لحظيًا مع سعر الذهب، ويتم تثبيت السعر النهائي عند تأكيد الطلب."
+      }
     >
       {!ready ? (
         <p className="text-sm text-muted-foreground">{t("جاري تحميل السلة…")}</p>
@@ -153,14 +160,18 @@ function CartPage() {
                   {egp(subtotal)} {t("ج.م")}
                 </dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">{t("الشحن المؤمّن")}</dt>
-                <dd className="text-primary">
-                  {delivery === 0 ? t("مجاني") : `${egp(delivery)} ${t("ج.م")}`}
-                </dd>
-              </div>
+              {!GUEST_MODE && (
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">{t("الشحن المؤمّن")}</dt>
+                  <dd className="text-primary">
+                    {delivery === 0 ? t("مجاني") : `${egp(delivery)} ${t("ج.م")}`}
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between border-t border-border pt-3">
-                <dt className="font-semibold text-primary">{t("الإجمالي")}</dt>
+                <dt className="font-semibold text-primary">
+                  {t(GUEST_MODE ? "الإجمالي التقديري" : "الإجمالي")}
+                </dt>
                 <dd className="font-display text-xl text-gold-deep">
                   {egp(subtotal + delivery)} {t("ج.م")}
                 </dd>

@@ -1,5 +1,13 @@
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
@@ -10,6 +18,7 @@ import type { Product } from "./catalog.server";
 import { useT } from "./i18n";
 import type { SiteSettings } from "./settings.server";
 import { useAuth } from "./use-auth";
+import { GUEST_MODE } from "./site";
 
 /**
  * السلة تعيش في الحساب: `GET/POST/DELETE /cart`، وكل ردّ هو السلة كاملة. الإضافة كانت
@@ -68,7 +77,109 @@ export const shortMessage = (t: (s: string) => string, p: Product) =>
 
 const lines = (qc: QueryClient) => qc.getQueryData<ServerCart>(KEY)?.items ?? [];
 
+/** وضع الزائر يحفظ السلة في المتصفح؛ غير ذلك تعيش في الحساب. */
 export function CartProvider({ children }: { children: ReactNode }) {
+  return GUEST_MODE ? (
+    <DeviceCartProvider>{children}</DeviceCartProvider>
+  ) : (
+    <AccountCartProvider>{children}</AccountCartProvider>
+  );
+}
+
+const DEVICE_KEY = "zadgold.guest-cart";
+
+/**
+ * سلة الزائر: أكواد وكميات في localStorage، بلا حساب ولا خادم. لا شيء محجوز بها — الطلب
+ * الذي يخرج منها (POST /web-requests) تذكير للفرع، والمخزون يتأكد هناك.
+ */
+function DeviceCartProvider({ children }: { children: ReactNode }) {
+  const qc = useQueryClient();
+  const t = useT();
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [ready, setReady] = useState(false);
+
+  // في المتصفح فقط، بعد أول رسم: الخادم لا يرى localStorage.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DEVICE_KEY) ?? "[]");
+      if (Array.isArray(saved))
+        setItems(saved.filter((i) => typeof i?.slug === "string" && i.qty > 0));
+    } catch {
+      /* سلة تالفة أو تخزين ممنوع — تبدأ فارغة */
+    }
+    setReady(true);
+  }, []);
+
+  const save = useCallback((fn: (prev: CartItem[]) => CartItem[]) => {
+    setItems((prev) => {
+      const next = fn(prev);
+      try {
+        localStorage.setItem(DEVICE_KEY, JSON.stringify(next));
+      } catch {
+        /* تعيش حتى إغلاق الصفحة */
+      }
+      return next;
+    });
+  }, []);
+
+  const add = useCallback(
+    (slug: string, qty = 1) => {
+      const current = items.find((i) => i.slug === slug)?.qty ?? 0;
+      const p = bySlug(qc.getQueryData(productsQuery.queryKey), slug);
+      if (p && qty > room(p.stock, current)) {
+        toast.error(shortMessage(t, p));
+        return false;
+      }
+      const next = Math.min(current + qty, MAX_QTY);
+      save((prev) =>
+        prev.some((i) => i.slug === slug)
+          ? prev.map((i) => (i.slug === slug ? { ...i, qty: next } : i))
+          : [{ slug, qty: next }, ...prev],
+      );
+      track("add_to_cart", {
+        currency: "EGP",
+        value: (p?.price ?? 0) * qty,
+        items: [gaItem(slug, p, qty)],
+      });
+      return true;
+    },
+    [items, qc, t, save],
+  );
+
+  const remove = useCallback(
+    (slug: string) => save((prev) => prev.filter((i) => i.slug !== slug)),
+    [save],
+  );
+
+  const setQty = useCallback(
+    (slug: string, qty: number) =>
+      qty <= 0
+        ? remove(slug)
+        : save((prev) =>
+            prev.map((i) => (i.slug === slug ? { ...i, qty: Math.min(qty, MAX_QTY) } : i)),
+          ),
+    [remove, save],
+  );
+
+  const clear = useCallback(() => save(() => []), [save]);
+
+  const value = useMemo<CartContextValue>(
+    () => ({
+      items,
+      count: items.reduce((s, i) => s + i.qty, 0),
+      ready,
+      add,
+      setQty,
+      remove,
+      clear,
+    }),
+    [items, ready, add, setQty, remove, clear],
+  );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+function AccountCartProvider({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();

@@ -3,6 +3,7 @@ import { useCallback, useSyncExternalStore } from "react";
 
 import { api, enterDemo, getToken, leaveDemo, setToken } from "./api";
 import { unregisterPush } from "./web-push";
+import { GUEST_MODE } from "./site";
 
 export type User = {
   id: number;
@@ -34,7 +35,9 @@ export const useToken = () => useSyncExternalStore(subscribe, getToken, () => nu
  * مشترك في react-query، فالشاشات التي تسأل عن المستخدم لا تكرّر النداء.
  */
 export function useAuth() {
-  const token = useToken();
+  // وضع الزائر: لا جلسة أبدًا، حتى لو بقي رمز قديم في المتصفح.
+  const stored = useToken();
+  const token = GUEST_MODE ? null : stored;
   const qc = useQueryClient();
 
   const { data, isPending } = useQuery({
