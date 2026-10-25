@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/use-auth";
-import { navLinks } from "@/lib/site";
+import { GUEST_MODE, navLinks } from "@/lib/site";
 import { useSiteSettings } from "@/lib/settings.queries";
 
 import { NotificationBell } from "./NotificationBell";
@@ -31,7 +31,7 @@ export function SiteHeader() {
             <span dir="ltr">{settings?.contact.hotline}</span>
           </span>
           <span className="hidden text-gold sm:inline">
-            {t("توصيل آمن ومؤمّن لكل محافظات مصر")}
+            {t(GUEST_MODE ? "اطلب أونلاين واستلم من الفرع" : "توصيل آمن ومؤمّن لكل محافظات مصر")}
           </span>
           <button
             onClick={() => setLang(lang === "ar" ? "en" : "ar")}
@@ -61,42 +61,47 @@ export function SiteHeader() {
               <p className="mt-1 text-[10px] tracking-[0.35em] text-gold-deep">GOLD JEWELRY</p>
             </Link>
             <div className="flex items-center gap-2">
-              <NotificationBell />
-              <Link
-                to="/orders"
-                aria-label={t("طلباتي")}
-                className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
-              >
-                <Package className="h-5 w-5" />
-              </Link>
-              {/* زائر → صفحة الدخول ثم يرجع للصفحة اللي كان فيها، مش لحسابه */}
-              <Link
-                to={user ? "/account" : "/auth"}
-                search={user ? {} : { next: pathname }}
-                aria-label={t("حسابي")}
-                className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
-              >
-                <User className="h-5 w-5" />
-              </Link>
-              <Link
-                to="/favorites"
-                aria-label={t("المفضلة")}
-                className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary"
-              >
-                <Heart className="h-5 w-5" />
-                {favorites.ready && favorites.count > 0 && (
-                  <span className="absolute -end-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-primary">
-                    {favorites.count}
-                  </span>
-                )}
-              </Link>
-              <Link
-                to="/wallet"
-                aria-label={t("محفظتي")}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary"
-              >
-                <Wallet className="h-5 w-5" />
-              </Link>
+              {/* وضع الزائر: لا حساب، فلا إشعارات ولا طلبات ولا مفضلة ولا محفظة — السلة فقط. */}
+              {!GUEST_MODE && (
+                <>
+                  <NotificationBell />
+                  <Link
+                    to="/orders"
+                    aria-label={t("طلباتي")}
+                    className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
+                  >
+                    <Package className="h-5 w-5" />
+                  </Link>
+                  {/* زائر → صفحة الدخول ثم يرجع للصفحة اللي كان فيها، مش لحسابه */}
+                  <Link
+                    to={user ? "/account" : "/auth"}
+                    search={user ? {} : { next: pathname }}
+                    aria-label={t("حسابي")}
+                    className="hidden h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary sm:flex"
+                  >
+                    <User className="h-5 w-5" />
+                  </Link>
+                  <Link
+                    to="/favorites"
+                    aria-label={t("المفضلة")}
+                    className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary"
+                  >
+                    <Heart className="h-5 w-5" />
+                    {favorites.ready && favorites.count > 0 && (
+                      <span className="absolute -end-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-primary">
+                        {favorites.count}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    to="/wallet"
+                    aria-label={t("محفظتي")}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary"
+                  >
+                    <Wallet className="h-5 w-5" />
+                  </Link>
+                </>
+              )}
               <Link
                 to="/cart"
                 aria-label={t("سلة الشراء")}

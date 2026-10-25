@@ -21,7 +21,8 @@ import { orderErrorMessage, placeOrder } from "@/lib/orders";
 import { gaItem, track } from "@/lib/analytics";
 import { egp, livePricesQuery } from "@/lib/prices.queries";
 import { useAuth } from "@/lib/use-auth";
-import { GOVERNORATES } from "@/lib/site";
+import { GOVERNORATES, GUEST_MODE } from "@/lib/site";
+import { GuestCheckout } from "@/components/GuestCheckout";
 import { marketQuery } from "@/lib/market-hours";
 import { useSiteSettings } from "@/lib/settings.queries";
 
@@ -41,7 +42,8 @@ export const Route = createFileRoute("/checkout")({
       context.queryClient.ensureQueryData(livePricesQuery),
       context.queryClient.ensureQueryData(productsQuery),
     ]),
-  component: CheckoutPage,
+  // وضع الزائر: طلب للفرع بدل الشراء من الحساب.
+  component: GUEST_MODE ? GuestCheckout : CheckoutPage,
 });
 
 const PAYMENTS = [

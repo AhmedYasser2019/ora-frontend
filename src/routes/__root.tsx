@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
   useRouterState,
+  redirect,
 } from "@tanstack/react-router";
 import { type ReactNode, useEffect } from "react";
 
@@ -20,6 +21,7 @@ import { trackView } from "@/lib/api";
 import { localizeValidity } from "@/lib/form-validity";
 import { initAnalytics, setAnalyticsUser } from "@/lib/analytics";
 import { useAuth } from "@/lib/use-auth";
+import { ACCOUNT_PAGES, GUEST_MODE } from "@/lib/site";
 
 /**
  * تُرسم أحيانًا خارج <LangProvider> (لو فشل RootComponent قبل تركيب الـ provider)،
@@ -117,6 +119,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         },
       ],
     };
+  },
+
+  /** وضع الزائر: صفحات الحساب غير موجودة، فرابط قديم لها يرجع للرئيسية. */
+  beforeLoad: ({ location }) => {
+    if (
+      GUEST_MODE &&
+      ACCOUNT_PAGES.some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`))
+    ) {
+      throw redirect({ to: "/" });
+    }
   },
 
   /**
